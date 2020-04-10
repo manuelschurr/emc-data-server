@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "Server backend for EMC data transmission",
     "main": "index.js",
+    "license": "MIT",
     "scripts": {
         "start": "npm run build && npm run serve",
         "serve": "node -r dotenv/config build/server.js",
