@@ -3,4 +3,5 @@ Platform for collecting emergency medical care (emc) data inside an ambulance vi
 
 Central Server Repo.
 
-Install packages in `/backend` with `npm i`
+### Installation Instructions
+Install packages in `/backend` with `npm i`. Start server with `npm run start`. Don't forget to create and fill a `.env` file before.
