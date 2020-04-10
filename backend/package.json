@@ -1,7 +1,7 @@
 {
-    "name": "nodejs-backend-architecture",
+    "name": "emc-data-server-backend",
     "version": "1.0.0",
-    "description": "Template architecture for a nodejs backend. Built using expressjs with typescript.",
+    "description": "Server backend for EMC data transmission",
     "main": "index.js",
     "scripts": {
         "start": "npm run build && npm run serve",
@@ -15,11 +15,6 @@
         "lint": "eslint '**/*.ts'",
         "format": "eslint '**/*.ts' --fix"
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/manuelschurr/template-backend.git"
-    },
-    "author": "Manuel Schurr",
     "dependencies": {
         "@hapi/joi": "^17.1.1",
         "body-parser": "^1.19.0",
