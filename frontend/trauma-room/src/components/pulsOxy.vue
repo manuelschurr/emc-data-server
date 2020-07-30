@@ -4,21 +4,18 @@
       <div class="col-12">
         <form class="form-inline" style="align-items: center;">
           <div class="col-9">
-            <div v-if="loaded">
-              <puls-oxy-line
-                v-for="data in jsonData"
-                v-bind:key="data.pulsoxy"
-                class="small"
-                :chart-data="data.pulsRate.value"
-                :chart-labels="data.pulsRate.time"
-              />
-            </div>
+            <puls-oxy-line
+              class="small"
+              v-if="loaded"
+              :chart-data="pulseData"
+              :chart-labels="pulseLabels"
+            />
           </div>
           <div class="col-3 pulseColor">
             <br />
             <b>Pulse</b>
             <br />
-            <span class="bigFont">{{ lastPulse }}</span>
+            <span class="bigFont">{{lastPulse}}</span>
             <svg
               width="1em"
               height="1em"
@@ -99,12 +96,12 @@ export default {
   },
   methods: {
     fillData() {
-      //  this.pulseData = response.data.pulseData.map(download => download.pulseData)
-      //  this.pulseLabels = response.data.pulseData.map(download => download.day)
-      this.pulseData = ["68", "89", "81"];
-      this.pulseLabels = ["2017-05-13", "2017-05-14", "2017-05-15"];
-      this.spo2Data = ["99", "95", "101"];
-      this.spo2Labels = ["2017-05-13", "2017-05-14", "2017-05-15"];
+      for (var data of this.jsonData) {
+        this.pulseData.push(data.pulsoxy.pulsRate.value.toString());
+        this.pulseLabels.push(data.pulsoxy.pulsRate.time);
+        this.spo2Data.push(data.pulsoxy.spo2.value.toString());
+        this.spo2Labels.push(data.pulsoxy.spo2.time);
+      }
       this.loaded = true;
       // this.chartdata = {
       //   datasets: [

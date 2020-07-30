@@ -8,13 +8,15 @@ export default {
   mixins: [reactiveProp],
   props: {
     chartData: {
-      type: Array,
-      required: false,
+      // eslint-disable-next-line vue/require-prop-type-constructor
+      type: Array | Object,
+      required: false
     },
     chartLabels: {
-      type: Array,
-      required: false,
-    },
+      // eslint-disable-next-line vue/require-prop-type-constructor
+      type: Array | Object,
+      required: false
+    }
   },
   data() {
     return {
@@ -23,27 +25,27 @@ export default {
           yAxes: [
             {
               ticks: {
-                beginAtZero: false,
+                beginAtZero: false
               },
               gridLines: {
-                display: true,
-              },
-            },
+                display: true
+              }
+            }
           ],
           xAxes: [
             {
               gridLines: {
-                display: false,
-              },
-            },
-          ],
+                display: false
+              }
+            }
+          ]
         },
         legend: {
-          display: false,
+          display: false
         },
         responsive: true,
-        maintainAspectRatio: false,
-      },
+        maintainAspectRatio: false
+      }
     };
   },
   mounted() {
@@ -57,12 +59,12 @@ export default {
             borderWidth: 1,
             pointBorderColor: "#249EBF",
             backgroundColor: "transparent",
-            data: this.chartData,
-          },
-        ],
+            data: this.chartData
+          }
+        ]
       },
       this.options
     );
-  },
+  }
 };
 </script>
