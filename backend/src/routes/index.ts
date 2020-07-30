@@ -1,7 +1,7 @@
 import express from "express"
 import img from "./img/img"
-import patient from "./Patient/Patient"
-import rtw from "./Rtw/Rtw"
+import patient from "./patient/patient"
+import rtw from "./rtw/rtw"
 import test from "./test/test"
 
 const router = express.Router()
