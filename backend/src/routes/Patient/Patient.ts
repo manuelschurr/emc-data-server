@@ -14,11 +14,11 @@ router.get(
 )
 
 router.post(
-    "/postPulo",
+    "/",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
 
-        Database.insertMultiplePulsoxyData(req)
+        console.log(req);//Database.insertMultiplePulsoxyData(req)
     }),
 )
 
