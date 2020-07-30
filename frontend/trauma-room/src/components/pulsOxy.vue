@@ -85,22 +85,32 @@ export default {
   },
   created() {
     // this.getRealtimeData()
+    // this.fillData();
   },
   computed: {
     lastPulse() {
-      return this.pulseData[this.pulseData.length - 1];
+      var lastPulseData = this.pulseData[this.pulseData.length - 1];
+      this.$root.$emit("lastPulseData", lastPulseData);
+      return lastPulseData;
     },
     lastSpo2() {
-      return this.spo2Data[this.spo2Data.length - 1];
+      var lastSpo2Data = this.spo2Data[this.spo2Data.length - 1];
+      this.$root.$emit("lastSpo2Data", lastSpo2Data);
+      return lastSpo2Data;
     },
   },
   methods: {
     fillData() {
-      for (var data of this.jsonData) {
+      //  this.pulseData = response.data.pulseData.map(download => download.pulseData)
+      //  this.pulseLabels = response.data.pulseData.map(download => download.day)
+      for (var data of this.jsonData.slice(
+        this.jsonData.length - 20,
+        this.jsonData.length
+      )) {
         this.pulseData.push(data.pulsoxy.pulsRate.value.toString());
-        this.pulseLabels.push(data.pulsoxy.pulsRate.time);
+        this.pulseLabels.push(data.pulsoxy.pulsRate.time.slice(0, 8));
         this.spo2Data.push(data.pulsoxy.spo2.value.toString());
-        this.spo2Labels.push(data.pulsoxy.spo2.time);
+        this.spo2Labels.push(data.pulsoxy.spo2.time.slice(0, 8));
       }
       this.loaded = true;
       // this.chartdata = {
