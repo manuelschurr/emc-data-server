@@ -3,7 +3,7 @@
     <div class="row align-items-start">
       <div class="col-12">
         <form class="form-inline" style="align-items: center;">
-          <div class="col-9">
+          <div class="col-9" v-if="selectedElements === 1">
             <puls-oxy-line
               class="small"
               v-if="loaded"
@@ -15,7 +15,7 @@
             <br />
             <b>Pulse</b>
             <br />
-            <span class="bigFont">{{lastPulse}}</span>
+            <span class="bigFont">{{ lastPulse }}</span>
             <svg
               width="1em"
               height="1em"
@@ -35,7 +35,7 @@
       </div>
       <div class="col-12">
         <form class="form-inline" style="align-items: center;">
-          <div class="col-9">
+          <div class="col-9" v-if="selectedElements === 1">
             <puls-oxy-line
               class="small"
               v-if="loaded"
@@ -53,8 +53,7 @@
             <span class="bigFont">{{ lastSpo2 }}</span>
             O
             <sub>2</sub>
-            <br />SpO
-            <sub>2</sub>%
+            <br />SpO <sub>2</sub>%
           </div>
         </form>
       </div>
@@ -77,8 +76,11 @@ export default {
       pulseLabels: [],
       spo2Data: [],
       spo2Labels: [],
-      jsonData: PulsOxy_data1,
+      jsonData: PulsOxy_data1
     };
+  },
+  props: {
+    selectedElements: Number
   },
   mounted() {
     this.fillData();
@@ -97,7 +99,7 @@ export default {
       var lastSpo2Data = this.spo2Data[this.spo2Data.length - 1];
       this.$root.$emit("lastSpo2Data", lastSpo2Data);
       return lastSpo2Data;
-    },
+    }
   },
   methods: {
     fillData() {
@@ -131,8 +133,8 @@ export default {
       // socket.on("newdata", fetchedData => {
       //   this.fillData(fetchedData)
       // })
-    },
-  },
+    }
+  }
   // async mounted () {
   //   this.loaded = false
   //   try {
