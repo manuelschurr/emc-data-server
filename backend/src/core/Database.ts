@@ -34,7 +34,7 @@ MongoClient.connect(url, function(err: any, db) {
    // db.close();
 });
 
-// just as an example
+
 module Database {
    export function insertPatientData(pat: Patient) 
    {
@@ -152,18 +152,21 @@ module Database {
             if (err) {
                console.log(err);
             }
-            // db.close();
-            let pulsox = new Pulsoxy();
-            pulsox.patientId = data[0];
-            pulsox.timestamp = data[1];
-            pulsox.pulsrate = data [2];
-            pulsox.spo2 = data[3];
-            return pulsox;//console.log(data);
+            if (data == null) {
+               console.log("No pulsoxy data found!");
+            }
+            else {
+               // let pulsox = new Pulsoxy();
+               // pulsox.patientId = data[0];
+               // pulsox.timestamp = data[1];
+               // pulsox.pulsrate = data [2];
+               // pulsox.spo2 = data[3];
+               // return pulsox;
+               console.log(data);
+            }
          });
       });
    }
-
-   export class Database { }
 }
 
 export default Database
