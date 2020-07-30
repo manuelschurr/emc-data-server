@@ -149,8 +149,13 @@ function findLatestPulsoxyObject(lookUpPatientId: number) {
          if (err) {
             throw err;
          }
-         console.log(data);
          db.close();
+         let pulsox = new Pulsoxy();
+         pulsox.patientId = data[0];
+         pulsox.timestamp = data[1];
+         pulsox.pulsrate = data [2];
+         pulsox.spo2 = data[3];
+         return pulsox;//console.log(data);
       });
    });
 }
