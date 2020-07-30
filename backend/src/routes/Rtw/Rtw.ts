@@ -12,4 +12,12 @@ router.get(
     }),
 )
 
+router.post(
+    "/gnss", 
+    asyncHandler(async (req, res, next)  => {
+        console.log(req);
+        return new SuccessResponse("Successful", null).send(res)
+    })
+)
+
 export default router
