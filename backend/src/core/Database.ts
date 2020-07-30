@@ -138,7 +138,35 @@ function findLatestGnssObject(lookUpRtwId: number) {
    });
 }
 
-function findLatestPulsoxyObject(lookUpPatientId: number) {
+module Database {
+   export function findLatestPulsoxyObject(lookUpPatientId: number) {
+      MongoClient.connect(url, function (err, db) {
+         if (err) {
+            throw err;
+         }
+         var dbObj = db.db("emc-data");
+         var query = {patientId: lookUpPatientId};
+         dbObj.collection("pulsoxy").findOne(query, {sort: {$natural: -1}}, function (err, data) {
+            if (err) {
+               throw err;
+            }
+            db.close();
+            let pulsox = new Pulsoxy();
+            pulsox.patientId = data[0];
+            pulsox.timestamp = data[1];
+            pulsox.pulsrate = data [2];
+            pulsox.spo2 = data[3];
+            return pulsox;//console.log(data);
+         });
+      });
+   }
+
+   export class Database { }
+}
+
+export default Database
+
+export function findLatestPulsoxyObject(lookUpPatientId: number) {
    MongoClient.connect(url, function (err, db) {
       if (err) {
          throw err;

@@ -1,6 +1,6 @@
 import express from "express"
-import getPatient from "./getPatient/getPatient"
-import getRtw from "./getRtw/getRtw"
+import getPatient from "./Patient/Patient"
+import getRtw from "./Rtw/Rtw"
 import test from "./test/test"
 
 const router = express.Router()
