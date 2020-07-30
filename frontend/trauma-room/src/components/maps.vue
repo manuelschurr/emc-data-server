@@ -1,15 +1,16 @@
 <template>
-  <l-map :zoom="zoom" :center="center" style="height: 300px; width: 300px;">
+  <l-map :zoom="zoom" :center="center" v-bind:style="styleObject">
     <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
     <l-marker :lat-lng="markerUMM">
       <l-tooltip :options="{ permanent: true, interactive: true }">
         UMM
       </l-tooltip>
     </l-marker>
-    <l-marker :lat-lng="markerPatient" :draggable="true"> </l-marker>
-    <l-tooltip :options="{ permanent: true, interactive: true }">
-      Patient
-    </l-tooltip>
+    <l-marker :lat-lng="markerPatient">
+      <l-tooltip :options="{ permanent: true, interactive: true }">
+        Patient
+      </l-tooltip>
+    </l-marker>
   </l-map>
 </template>
 
@@ -46,7 +47,8 @@ export default {
     LTooltip
   },
   props: {
-    Rtwdocument: Object
+    Rtwdocument: Object,
+    selectedElements: Number
   },
   watch: {
     Rtwdocument: {
@@ -57,12 +59,26 @@ export default {
         );
       },
       deep: true
+    },
+    selectedElements: function(newV, oldV) {
+      console.log(newV, oldV);
     }
   },
   methods: {
     adjustPosition: function(lat, long) {
       this.markerPatient = L.latLng(lat, long);
       this.center = L.latLng(lat, long);
+    }
+  },
+  computed: {
+    styleObject: function() {
+      if (this.selectedElements === 1) {
+        return { height: "400px", width: "700px" };
+      } else if (this.selectedElements === 2) {
+        return { height: "400px", width: "350px" };
+      } else if (this.selectedElements === 3) {
+        return { height: "400px", width: "175px" };
+      } else return { height: "400px", width: "700px" };
     }
   }
 };
