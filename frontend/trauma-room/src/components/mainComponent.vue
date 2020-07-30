@@ -2,19 +2,31 @@
   <div class="container">
     <div v-if="componentArray.length === 1">
       <div v-for="child in componentArray" :key="child.name">
-        <component :is="child" :Rtwdocument="Rtwdocument"></component>
+        <component
+          :is="child"
+          :Rtwdocument="Rtwdocument"
+          :selectedElements="componentArray.length"
+        ></component>
       </div>
     </div>
     <div class="row" v-if="componentArray.length === 2">
       <div v-for="child in componentArray" :key="child.name">
         <div class="col-4">
-          <component :is="child" :Rtwdocument="Rtwdocument"></component>
+          <component
+            :is="child"
+            :Rtwdocument="Rtwdocument"
+            :selectedElements="componentArray.length"
+          ></component>
         </div>
       </div>
     </div>
     <div class="row" v-if="componentArray.length === 3">
       <div class="col" v-for="child in componentArray" :key="child.name">
-        <component :is="child" :Rtwdocument="Rtwdocument"></component>
+        <component
+          :is="child"
+          :Rtwdocument="Rtwdocument"
+          :selectedElements="componentArray.length"
+        ></component>
       </div>
     </div>
   </div>
