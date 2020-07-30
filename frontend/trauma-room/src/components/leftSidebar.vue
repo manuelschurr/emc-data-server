@@ -1,10 +1,11 @@
 <template>
   <div>
-    <div class="btn-group-vertical" role="group">
+    <div class="btn-group-vertical" data-toggel="buttons" role="group">
       <button
         @click="setSelection($event)"
         id="btn-puls"
         class="btn btn-secondary"
+        :class="toggleButton(showComponentPulsoxy)"
       >
         Puls Oxy <br />
         Puls: 192 <br />
@@ -14,6 +15,7 @@
         @click="setSelection($event)"
         id="btn-stream"
         class="btn btn-secondary"
+        :class="toggleButton(showComponentStream)"
       >
         Live Bild
       </button>
@@ -21,6 +23,7 @@
         @click="setSelection($event)"
         id="btn-position"
         class="btn btn-secondary"
+        :class="toggleButton(showComponentMap)"
       >
         Position <br />
         ETA: {{ arrivalTime ? arrivalTime : "-" | secToTime }}
@@ -45,6 +48,13 @@ export default {
   },
   methods: {
     setSelection(event) {
+      if (event.currentTarget.id === "btn-puls") {
+        this.showComponentPulsoxy = !this.showComponentPulsoxy;
+      } else if (event.currentTarget.id === "btn-stream") {
+        this.showComponentStream = !this.showComponentStream;
+      } else if (event.currentTarget.id === "btn-position") {
+        this.showComponentMap = !this.showComponentMap;
+      }
       this.pastEvent = event.currentTarget.id;
       if (!this.selection.includes(event.currentTarget.id)) {
         this.selection.push(event.currentTarget.id);
@@ -55,6 +65,13 @@ export default {
         }
       }
       this.$root.$emit("selectedComponent", this.selection);
+    },
+    toggleButton(status) {
+      let buttonClass = "";
+      if (status) {
+        buttonClass = "okABCDE";
+      }
+      return buttonClass;
     }
   },
   filters: {
@@ -69,3 +86,11 @@ export default {
   }
 };
 </script>
+<style scoped>
+.okABCDE {
+  background-color: lightgreen;
+}
+.notOkABCDE {
+  background-color: red;
+}
+</style>
