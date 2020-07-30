@@ -8,11 +8,11 @@ export default {
   mixins: [reactiveProp],
   props: {
     chartData: {
-      type: Array,
+      type: Array | Object,
       required: false,
     },
     chartLabels: {
-      type: Array,
+      type: Array | Object,
       required: false,
     },
   },
