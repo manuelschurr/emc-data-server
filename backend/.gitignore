@@ -25,4 +25,4 @@ coverage
 *.env
 
 #Uploaded images
-uploads
+uploads/*
