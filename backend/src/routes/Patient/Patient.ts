@@ -17,7 +17,8 @@ router.post(
     "/postPulo",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        Database.insertMultiplePulsoxyData(res)
+
+        Database.insertMultiplePulsoxyData(req)
     }),
 )
 
