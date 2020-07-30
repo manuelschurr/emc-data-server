@@ -7,25 +7,26 @@
         class="btn btn-secondary"
         :class="toggleButton(showComponentPulsoxy)"
       >
-        Puls Oxy <br />
-        Puls: 192 <br />
-        SpO2: 98
+        Puls Oxy
+        <br />
+        Puls: {{lastPulse}}
+        <br />
+        SpO2: {{lastSpo2}}
       </button>
       <button
         @click="setSelection($event)"
         id="btn-stream"
         class="btn btn-secondary"
         :class="toggleButton(showComponentStream)"
-      >
-        Live Bild
-      </button>
+      >Live Bild</button>
       <button
         @click="setSelection($event)"
         id="btn-position"
         class="btn btn-secondary"
         :class="toggleButton(showComponentMap)"
       >
-        Position <br />
+        Position
+        <br />
         ETA: {{ arrivalTime ? arrivalTime : "-" | secToTime }}
       </button>
     </div>
@@ -40,11 +41,21 @@ export default {
       showComponentStream: false,
       showComponentPulsoxy: false,
       pastEvent: null,
-      selection: []
+      selection: [],
+      lastPulse: null,
+      lastSpo2: null,
     };
   },
+  mounted() {
+    this.$root.$on("lastPulseData", (data) => {
+      this.lastPulse = data;
+    });
+    this.$root.$on("lastSpo2Data", (data) => {
+      this.lastSpo2 = data;
+    });
+  },
   props: {
-    arrivalTime: Number
+    arrivalTime: Number,
   },
   methods: {
     setSelection(event) {
@@ -72,18 +83,18 @@ export default {
         buttonClass = "okABCDE";
       }
       return buttonClass;
-    }
+    },
   },
   filters: {
-    secToTime: function(value) {
+    secToTime: function (value) {
       var seconds = Math.floor(value % 60).toString();
       var minutes = Math.floor(value / 60).toString();
       if (seconds.length === 1) {
         seconds = "0" + seconds;
       }
       return minutes + ":" + seconds;
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
