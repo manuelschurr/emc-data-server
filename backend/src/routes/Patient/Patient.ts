@@ -1,6 +1,6 @@
 import express from "express";
 import { SuccessResponse } from "../../core/ApiResponse";
-import Database, { insertMultiplePulsoxyData } from "../../core/Database";
+import Database from "../../core/Database";
 import asyncHandler from "../../helpers/asyncHandler";
 
 const router = express.Router()
@@ -17,7 +17,7 @@ router.post(
     "/postPulo",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        insertMultiplePulsoxyData(res)
+        Database.insertMultiplePulsoxyData(res)
     }),
 )
 
