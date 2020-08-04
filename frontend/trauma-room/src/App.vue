@@ -22,6 +22,7 @@ import RightSidebar from "./components/rightSidebar.vue";
 import LeftSidebar from "./components/leftSidebar.vue";
 import MainComponent from "./components/mainComponent.vue";
 import RtwSelection from "./components/rtwSelection.vue";
+const axios = require("axios");
 
 export default {
   name: "App",
@@ -101,6 +102,30 @@ export default {
   },
   mounted: function() {
     this.calculateRoute();
+
+    // Consume REST-API
+    let rtw = "http://localhost:3000/rtw";
+    let patient = "http://localhost:3000/patient";
+
+    const requestRtw = axios.get(rtw);
+    const requestPatient = axios.get(patient);
+
+    axios
+      .all([requestRtw, requestPatient])
+      .then(
+        axios.spread((...responses) => {
+          //TODO assign response to actual data object
+          const requestRtw = responses[0];
+          const requestPatient = responses[1];
+
+          // use/access the results
+          console.log("AXIOS: " + requestRtw, requestPatient);
+        })
+      )
+      .catch(errors => {
+        // react on errors.
+        console.error("AXIOS ERROR: " + errors);
+      });
   }
 };
 </script>
