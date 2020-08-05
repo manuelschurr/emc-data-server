@@ -10,7 +10,8 @@ router.get(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         try {
-            return new SuccessResponse("Successful", await Database.findLatestPulsoxyObject(1)).send(res);
+            const latestData = await Database.findLatestPulsoxyObject(1)
+            return new SuccessResponse("Successful", latestData).send(res);
         } catch (e) {
             next(e);
         }
@@ -21,7 +22,7 @@ router.post(
     "/",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        Database.insertPulsoxyData(req.body)
+        await Database.insertPulsoxyData(req.body)
         console.log(req.body);
         return new SuccessResponse("Successful", null).send(res)
     }),
