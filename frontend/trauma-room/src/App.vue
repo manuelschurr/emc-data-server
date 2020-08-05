@@ -1,14 +1,28 @@
 <template>
   <div id="app">
-    <RtwSelection v-if="!rtwSelected" :selectRTW="selectRTW" />
-    <div v-if="rtwSelected">
-      <Header :changeRTW="changeRTW" />
-      <PatientData />
-      <div class="container-fluid" v-if="rtwSelected">
-        <div class="row align-items-start">
-          <div class="col-2"><LeftSidebar :arrivalTime="arrivalTime" /></div>
-          <div class="col-8"><MainComponent :Rtwdocument="Rtwdocument" /></div>
-          <div class="col-2"><RightSidebar /></div>
+    <div class="d-flex justify-content-center" v-if="loading">
+      <div
+        class="spinner-border"
+        style="position: fixed; top: 50%;"
+        role="status"
+      ></div>
+      <div style="position: fixed; top: 55%;">
+        Lade anfahrende Rettungswagen
+      </div>
+    </div>
+    <div v-else>
+      <RtwSelection v-if="!rtwSelected && !loading" :selectRTW="selectRTW" />
+      <div v-if="rtwSelected">
+        <Header :changeRTW="changeRTW" />
+        <PatientData />
+        <div class="container-fluid" v-if="rtwSelected">
+          <div class="row align-items-start">
+            <div class="col-2"><LeftSidebar :arrivalTime="arrivalTime" /></div>
+            <div class="col-8">
+              <MainComponent :Rtwdocument="Rtwdocument" />
+            </div>
+            <div class="col-2"><RightSidebar /></div>
+          </div>
         </div>
       </div>
     </div>
@@ -39,7 +53,7 @@ export default {
         }
       },
       arrivalTime: Number,
-      test: Number
+      loading: false
     };
   },
   components: {
@@ -54,8 +68,9 @@ export default {
     changeRTW: function() {
       this.rtwSelected = !this.rtwSelected;
     },
-    selectRTW: function() {
+    selectRTW: function(/* patientId */) {
       this.rtwSelected = !this.rtwSelected;
+      //Get Request mit patientId
     },
     calculateRoute: function() {
       let request = new XMLHttpRequest();
@@ -109,23 +124,24 @@ export default {
 
     const requestRtw = axios.get(rtwAPI);
     const requestPatient = axios.get(patientAPI);
-
+    this.loading = true;
     axios
       .all([requestRtw, requestPatient])
       .then(
         axios.spread((...responses) => {
           //TODO assign response to actual data object
-          const requestRtw = responses[0];
-          const requestPatient = responses[1];
+          const responseRTW = responses[0];
+          //const responsePatient = responses[1];
 
           // use/access the results
-          console.log("AXIOS: " + requestRtw, requestPatient);
+          console.log("AXIOS: " + responseRTW);
         })
       )
       .catch(errors => {
         // react on errors.
         console.error("AXIOS ERROR: " + errors);
-      });
+      })
+      .finally(() => (this.loading = false));
   }
 };
 </script>
