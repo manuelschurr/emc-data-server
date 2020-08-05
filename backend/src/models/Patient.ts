@@ -2,6 +2,7 @@ enum Gender {M, F, D};
 
 class Patient {
    patientId: number;
+   rtwId: number;
    surName: string;
    firstName: string;
    gender: Gender;
