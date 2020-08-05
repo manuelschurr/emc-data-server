@@ -1,6 +1,8 @@
 import express from "express"
+import fs from "fs"
 import multer from "multer"
-import { BadRequestResponse, SuccessResponse } from "../../core/ApiResponse"
+import path from "path"
+import { BadRequestResponse, NotFoundResponse, SuccessResponse } from "../../core/ApiResponse"
 import asyncHandler from "../../helpers/asyncHandler"
 
 const router = express.Router()
@@ -15,9 +17,8 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage: storage })
 
-
 router.post(
-    "/upload", upload.single("img"),
+    "/", upload.single("img"),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const file = req.file
@@ -25,6 +26,21 @@ router.post(
             return new BadRequestResponse("No file provided").send(res)
         }
         return new SuccessResponse("Successful", file).send(res)
+    }),
+)
+
+router.get(
+    "/",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asyncHandler(async (req, res, next) => {
+        const files = fs.readdirSync("./uploads").sort()
+        const newest = files[files.length-1]
+        if (!newest){
+            return new NotFoundResponse("No files exist").send(res)
+        }
+        console.log(newest)
+        res.sendFile(path.join(__dirname + newest))
+        return new SuccessResponse("Successful", null).send(res)
     }),
 )
 
