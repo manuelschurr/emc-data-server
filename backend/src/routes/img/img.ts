@@ -49,6 +49,7 @@ router.get(
 
 router.get("/all", asyncHandler(async (req, res, next) => {
     console.log(process.cwd())
+    // Ignores .gitignore file (which is required to track the empty directory)
     const all_img = fs.readdirSync("./uploads/").sort().slice(1)
     return new SuccessResponse("Success", all_img).send(res)
 }),
