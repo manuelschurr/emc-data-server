@@ -9,7 +9,11 @@ router.get(
     "/",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        return new SuccessResponse("Successful", Database.findLatestPulsoxyObject(1)).send(res)
+        try {
+            return new SuccessResponse("Successful", await Database.findLatestPulsoxyObject(1)).send(res);
+        } catch (e) {
+            next(e);
+        }
     }),
 )
 

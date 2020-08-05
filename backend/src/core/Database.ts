@@ -1,43 +1,47 @@
 import mongo from "mongodb";
+import { Gnss } from "../models/Gnss";
+import { Pulsoxy } from "../models/Pulsoxy";
 
 var MongoClient = mongo.MongoClient;
 var url = "mongodb://localhost:27017/";
 
-MongoClient.connect(url, function(err: any, db) {
-   if (err) {
-      console.log(err);
-   }
-   var dbObj = db.db("emc-data");
+const connection = MongoClient.connect(url, { useUnifiedTopology: true });
+
+async function createCollections() {
+   try {
+      const client = await connection;
+      var db = client.db("emc-data");
+      // Create different collections: patient, pulsoxy etc.
+      db.createCollection("patients", function (err, res) {
+         if (err) {
+            console.log(err);
+         }
+         console.log("+++ Created collection 'patients' successfully.")
+      });
+
+      db.createCollection("gnss", function (err, res) {
+         if (err) {
+            console.log(err);
+         }
+         console.log("+++ Created collection 'gnss' successfully.")
+      });
    
-   // Create different collections: patient, pulsoxy etc.
-   dbObj.createCollection("patients", function (err, res) {
-      if (err) {
-         console.log(err);
-      }
-      console.log("Created collections 'patients' successfully.")
-   });
+      db.createCollection("pulsoxy", function (err, res) {
+         if (err) {
+            console.log(err);
+         }
+         console.log("+++ Created collection 'pulsoxy' successfully.")
+      });
+   } catch (e) {
+      throw e;
+   }
+}
 
-   dbObj.createCollection("gnss", function (err, res) {
-      if (err) {
-         console.log(err);
-      }
-      console.log("Created collections 'gnss' successfully.")
-   });
-
-   dbObj.createCollection("pulsoxy", function (err, res) {
-      if (err) {
-         console.log(err);
-      }
-      console.log("Created collections 'pulsoxy' successfully.")
-   });
-
-   // db.close();
-});
+createCollections();
 
 
 module Database {
-   export function insertPatientData(pat: Patient) 
-   {
+   export function insertPatientData(pat: Patient) {
       MongoClient.connect(url, function (err, db) {
          if (err) {
             console.log(err);
@@ -48,13 +52,11 @@ module Database {
                console.log(err);
             }
             console.log("Inserted 1 patient document successfully.");
-            // db.close();
          });
       });
    }
-   
-   export function insertGnssData(gnss: Gnss) 
-   {
+
+   export function insertGnssData(gnss: Gnss) {
       MongoClient.connect(url, function (err, db) {
          if (err) {
             console.log(err);
@@ -65,13 +67,11 @@ module Database {
                console.log(err);
             }
             console.log("Inserted 1 gnss document successfully.");
-            // db.close();
          });
       });
    }
 
-   export function insertMultiplePulsoxyData(pulsoxy: Pulsoxy[]) 
-   {
+   export function insertMultiplePulsoxyData(pulsoxy: Pulsoxy[]) {
       MongoClient.connect(url, function (err, db) {
          if (err) {
             console.log(err);
@@ -82,13 +82,11 @@ module Database {
                console.log(err);
             }
             console.log("Inserted ${res.insertedCount} pulsoxy document(s) successfully.");
-            db.close();
          });
       });
    }
-   
-   export function insertPulsoxyData(pulsoxy: Pulsoxy) 
-   {
+
+   export function insertPulsoxyData(pulsoxy: Pulsoxy) {
       MongoClient.connect(url, function (err, db) {
          if (err) {
             console.log(err);
@@ -99,73 +97,44 @@ module Database {
                console.log(err);
             }
             console.log("Inserted 1 pulsoxy document successfully.");
-            // db.close();
          });
       });
    }
 
-   export function findPatientObject(lookUpRtwId: number) 
-   {
-      MongoClient.connect(url, function (err, db) {
-         if (err) {
-            console.log(err);
-         }
-         var dbObj = db.db("emc-data");
-         var query = {rtwId: lookUpRtwId};
-         dbObj.collection("patients").findOne(query, function (err, result) {
-            if (err) {
-               console.log(err);
-            }
-            console.log(result);
-            // db.close();
-         });
-      });
-   }
-   
-   export function findLatestGnssObject(lookUpRtwId: number)
-   {
-      MongoClient.connect(url, function (err, db) {
-         if (err) {
-            console.log(err);
-         }
-         var dbObj = db.db("emc-data");
-         var query = {rtwId: lookUpRtwId};
-         dbObj.collection("gnss").findOne(query, {sort: {$natural: -1}}, function (err, data) {
-            if (err) {
-               console.log(err);
-            }
-            console.log(data);
-            // db.close();
-         });
-      });
+   export async function findPatientObject(lookUpRtwId: number) {
+      let result;
+      try {
+         const client = await connection;
+         var collection = client.db("emc-data").collection("patients");
+         result = await collection.findOne({ rtwId: lookUpRtwId }, { sort: { $natural: -1 }, projection: { _id: 0, rtwId: 0 } })
+      } catch (e) {
+         throw e;
+      }
+      return result;
    }
 
-   export function findLatestPulsoxyObject(lookUpPatientId: number)
-   {
-      MongoClient.connect(url, function (err, db) {
-         if (err) {
-            console.log(err);
-         }
-         var dbObj = db.db("emc-data");
-         var query = {patientId: lookUpPatientId};
-         dbObj.collection("pulsoxy").findOne(query, {sort: {$natural: -1}}, function (err, data) {
-            if (err) {
-               console.log(err);
-            }
-            if (data == null) {
-               console.log("No pulsoxy data found!");
-            }
-            else {
-               // let pulsox = new Pulsoxy();
-               // pulsox.patientId = data[0];
-               // pulsox.timestamp = data[1];
-               // pulsox.pulsrate = data [2];
-               // pulsox.spo2 = data[3];
-               // return pulsox;
-               console.log(data);
-            }
-         });
-      });
+   export async function findLatestGnssObject(lookUpRtwId: number) {
+      let result;
+      try {
+         const client = await connection;
+         var collection = client.db("emc-data").collection("gnss");
+         result = await collection.findOne({ rtwId: lookUpRtwId }, { sort: { $natural: -1 }, projection: { _id: 0, rtwId: 0 } })
+      } catch (e) {
+         throw e;
+      }
+      return result;
+   }
+
+   export async function findLatestPulsoxyObject(lookUpPatientId: number) {
+      let result;
+      try {
+         const client = await connection;
+         var collection = client.db("emc-data").collection("pulsoxy");
+         result = await collection.findOne({ patientID: lookUpPatientId }, { sort: { $natural: -1 }, projection: { _id: 0, patientID: 0 } })
+      } catch (e) {
+         throw e;
+      }
+      return result;
    }
 }
 
