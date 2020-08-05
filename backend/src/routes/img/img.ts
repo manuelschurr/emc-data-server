@@ -4,7 +4,6 @@ import multer from "multer"
 import path from "path"
 import { BadRequestResponse, NotFoundResponse, SuccessResponse } from "../../core/ApiResponse"
 import asyncHandler from "../../helpers/asyncHandler"
-
 const router = express.Router()
 
 const storage = multer.diskStorage({
@@ -22,26 +21,48 @@ router.post(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const file = req.file
-        if (!file) {
-            return new BadRequestResponse("No file provided").send(res)
-        }
+        if (!file) return new BadRequestResponse("No file provided").send(res)
         return new SuccessResponse("Successful", file).send(res)
     }),
 )
 
+
+const UPLOAD_DIR = "/mnt/c/Users/schur/Code/emc-data-server/backend/uploads/"
+
 router.get(
-    "/",
+    "/newest",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const files = fs.readdirSync("./uploads").sort()
-        const newest = files[files.length-1]
-        if (!newest){
+        const newest = files[files.length - 1]
+        if (!newest) {
             return new NotFoundResponse("No files exist").send(res)
         }
-        console.log(newest)
-        res.sendFile(path.join(__dirname + newest))
-        return new SuccessResponse("Successful", null).send(res)
+
+        // TODO: Return image via SuccessResponse. How?!
+        res.contentType("jpeg")
+        res.sendFile(path.join(UPLOAD_DIR + newest))
+        // return new SuccessResponse("Successful", null).send(res)
     }),
+)
+
+router.get("/all", asyncHandler(async (req, res, next) => {
+    console.log("test2")
+    return new SuccessResponse("Successful2", null).send(res)
+}),
+)
+
+
+
+
+router.get("/single/:imgId", asyncHandler(async (req, res, next) => {
+    const { imgId } = req.params
+    const img_path = path.join(UPLOAD_DIR + imgId)
+    console.log(imgId)
+    console.log(img_path)
+    if (!img_path) return new BadRequestResponse("Image does not exist").send(res)
+    return new SuccessResponse("Success", null).send(res)
+}),
 )
 
 export default router
