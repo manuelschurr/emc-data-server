@@ -104,11 +104,11 @@ export default {
     this.calculateRoute();
 
     // Consume REST-API
-    let rtw = "http://localhost:3000/rtw";
-    let patient = "http://localhost:3000/patient";
+    let rtwAPI = "http://localhost:3000/rtw";
+    let patientAPI = "http://localhost:3000/patient";
 
-    const requestRtw = axios.get(rtw);
-    const requestPatient = axios.get(patient);
+    const requestRtw = axios.get(rtwAPI);
+    const requestPatient = axios.get(patientAPI);
 
     axios
       .all([requestRtw, requestPatient])
