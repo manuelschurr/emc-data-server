@@ -40,28 +40,27 @@ router.get(
         }
 
         // TODO: Return image via SuccessResponse. How?!
+        const imgPath = path.join(UPLOAD_DIR + newest)
         res.contentType("jpeg")
-        res.sendFile(path.join(UPLOAD_DIR + newest))
+        res.sendFile(imgPath)
         // return new SuccessResponse("Successful", null).send(res)
     }),
 )
 
 router.get("/all", asyncHandler(async (req, res, next) => {
-    console.log("test2")
-    return new SuccessResponse("Successful2", null).send(res)
+    const all_img = fs.readdirSync("./uploads").sort().slice(1)
+    return new SuccessResponse("Success", all_img).send(res)
 }),
 )
 
 
-
-
 router.get("/single/:imgId", asyncHandler(async (req, res, next) => {
     const { imgId } = req.params
-    const img_path = path.join(UPLOAD_DIR + imgId)
-    console.log(imgId)
-    console.log(img_path)
-    if (!img_path) return new BadRequestResponse("Image does not exist").send(res)
-    return new SuccessResponse("Success", null).send(res)
+    const imgPath = path.join(UPLOAD_DIR + imgId)
+    if (!fs.existsSync(imgPath)) return new BadRequestResponse("Image does not exist").send(res)
+    res.contentType("jpeg")
+    res.sendFile(imgPath)
+    // return new SuccessResponse("Success", null).send(res)
 }),
 )
 
