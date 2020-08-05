@@ -4,6 +4,7 @@ import multer from "multer"
 import path from "path"
 import { BadRequestResponse, NotFoundResponse, SuccessResponse } from "../../core/ApiResponse"
 import asyncHandler from "../../helpers/asyncHandler"
+
 const router = express.Router()
 
 const storage = multer.diskStorage({
@@ -26,6 +27,12 @@ router.post(
     }),
 )
 
+router.get("/all", asyncHandler(async (req, res, next) => {
+    // Ignores .gitignore file (which is required to track the (initially) empty directory)
+    const all_img = fs.readdirSync("./images/").sort().slice(1)
+    return new SuccessResponse("Success", all_img).send(res)
+}),
+)
 
 const IMAGES_DIR = path.join(process.cwd() + "/images/")
 
@@ -47,12 +54,6 @@ router.get(
     }),
 )
 
-router.get("/all", asyncHandler(async (req, res, next) => {
-    // Ignores .gitignore file (which is required to track the empty directory)
-    const all_img = fs.readdirSync("./images/").sort().slice(1)
-    return new SuccessResponse("Success", all_img).send(res)
-}),
-)
 
 
 router.get("/single/:imgId", asyncHandler(async (req, res, next) => {
