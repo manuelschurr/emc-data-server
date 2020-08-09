@@ -4,6 +4,7 @@ import express, { NextFunction, Request, Response } from "express"
 import { corsUrl, environment } from "./config"
 import { ApiError, InternalError, NotFoundError } from "./core/ApiError"
 import Logger from "./core/Logger"
+import './database' // initialize database
 import routes from "./routes"
 
 process.on("uncaughtException", (e) => {
