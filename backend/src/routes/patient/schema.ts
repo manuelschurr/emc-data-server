@@ -4,6 +4,7 @@ import { TIMESTAMP_REG_EX } from '../../helpers/validator';
 export default {
    patientId: Joi.object().keys({
       patientId: Joi.number().required(),
+      timestamp: Joi.string().regex(TIMESTAMP_REG_EX).required()
    }),
    ambulanceId: Joi.object().keys({
       ambulanceId: Joi.number().required(),

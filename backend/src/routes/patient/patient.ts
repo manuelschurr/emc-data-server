@@ -45,7 +45,7 @@ router.get(
     validator(schema.patientId),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const pulsoxy = await PulsoxyRepo.findLatestByPatientId(req.body.patientId);
+        const pulsoxy = await PulsoxyRepo.findLatestByPatientId(req.body.patientId, req.body.timestamp);
         if (!pulsoxy) {
             throw new BadRequestError('Pulsoxy data could not be found.');
         }
