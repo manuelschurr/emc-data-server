@@ -72,17 +72,26 @@ export default {
           patientID: "123",
           identifier: "DRK",
           gnssPosition: {
-            time: Date,
-            long: 8.4660395,
-            lat: 49.4874592
+            time: Date
+            /* long: 8.4660395,
+            lat: 49.4874592 */
           }
         },
         {
-          patientID: "123",
+          patientID: "125",
           identifier: "ASB",
           gnssPosition: {
             time: Date,
             long: 8.7660395,
+            lat: 49.4874592
+          }
+        },
+        {
+          patientID: "1244",
+          identifier: "DRK2",
+          gnssPosition: {
+            time: Date,
+            long: 9.7660395,
             lat: 49.4874592
           }
         }

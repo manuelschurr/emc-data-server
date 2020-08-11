@@ -13,15 +13,18 @@
       </h1>
       <ul v-if="ambulances.length">
         <div v-if="ambulancesWithETAs.length">
-          <li v-for="ambulance in ambulances" v-bind:key="ambulance.identifier">
-            <p>
+          <li
+            v-for="(ambulance, index) in ambulances"
+            v-bind:key="ambulance.identifier"
+          >
+            <p v-if="index > 0">
               <button @click="selectRTW(ambulance)">
                 <img src="../assets/ambulance.png" width="100" />
                 <br />
                 <br />
                 RTW - {{ ambulance.identifier }}
                 <br />
-                ETA: {{ ambulance.eta }} Minuten
+                ETA: {{ ambulance.eta }}
                 <br />
                 Diagnose: {{ ambulance.diagnosis }}
                 <br />
@@ -79,24 +82,32 @@ export default {
   },
   data: () => ({
     arrivalTimes: [],
-    ambulancesWithETAs: []
+    ambulancesWithETAs: [],
+    ambulancesWithNoETA: []
+    //rtwLocations: []
   }),
   methods: {
     computeAllETAs: function() {
       let request = new XMLHttpRequest();
       var rtwLocations = [];
+      var index = 0;
       //Prototyping; change rtwList to the reponse object; first item in this list has to be the UMM address
       //Exception Handling: If no GNSS data is obtained, display rtw list without ETA
       for (var rtw of this.ambulances) {
+        console.log("RTW: " + JSON.stringify(rtw));
+        console.log("index: " + index);
         //For each RTW make a get request to obtian GNSS data and add to the rtwLocations []
-        if (rtw.long && rtw.lat) {
+        if (!isNaN(rtw.gnssPosition.long) && !isNaN(rtw.gnssPosition.lat)) {
           rtwLocations.push(
             `[${rtw.gnssPosition.long}, ${rtw.gnssPosition.lat}]`
           );
+        } else {
+          this.ambulancesWithNoETA.push(index);
         }
+        index++;
       }
-      console.log(rtwLocations);
-      if (rtwLocations.length) {
+      console.log("rtwlocations: " + rtwLocations);
+      if (rtwLocations.length > 1) {
         request.open(
           "POST",
           "https://api.openrouteservice.org/v2/matrix/driving-car"
@@ -126,22 +137,35 @@ export default {
         const body = `{"locations": [${rtwLocations}]}`;
         request.send(body);
       } else {
-        this.ambulancesWithETAs = this.ambulances;
+        this.ambulances = [];
       }
     },
     mapETAs: function() {
-      for (var i = 1; i < this.ambulances.length; i++) {
-        this.ambulances[i].eta = this.secToTime(this.arrivalTimes[i]);
+      for (var aIndex of this.ambulancesWithNoETA) {
+        this.arrivalTimes.splice(aIndex, 0, "No GNSS available");
       }
+
+      for (var i = 0; i < this.ambulances.length; i++) {
+        if (!this.ambulancesWithNoETA.includes(i)) {
+          this.ambulances[i].eta = this.secToTime(this.arrivalTimes[i]);
+        } else {
+          this.ambulances[i].eta =
+            "Nicht berechenbar aufgrund fehlender GNSS Daten";
+        }
+      }
+
       this.ambulancesWithETAs = this.ambulances;
     },
     secToTime: function(etaInSec) {
-      var seconds = Math.floor(etaInSec % 60).toString();
-      var minutes = Math.floor(etaInSec / 60).toString();
-      if (seconds.length === 1) {
-        seconds = "0" + seconds;
+      console.log("sectoTime: " + etaInSec);
+      if (!isNaN(etaInSec)) {
+        var seconds = Math.floor(etaInSec % 60).toString();
+        var minutes = Math.floor(etaInSec / 60).toString();
+        if (seconds.length === 1) {
+          seconds = "0" + seconds;
+        }
+        return minutes + " Minuten " + seconds + " Sekunden";
       }
-      return minutes + ":" + seconds;
     }
   },
   mounted: function() {
