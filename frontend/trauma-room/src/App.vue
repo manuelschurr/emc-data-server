@@ -63,27 +63,27 @@ export default {
           patientID: "00",
           identifier: "UMM",
           gnssPosition: {
-            time: Date,
-            long: 8.487255,
-            lat: 49.492427
+            time: Date
+            /* long: 8.487255,
+            lat: 49.492427 */
           }
         },
         {
           patientID: "123",
           identifier: "DRK",
           gnssPosition: {
-            time: Date,
-            long: 8.4660395,
-            lat: 49.4874592
+            time: Date
+            /* long: 8.4660395,
+            lat: 49.4874592 */
           }
         },
         {
           patientID: "123",
           identifier: "ASB",
           gnssPosition: {
-            time: Date,
-            long: 8.7660395,
-            lat: 49.4874592
+            time: Date
+            /* long: 8.7660395,
+            lat: 49.4874592 */
           }
         }
       ],
@@ -120,23 +120,12 @@ export default {
   }, */
   mounted: function() {
     // Consume REST-API
-    let rtwAPI = "http://localhost:3000/rtw";
-    let patientAPI = "http://localhost:3000/patient";
+    let rtwAPI = "http://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll";
 
-    const requestRtw = axios.get(rtwAPI);
-    const requestPatient = axios.get(patientAPI);
     this.loading = true;
     axios
-      .all([requestRtw, requestPatient])
-      .then(
-        axios.spread((...responses) => {
-          //TODO assign response to actual data object
-          const responseRTW = responses[0];
-
-          // use/access the results
-          console.log("AXIOS: " + responseRTW);
-        })
-      )
+      .get(rtwAPI)
+      .then(response => (this.rtwList = response.data.data))
       .catch(errors => {
         // react on errors.
         console.error("AXIOS ERROR: " + errors);

@@ -86,38 +86,48 @@ export default {
       let request = new XMLHttpRequest();
       var rtwLocations = [];
       //Prototyping; change rtwList to the reponse object; first item in this list has to be the UMM address
+      //Exception Handling: If no GNSS data is obtained, display rtw list without ETA
       for (var rtw of this.ambulances) {
-        rtwLocations.push(
-          `[${rtw.gnssPosition.long}, ${rtw.gnssPosition.lat}]`
-        );
+        //For each RTW make a get request to obtian GNSS data and add to the rtwLocations []
+        if (rtw.long && rtw.lat) {
+          rtwLocations.push(
+            `[${rtw.gnssPosition.long}, ${rtw.gnssPosition.lat}]`
+          );
+        }
       }
       console.log(rtwLocations);
-      request.open(
-        "POST",
-        "https://api.openrouteservice.org/v2/matrix/driving-car"
-      );
+      if (rtwLocations.length) {
+        request.open(
+          "POST",
+          "https://api.openrouteservice.org/v2/matrix/driving-car"
+        );
 
-      request.setRequestHeader(
-        "Accept",
-        "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8"
-      );
-      request.setRequestHeader("Content-Type", "application/json");
-      request.setRequestHeader(
-        "Authorization",
-        "5b3ce3597851110001cf624801e9954029634268ad5336aa3eb55140" //API Key
-      );
-      let context = this;
-      request.onreadystatechange = function() {
-        if (request.readyState === 4) {
-          context.arrivalTimes = JSON.parse(request.responseText).durations[0];
-          context.mapETAs();
-          console.log("Status:", request.status);
-          console.log("Headers:", request.getAllResponseHeaders());
-          console.log("Body:", request.responseText);
-        }
-      };
-      const body = `{"locations": [${rtwLocations}]}`;
-      request.send(body);
+        request.setRequestHeader(
+          "Accept",
+          "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8"
+        );
+        request.setRequestHeader("Content-Type", "application/json");
+        request.setRequestHeader(
+          "Authorization",
+          "5b3ce3597851110001cf624801e9954029634268ad5336aa3eb55140" //API Key
+        );
+        let context = this;
+        request.onreadystatechange = function() {
+          if (request.readyState === 4) {
+            context.arrivalTimes = JSON.parse(
+              request.responseText
+            ).durations[0];
+            context.mapETAs();
+            console.log("Status:", request.status);
+            console.log("Headers:", request.getAllResponseHeaders());
+            console.log("Body:", request.responseText);
+          }
+        };
+        const body = `{"locations": [${rtwLocations}]}`;
+        request.send(body);
+      } else {
+        this.ambulancesWithETAs = this.ambulances;
+      }
     },
     mapETAs: function() {
       for (var i = 1; i < this.ambulances.length; i++) {
