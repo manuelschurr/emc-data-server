@@ -3,7 +3,7 @@ import fs from "fs"
 import multer from "multer"
 import path from "path"
 import { BadRequestError } from "../../core/ApiError"
-import { BadRequestResponse, NotFoundResponse, SuccessResponse } from "../../core/ApiResponse"
+import { NotFoundResponse, SuccessResponse } from "../../core/ApiResponse"
 import asyncHandler from "../../helpers/asyncHandler"
 import validator, { ValidationSource } from "../../helpers/validator"
 import schema from "./schema"
@@ -21,11 +21,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 router.post(
-    "/", upload.single("img"),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    asyncHandler(async (req, res, next) => {
+    "/", upload.single("img"), asyncHandler(async (req, res, next) => {
         const file = req.file
-        if (!file) return new BadRequestResponse("No file provided").send(res)
+        if (!file) throw new BadRequestError("No file provided")
         return new SuccessResponse("Successful", file).send(res)
     }),
 )
@@ -46,7 +44,6 @@ router.get(
         try {
             const files = fs.readdirSync("./images/").sort()
             const newest = files[files.length - 1]
-            console.log(newest)
             // TODO: Return image via SuccessResponse. How?!
             if (!newest || newest == ".gitignore") {
                 return new NotFoundResponse("No files exist").send(res)
