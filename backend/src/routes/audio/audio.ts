@@ -2,8 +2,11 @@ import express from "express";
 import fs from "fs";
 import multer from "multer";
 import path from "path";
-import { BadRequestResponse, SuccessResponse } from "../../core/ApiResponse";
+import { BadRequestError } from "../../core/ApiError";
+import { SuccessResponse } from "../../core/ApiResponse";
 import asyncHandler from "../../helpers/asyncHandler";
+import validator, { ValidationSource } from "../../helpers/validator";
+import schema from "./schema";
 
 
 const router = express.Router()
@@ -22,7 +25,7 @@ const upload = multer({ storage: storage })
 
 router.post("/", upload.single("audio"), asyncHandler(async (req, res, next) => {
     const file = req.file
-    if (!file) return new BadRequestResponse("No file provided").send(res)
+    if (!file) throw new BadRequestError("No file provided")
     return new SuccessResponse("Success", file).send(res)
 }),
 )
@@ -36,10 +39,10 @@ router.get("/all", asyncHandler(async (req, res, next) => {
 
 const AUDIO_DIR = path.join(process.cwd() + "/audio/")
 
-router.get("/single/:audioId", asyncHandler(async (req, res, next) => {
+router.get("/single/:audioId", validator(schema.getSingle, ValidationSource.PARAM), asyncHandler(async (req, res, next) => {
     const { audioId } = req.params
-    const audioPath = path.join(AUDIO_DIR + "/" + audioId)
-    if (!fs.existsSync(audioPath)) return new BadRequestResponse("Audio file does not exist").send(res)
+    const audioPath = path.join(AUDIO_DIR + audioId)
+    if (!fs.existsSync(audioPath)) throw new BadRequestError("Audio file does not exist")
     res.contentType("audio/mp3")
     res.sendFile(audioPath)
     // return new SuccessResponse("Success", null).send(res)
