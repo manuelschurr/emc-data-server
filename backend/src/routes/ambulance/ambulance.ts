@@ -7,7 +7,7 @@ import Gnss from "../../database/model/Gnss";
 import AmbulanceRepo from "../../database/repository/AmbulanceRepo";
 import GnssRepo from "../../database/repository/GnssRepo";
 import asyncHandler from "../../helpers/asyncHandler";
-import validator from "../../helpers/validator";
+import validator, { ValidationSource } from "../../helpers/validator";
 import schema from "./schema";
 
 const router = express.Router()
@@ -26,11 +26,12 @@ router.get(
 );
 
 router.get(
-    "/findByAmbulanceId",
-    validator(schema.ambulanceId),
+    "/findByAmbulanceId/:ambulanceId",
+    validator(schema.ambulanceId, ValidationSource.PARAM),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const ambulance = await AmbulanceRepo.findByAmbulanceId(req.body.ambulanceId);
+        const { ambulanceId } = req.params;
+        const ambulance = await AmbulanceRepo.findByAmbulanceId(parseInt(ambulanceId));
         if (!ambulance) {
             throw new BadRequestError('Ambulance data could not be found.');
         }
@@ -40,11 +41,12 @@ router.get(
 );
 
 router.get(
-    "/findGnssByAmbulanceId",
-    validator(schema.ambulanceId),
+    "/findGnssByAmbulanceId/:ambulanceId",
+    validator(schema.ambulanceId, ValidationSource.PARAM),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const gnss = await GnssRepo.findLatestByAmbulanceId(req.body.ambulanceId);
+        const { ambulanceId } = req.params;
+        const gnss = await GnssRepo.findLatestByAmbulanceId(parseInt(ambulanceId));
         if (!gnss) {
             throw new BadRequestError('GNSS data could not be found.');
         }
@@ -58,7 +60,7 @@ router.post(
     validator(schema.create),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        
+
         const { ambulance: createdAmbulance } = await AmbulanceRepo.create(
             {
                 ambulanceId: req.body.ambulanceId,
@@ -78,7 +80,7 @@ router.post(
     validator(schema.createGnss),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        
+
         const { gnss: createdGnss } = await GnssRepo.create(
             {
                 ambulanceId: req.body.ambulanceId,

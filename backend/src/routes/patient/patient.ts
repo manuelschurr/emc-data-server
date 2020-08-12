@@ -7,17 +7,18 @@ import Pulsoxy from "../../database/model/Pulsoxy";
 import PatientRepo from "../../database/repository/PatientRepo";
 import PulsoxyRepo from "../../database/repository/PulsoxyRepo";
 import asyncHandler from "../../helpers/asyncHandler";
-import validator from "../../helpers/validator";
+import validator, { ValidationSource } from "../../helpers/validator";
 import schema from "./schema";
 
 const router = express.Router()
 
 router.get(
-    "/findByPatientId",
-    validator(schema.patientId),
+    "/findByPatientId/:patientId",
+    validator(schema.patientId, ValidationSource.PARAM),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const patient = await PatientRepo.findByPatientId(req.body.patientId);
+        const { patientId } = req.params;
+        const patient = await PatientRepo.findByPatientId(parseInt(patientId));
         if (!patient) {
             throw new BadRequestError('Patient could not be found.');
         }
@@ -27,11 +28,12 @@ router.get(
 );
 
 router.get(
-    "/findByAmbulanceId",
-    validator(schema.ambulanceId),
+    "/findByAmbulanceId/:ambulanceId",
+    validator(schema.ambulanceId, ValidationSource.PARAM),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const patient = await PatientRepo.findByAmbulanceId(req.body.ambulanceId);
+        const { ambulanceId } = req.params;
+        const patient = await PatientRepo.findByAmbulanceId(parseInt(ambulanceId));
         if (!patient) {
             throw new BadRequestError('Patient could not be found.');
         }
@@ -42,15 +44,19 @@ router.get(
 
 router.get(
     "/findPulsoxyByPatientId",
-    validator(schema.patientId),
+    validator(schema.pulsoxy, ValidationSource.QUERY),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const pulsoxy = await PulsoxyRepo.findLatestByPatientId(req.body.patientId, req.body.timestamp);
-        if (!pulsoxy) {
-            throw new BadRequestError('Pulsoxy data could not be found.');
-        }
+        // const patientId = parseInt(req.query["patientId"].toString());
+        // const timestamp = req.query["patientId"].toString();
+        // const pulsoxy = await PulsoxyRepo.findLatestByPatientId(patientId, timestamp);
+        // if (!pulsoxy) {
+        //     throw new BadRequestError('Pulsoxy data could not be found.');
+        // }
 
-        return new SuccessResponse("Successful", pulsoxy).send(res);
+        // return new SuccessResponse("Successful", pulsoxy).send(res);
+
+        return new SuccessResponse("Successful", null).send(res);
     }),
 );
 
