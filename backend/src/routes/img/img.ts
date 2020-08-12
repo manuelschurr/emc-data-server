@@ -2,8 +2,11 @@ import express from "express"
 import fs from "fs"
 import multer from "multer"
 import path from "path"
+import { BadRequestError } from "../../core/ApiError"
 import { BadRequestResponse, NotFoundResponse, SuccessResponse } from "../../core/ApiResponse"
 import asyncHandler from "../../helpers/asyncHandler"
+import validator, { ValidationSource } from "../../helpers/validator"
+import schema from "./schema"
 
 const router = express.Router()
 
@@ -40,26 +43,28 @@ router.get(
     "/newest",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const files = fs.readdirSync("./images/").sort()
-        const newest = files[files.length - 1]
-        if (!newest) {
+        try {
+            const files = fs.readdirSync("./images/").sort()
+            const newest = files[files.length - 1]
+            console.log(newest)
+            // TODO: Return image via SuccessResponse. How?!
+            if (!newest || newest == ".gitignore") {
+                return new NotFoundResponse("No files exist").send(res)
+            }
+            const imgPath = path.join(IMAGES_DIR + newest)
+            res.contentType("jpeg")
+            res.sendFile(imgPath)
+        } catch (e) {
             return new NotFoundResponse("No files exist").send(res)
         }
-
-        // TODO: Return image via SuccessResponse. How?!
-        const imgPath = path.join(IMAGES_DIR + newest)
-        res.contentType("jpeg")
-        res.sendFile(imgPath)
-        // return new SuccessResponse("Successful", null).send(res)
     }),
 )
 
 
-
-router.get("/single/:imgId", asyncHandler(async (req, res, next) => {
+router.get("/single/:imgId", validator(schema.getSingle, ValidationSource.PARAM), asyncHandler(async (req, res, next) => {
     const { imgId } = req.params
     const imgPath = path.join(IMAGES_DIR + "/" + imgId)
-    if (!fs.existsSync(imgPath)) return new BadRequestResponse("Image does not exist").send(res)
+    if (!fs.existsSync(imgPath)) throw new BadRequestError("Image does not exist")
     res.contentType("jpeg")
     res.sendFile(imgPath)
     // return new SuccessResponse("Success", null).send(res)
