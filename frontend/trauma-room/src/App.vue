@@ -11,13 +11,19 @@
       </div>
     </div>
     <div v-else>
-      <RtwSelection v-if="!rtwSelected && !loading" :selectRTW="selectRTW" />
+      <RtwSelection
+        v-if="!rtwSelected && !loading"
+        :selectRTW="selectRTW"
+        :ambulances="rtwList"
+      />
       <div v-if="rtwSelected">
         <Header :changeRTW="changeRTW" />
         <PatientData />
         <div class="container-fluid" v-if="rtwSelected">
           <div class="row align-items-start">
-            <div class="col-2"><LeftSidebar :arrivalTime="arrivalTime" /></div>
+            <div class="col-2">
+              <LeftSidebar :arrivalTime="selectedRTW.eta" />
+            </div>
             <div class="col-8">
               <MainComponent :Rtwdocument="Rtwdocument" />
             </div>
@@ -52,8 +58,46 @@ export default {
           lat: 49.4874592
         }
       },
-      arrivalTime: Number,
-      loading: false
+      rtwList: [
+        {
+          patientID: "00",
+          identifier: "UMM",
+          gnssPosition: {
+            time: Date,
+            long: 8.487255,
+            lat: 49.492427
+          }
+        },
+        {
+          patientID: "123",
+          identifier: "DRK",
+          gnssPosition: {
+            time: Date
+            /* long: 8.4660395,
+            lat: 49.4874592 */
+          }
+        },
+        {
+          patientID: "125",
+          identifier: "ASB",
+          gnssPosition: {
+            time: Date,
+            long: 8.7660395,
+            lat: 49.4874592
+          }
+        },
+        {
+          patientID: "1244",
+          identifier: "DRK2",
+          gnssPosition: {
+            time: Date,
+            long: 9.7660395,
+            lat: 49.4874592
+          }
+        }
+      ],
+      loading: false,
+      selectedRTW: Object
     };
   },
   components: {
@@ -67,76 +111,30 @@ export default {
   methods: {
     changeRTW: function() {
       this.rtwSelected = !this.rtwSelected;
+      this.selectedRTW = Object;
     },
-    selectRTW: function(/* patientId */) {
+    selectRTW: function(rtw) {
       this.rtwSelected = !this.rtwSelected;
-      //Get Request mit patientId
-    },
-    calculateRoute: function() {
-      let request = new XMLHttpRequest();
-
-      request.open(
-        "POST",
-        "https://api.openrouteservice.org/v2/matrix/driving-car"
-      );
-
-      request.setRequestHeader(
-        "Accept",
-        "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8"
-      );
-      request.setRequestHeader("Content-Type", "application/json");
-      request.setRequestHeader(
-        "Authorization",
-        "5b3ce3597851110001cf624801e9954029634268ad5336aa3eb55140" //API Key
-      );
-      let context = this;
-      request.onreadystatechange = function() {
-        if (request.readyState === 4) {
-          context.arrivalTime = JSON.parse(
-            request.responseText
-          ).durations[0][1];
-          console.log("Status:", request.status);
-          console.log("Headers:", request.getAllResponseHeaders());
-          console.log("Body:", request.responseText);
-        }
-      };
-      let patientLoc = `[${this.Rtwdocument.gnssPosition.long},${this.Rtwdocument.gnssPosition.lat}]`;
-      let ummLoc = `[8.487255, 49.492427]`;
-      const body = `{"locations":[${patientLoc},${ummLoc}],"metrics":["duration"],"resolve_locations":"false","units":"m"}`;
-
-      request.send(body);
+      this.selectedRTW = rtw; //TODO apply a watcher on selectedRTW; if selectedRTW != null, make get request every 5 seconds to get the current value of the selected RTW;
+      //same logic for the get patient request
     }
   },
-  watch: {
-    Rtwdocument: {
+  /* watch: {
+    rtwList: {
       handler() {
-        this.calculateRoute();
+        this.computeAllETAs();
       },
       deep: true
     }
-  },
+  }, */
   mounted: function() {
-    this.calculateRoute();
-
     // Consume REST-API
-    let rtwAPI = "http://localhost:3000/rtw";
-    let patientAPI = "http://localhost:3000/patient";
+    let rtwAPI = "http://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll";
 
-    const requestRtw = axios.get(rtwAPI);
-    const requestPatient = axios.get(patientAPI);
     this.loading = true;
     axios
-      .all([requestRtw, requestPatient])
-      .then(
-        axios.spread((...responses) => {
-          //TODO assign response to actual data object
-          const responseRTW = responses[0];
-          //const responsePatient = responses[1];
-
-          // use/access the results
-          console.log("AXIOS: " + responseRTW);
-        })
-      )
+      .get(rtwAPI)
+      .then(response => (this.rtwList = response.data.data))
       .catch(errors => {
         // react on errors.
         console.error("AXIOS ERROR: " + errors);

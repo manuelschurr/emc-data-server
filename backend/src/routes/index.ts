@@ -1,14 +1,14 @@
 import express from "express"
+import ambulance from "./ambulance/ambulance"
+import audio from "./audio/audio"
 import img from "./img/img"
 import patient from "./patient/patient"
-import rtw from "./rtw/rtw"
-import test from "./test/test"
 
 const router = express.Router()
 
-router.use("/test", test)
 router.use("/patient", patient)
-router.use("/rtw", rtw)
+router.use("/ambulance", ambulance)
 router.use("/img", img)
+router.use("/audio", audio)
 
 export default router

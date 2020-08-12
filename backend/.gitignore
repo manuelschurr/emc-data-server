@@ -23,6 +23,3 @@ coverage
 
 # Environment varibles
 *.env
-
-#Uploaded images
-uploads/*
