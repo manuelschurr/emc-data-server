@@ -12,7 +12,7 @@ const router = express.Router()
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./images/")
+        cb(null, "./img/")
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname)
@@ -30,25 +30,25 @@ router.post(
 
 router.get("/all", asyncHandler(async (req, res, next) => {
     // Ignores .gitignore file (which is required to track the (initially) empty directory)
-    const all_img = fs.readdirSync("./images/").sort().slice(1)
+    const all_img = fs.readdirSync("./img/").sort().slice(1)
     return new SuccessResponse("Success", all_img).send(res)
 }),
 )
 
-const IMAGES_DIR = path.join(process.cwd() + "/images/")
+const IMG_DIR = path.join(process.cwd() + "/img/")
 
 router.get(
     "/newest",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         try {
-            const files = fs.readdirSync("./images/").sort()
+            const files = fs.readdirSync("./img/").sort()
             const newest = files[files.length - 1]
             // TODO: Return image via SuccessResponse. How?!
             if (!newest || newest == ".gitignore") {
                 return new NotFoundResponse("No files exist").send(res)
             }
-            const imgPath = path.join(IMAGES_DIR + newest)
+            const imgPath = path.join(IMG_DIR + newest)
             res.contentType("jpeg")
             res.sendFile(imgPath)
         } catch (e) {
@@ -60,7 +60,7 @@ router.get(
 
 router.get("/single/:imgId", validator(schema.getSingle, ValidationSource.PARAM), asyncHandler(async (req, res, next) => {
     const { imgId } = req.params
-    const imgPath = path.join(IMAGES_DIR + "/" + imgId)
+    const imgPath = path.join(IMG_DIR + "/" + imgId)
     if (!fs.existsSync(imgPath)) throw new BadRequestError("Image does not exist")
     res.contentType("jpeg")
     res.sendFile(imgPath)
