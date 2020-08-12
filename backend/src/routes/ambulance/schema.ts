@@ -3,7 +3,7 @@ import { TIMESTAMP_REG_EX } from '../../helpers/validator';
 
 export default {
    ambulanceId: Joi.object().keys({
-      ambulanceId: Joi.number().required(),
+      ambulanceId: Joi.string().required(),
    }),
    create: Joi.object().keys({
       ambulanceId: Joi.number().required(),
