@@ -14,10 +14,10 @@
       <ul v-if="ambulances.length">
         <div v-if="ambulancesWithETAs.length">
           <li
-            v-for="(ambulance, index) in ambulances"
+            v-for="ambulance in ambulancesWithETAs"
             v-bind:key="ambulance.identifier"
           >
-            <p v-if="index > 0">
+            <p>
               <button @click="selectRTW(ambulance)">
                 <img src="../assets/ambulance.png" width="100" />
                 <br />
@@ -74,6 +74,8 @@
 </template>
 
 <script>
+var axios = require("axios");
+
 export default {
   name: "RtwSelection",
   props: {
@@ -89,17 +91,22 @@ export default {
   methods: {
     computeAllETAs: function() {
       let request = new XMLHttpRequest();
-      var rtwLocations = [];
+      //Initialise rtwLocations with UMM's position as first element
+      var rtwLocations = [`[${8.487255}, ${49.492427}]`];
       var index = 0;
       //Prototyping; change rtwList to the reponse object; first item in this list has to be the UMM address
       //Exception Handling: If no GNSS data is obtained, display rtw list without ETA
       for (var rtw of this.ambulances) {
-        console.log("RTW: " + JSON.stringify(rtw));
-        console.log("index: " + index);
         //For each RTW make a get request to obtian GNSS data and add to the rtwLocations []
-        if (!isNaN(rtw.gnssPosition.long) && !isNaN(rtw.gnssPosition.lat)) {
+        var ambulanceId = rtw.ambulanceId;
+        var gnssPosition = this.getGnssData(ambulanceId);
+        if (
+          gnssPosition &&
+          !isNaN(gnssPosition.longitude) &&
+          !isNaN(gnssPosition.latitude)
+        ) {
           rtwLocations.push(
-            `[${rtw.gnssPosition.long}, ${rtw.gnssPosition.lat}]`
+            `[${gnssPosition.longitude}, ${gnssPosition.latitude}]`
           );
         } else {
           this.ambulancesWithNoETA.push(index);
@@ -137,7 +144,10 @@ export default {
         const body = `{"locations": [${rtwLocations}]}`;
         request.send(body);
       } else {
-        this.ambulances = [];
+        this.ambulancesWithETAs = this.ambulances;
+        for (var amb of this.ambulancesWithETAs) {
+          amb.eta = "Nicht berechenbar aufgrund fehlender GNSS Daten";
+        }
       }
     },
     mapETAs: function() {
@@ -147,9 +157,9 @@ export default {
 
       for (var i = 0; i < this.ambulances.length; i++) {
         if (!this.ambulancesWithNoETA.includes(i)) {
-          this.ambulances[i].eta = this.secToTime(this.arrivalTimes[i]);
+          this.ambulancesWithETAs[i].eta = this.secToTime(this.arrivalTimes[i]);
         } else {
-          this.ambulances[i].eta =
+          this.ambulancesWithETAs[i].eta =
             "Nicht berechenbar aufgrund fehlender GNSS Daten";
         }
       }
@@ -166,6 +176,29 @@ export default {
         }
         return minutes + " Minuten " + seconds + " Sekunden";
       }
+    },
+    getGnssData(ambulanceId) {
+      var data = JSON.stringify({ ambulanceId: 1 });
+      console.log("gnss bodyy:_ " + ambulanceId);
+
+      var config = {
+        method: "get",
+        url:
+          "http://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: data
+      };
+      console.log(config);
+
+      axios(config)
+        .then(function(response) {
+          console.log("GNSS response: " + JSON.stringify(response.data));
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     }
   },
   mounted: function() {
