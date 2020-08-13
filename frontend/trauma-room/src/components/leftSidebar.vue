@@ -29,7 +29,7 @@
       >
         Position
         <br />
-        ETA: {{ arrivalTime ? arrivalTime : "-" }} Minuten
+        ETA: {{ arrivalTime ? arrivalTime : "-" }}
       </button>
     </div>
   </div>
@@ -55,6 +55,13 @@ export default {
     this.$root.$on("lastSpo2Data", data => {
       this.lastSpo2 = data;
     });
+    this.$watch(
+      "arrivalTime",
+      arrivalTime => {
+        this.arrivalTime = arrivalTime;
+      },
+      { immediate: true }
+    );
   },
   props: {
     arrivalTime: String
@@ -86,17 +93,7 @@ export default {
       }
       return buttonClass;
     }
-  } /* ,
-  filters: {
-    secToTime: function (value) {
-      var seconds = Math.floor(value % 60).toString();
-      var minutes = Math.floor(value / 60).toString();
-      if (seconds.length === 1) {
-        seconds = "0" + seconds;
-      }
-      return minutes + ":" + seconds;
-    },
-  }, */
+  }
 };
 </script>
 <style scoped>

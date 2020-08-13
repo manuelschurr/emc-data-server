@@ -60,44 +60,14 @@ export default {
       },
       rtwList: [
         {
-          patientID: "00",
-          identifier: "UMM",
-          gnssPosition: {
-            time: Date,
-            long: 8.487255,
-            lat: 49.492427
-          }
-        },
-        {
-          patientID: "123",
-          identifier: "DRK",
-          gnssPosition: {
-            time: Date
-            /* long: 8.4660395,
-            lat: 49.4874592 */
-          }
-        },
-        {
-          patientID: "125",
-          identifier: "ASB",
-          gnssPosition: {
-            time: Date,
-            long: 8.7660395,
-            lat: 49.4874592
-          }
-        },
-        {
-          patientID: "1244",
-          identifier: "DRK2",
-          gnssPosition: {
-            time: Date,
-            long: 9.7660395,
-            lat: 49.4874592
-          }
+          ambulanceId: 3,
+          patientId: 0,
+          identifier: "Malteser Hilfsdienst"
         }
       ],
       loading: false,
-      selectedRTW: Object
+      selectedRTW: Object,
+      rtwLocations: [`[${8.487255}, ${49.492427}]`]
     };
   },
   components: {
@@ -117,16 +87,83 @@ export default {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = rtw; //TODO apply a watcher on selectedRTW; if selectedRTW != null, make get request every 5 seconds to get the current value of the selected RTW;
       //same logic for the get patient request
+    },
+    getGnssdata: function() {
+      let config = {
+        method: "get",
+        url:
+          "http://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+          this.selectedRTW.ambulanceId
+      };
+
+      axios(config)
+        .then(response => {
+          this.rtwLocations.splice(
+            1,
+            1,
+            `[${response.data.data.longitude}, ${response.data.data.latitude}]`
+          );
+          this.computeETA();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    computeETA: function() {
+      let request = new XMLHttpRequest();
+      if (this.rtwLocations.length > 1) {
+        request.open(
+          "POST",
+          "https://api.openrouteservice.org/v2/matrix/driving-car"
+        );
+
+        request.setRequestHeader(
+          "Accept",
+          "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8"
+        );
+        request.setRequestHeader("Content-Type", "application/json");
+        request.setRequestHeader(
+          "Authorization",
+          "5b3ce3597851110001cf62486cd746dbfa404187b5fee363289e8fed" //API Key
+        );
+        let context = this;
+        request.onreadystatechange = function() {
+          if (request.readyState === 4) {
+            context.selectedRTW.eta = context.secToTime(
+              JSON.parse(request.responseText).durations[1][0]
+            );
+            context.$forceUpdate();
+          }
+        };
+        const body = `{"locations": [${this.rtwLocations}]}`;
+        request.send(body);
+      }
+    },
+    secToTime: function(etaInSec) {
+      if (!isNaN(etaInSec)) {
+        var seconds = Math.floor(etaInSec % 60).toString();
+        var minutes = Math.floor(etaInSec / 60).toString();
+        if (seconds.length === 1) {
+          seconds = "0" + seconds;
+        }
+        return minutes + " Minuten " + seconds + " Sekunden";
+      }
     }
   },
-  /* watch: {
-    rtwList: {
+  watch: {
+    rtwSelected: {
       handler() {
-        this.computeAllETAs();
-      },
-      deep: true
+        // Request GNSS Data from Server every 10 Seconds
+        if (this.rtwSelected) {
+          this.interval = setInterval(() => {
+            this.getGnssdata();
+          }, 10000);
+        } else {
+          clearInterval(this.interval);
+        }
+      }
     }
-  }, */
+  },
   mounted: function() {
     // Consume REST-API
     let rtwAPI = "http://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll";
@@ -134,7 +171,12 @@ export default {
     this.loading = true;
     axios
       .get(rtwAPI)
-      .then(response => (this.rtwList = response.data.data))
+      .then(response => {
+        this.rtwList = response.data.data;
+        for (var r of this.rtwList) {
+          r.eta = 0;
+        }
+      })
       .catch(errors => {
         // react on errors.
         console.error("AXIOS ERROR: " + errors);
