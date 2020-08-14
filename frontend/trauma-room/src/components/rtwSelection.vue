@@ -116,17 +116,13 @@ export default {
               );
               context.ambulancesWithETAs.push(currentRtw);
             } else {
-              context.ambulancesWithETAs = context.ambulances;
+              currentRtw.eta = "Fehler bei Routen Schnittstelle";
+              context.ambulancesWithETAs.push(currentRtw);
             }
           }
         };
         const body = `{"locations": [${this.rtwLocations}]}`;
         request.send(body);
-      } else {
-        this.ambulancesWithETAs = this.ambulances;
-        for (var amb of this.ambulancesWithETAs) {
-          amb.eta = "Nicht berechenbar aufgrund fehlender GNSS Daten";
-        }
       }
     },
     secToTime: function(etaInSec) {
@@ -167,9 +163,19 @@ export default {
               }
             })
             .catch(error => {
-              console.log("errrorrr: " + JSON.stringify(error));
+              var errorId = JSON.stringify(error.config.url.slice(-1));
+              console.log("No GNSS Data for AmbulanceID: " + errorId);
               this.stateMessage = JSON.stringify(error.message);
-              this.ambulancesWithETAs = this.ambulances;
+
+              //add I
+              for (var ea of this.ambulances) {
+                if (`"${ea.ambulanceId}"` === errorId) {
+                  console.log("TEST");
+                  ea.eta = "Keine GNSS Daten verfügbar";
+                  this.ambulancesWithETAs.push(ea);
+                  this.$forceUpdate();
+                }
+              }
             });
         }
       }

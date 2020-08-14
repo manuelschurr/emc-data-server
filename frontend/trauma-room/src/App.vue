@@ -129,10 +129,15 @@ export default {
         let context = this;
         request.onreadystatechange = function() {
           if (request.readyState === 4) {
-            context.selectedRTW.eta = context.secToTime(
-              JSON.parse(request.responseText).durations[1][0]
-            );
-            context.$forceUpdate();
+            if (request.status === 200) {
+              context.selectedRTW.eta = context.secToTime(
+                JSON.parse(request.responseText).durations[1][0]
+              );
+              context.$forceUpdate();
+            } else {
+              context.selectedRTW = "Fehler bei Routen Schnittstelle";
+              context.$forceUpdate();
+            }
           }
         };
         const body = `{"locations": [${this.rtwLocations}]}`;
