@@ -3,11 +3,14 @@ import { TIMESTAMP_REG_EX } from '../../helpers/validator';
 
 export default {
    patientId: Joi.object().keys({
-      patientId: Joi.number().required(),
-      timestamp: Joi.string().regex(TIMESTAMP_REG_EX).required()
+      patientId: Joi.string().required()
    }),
    ambulanceId: Joi.object().keys({
-      ambulanceId: Joi.number().required(),
+      ambulanceId: Joi.string().required(),
+   }),
+   pulsoxy: Joi.object().keys({
+      patientId: Joi.number().required(),
+      timestamp: Joi.string().regex(TIMESTAMP_REG_EX).required()
    }),
    create: Joi.object().keys({
       patientId: Joi.number().required(),

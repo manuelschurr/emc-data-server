@@ -7,9 +7,15 @@ import Logger from "./core/Logger"
 import './database' // initialize database
 import routes from "./routes"
 
-process.on("uncaughtException", (e) => {
+process.on("uncaughtException", (e:any) => {
     Logger.error(e)
 })
+
+var fs = require('fs')
+var https = require('https')
+var privateKey  = fs.readFileSync('./certificates/key.pem', 'utf8')
+var certificate = fs.readFileSync('./certificates/cert.pem', 'utf8')
+var credentials = {key: privateKey, cert: certificate};
 
 const app = express()
 
@@ -37,4 +43,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     return ApiError.handle(new InternalError(), res)
 })
 
-export default app
+var httpsServer = https.createServer(credentials, app);
+
+export default httpsServer
