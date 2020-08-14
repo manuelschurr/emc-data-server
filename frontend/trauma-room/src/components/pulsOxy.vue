@@ -15,7 +15,7 @@
             <br />
             <b>Pulse</b>
             <br />
-            <span class="bigFont">{{lastPulse}}</span>
+            <span class="bigFont">{{ lastPulse }}</span>
             <svg
               width="1em"
               height="1em"
@@ -65,8 +65,8 @@
 <script>
 import PulsOxyLine from "./pulsOxyLine.vue";
 import PulsOxy_data1 from "../assets/PulsOxy_data1.json";
-// import io from "socket.io-client";
-// var socket = io.connect("http://localhost:4000");
+const axios = require("axios");
+
 export default {
   name: "LineChartContainer",
   components: { PulsOxyLine },
@@ -101,48 +101,50 @@ export default {
   },
   methods: {
     fillData() {
-      //  this.pulseData = response.data.pulseData.map(download => download.pulseData)
-      //  this.pulseLabels = response.data.pulseData.map(download => download.day)
-      for (var data of this.jsonData.slice(
-        this.jsonData.length - 20,
-        this.jsonData.length
-      )) {
-        this.pulseData.push(data.pulsoxy.pulsRate.value.toString());
-        this.pulseLabels.push(data.pulsoxy.pulsRate.time.slice(0, 8));
-        this.spo2Data.push(data.pulsoxy.spo2.value.toString());
-        this.spo2Labels.push(data.pulsoxy.spo2.time.slice(0, 8));
-      }
+      this.loading = true;
+
+      var body = "";
+
+      var config = {
+        method: "get",
+        url: "http://134.155.48.211:3000/patient/findPulsoxyByPatientId/1",
+        headers: {},
+        data: body,
+      };
+
+      // axios(config)
+      //   .then(function (response) {
+      //     console.log(JSON.stringify(response.data));
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //   });
+
+      axios(config)
+        .then(function (response) {
+          this.pulseData.push(response.data.data.pulsrate.value.toString());
+          this.pulseLabels.push(response.data.data.timestamp.slice(11, 19));
+          this.spo2Data.push(response.data.data.spo2.value.toString());
+          this.spo2Labels.push(response.data.data.timestamp.slice(11, 19));
+          console.log(JSON.stringify(response.data.data));
+        })
+        .catch(function (error) {
+          console.log("AXIOS ERROR: " + error);
+        })
+        .finally(() => (this.loading = false));
+
+      // for (var data of this.jsonData.slice(
+      //   this.jsonData.length - 20,
+      //   this.jsonData.length
+      // )) {
+      //   this.pulseData.push(data.pulsoxy.pulsRate.value.toString());
+      //   this.pulseLabels.push(data.pulsoxy.pulsRate.time.slice(0, 8));
+      //   this.spo2Data.push(data.pulsoxy.spo2.value.toString());
+      //   this.spo2Labels.push(data.pulsoxy.spo2.time.slice(0, 8));
+      // }
       this.loaded = true;
-      // this.chartdata = {
-      //   datasets: [
-      //     {
-      //       label: "Puls",
-      //       backgroundColor: "#1A73E8",
-      //       data: [fetchedData]
-      //     },
-      //     {
-      //       label: "SpO2",
-      //       backgroundColor: "#2b7518",
-      //       data: [fetchedData]          }
-      //   ]
-      // };
-    },
-    getRealtimeData() {
-      // socket.on("newdata", fetchedData => {
-      //   this.fillData(fetchedData)
-      // })
     },
   },
-  // async mounted () {
-  //   this.loaded = false
-  //   try {
-  //     const { userlist } = await fetch('/api/userlist')
-  //     this.chartdata = userlist
-  //     this.loaded = true
-  //   } catch (e) {
-  //     console.error(e)
-  //   }
-  // }
 };
 </script>
 

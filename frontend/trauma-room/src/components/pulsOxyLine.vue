@@ -25,7 +25,7 @@ export default {
           yAxes: [
             {
               ticks: {
-                beginAtZero: false,
+                beginAtZero: true,
               },
               gridLines: {
                 display: true,
