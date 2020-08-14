@@ -64,7 +64,7 @@
             role="status"
           ></div>
           <div style="position: fixed; top: 55%;">
-            Berechne geschätzte Ankunftszeit
+            {{ stateMessage }}
           </div>
         </div>
       </ul>
@@ -85,36 +85,14 @@ export default {
   data: () => ({
     arrivalTimes: [],
     ambulancesWithETAs: [],
-    ambulancesWithNoETA: []
-    //rtwLocations: []
+    ambulancesWithNoETA: [],
+    rtwLocations: [`[${8.487255}, ${49.492427}]`],
+    stateMessage: "Berechne geschätzte Ankunftszeit"
   }),
   methods: {
-    computeAllETAs: function() {
+    computeETA: function(currentRtw) {
       let request = new XMLHttpRequest();
-      //Initialise rtwLocations with UMM's position as first element
-      var rtwLocations = [`[${8.487255}, ${49.492427}]`];
-      var index = 0;
-      //Prototyping; change rtwList to the reponse object; first item in this list has to be the UMM address
-      //Exception Handling: If no GNSS data is obtained, display rtw list without ETA
-      for (var rtw of this.ambulances) {
-        //For each RTW make a get request to obtian GNSS data and add to the rtwLocations []
-        var ambulanceId = rtw.ambulanceId;
-        var gnssPosition = this.getGnssData(ambulanceId);
-        if (
-          gnssPosition &&
-          !isNaN(gnssPosition.longitude) &&
-          !isNaN(gnssPosition.latitude)
-        ) {
-          rtwLocations.push(
-            `[${gnssPosition.longitude}, ${gnssPosition.latitude}]`
-          );
-        } else {
-          this.ambulancesWithNoETA.push(index);
-        }
-        index++;
-      }
-      console.log("rtwlocations: " + rtwLocations);
-      if (rtwLocations.length > 1) {
+      if (this.rtwLocations.length > 1) {
         request.open(
           "POST",
           "https://api.openrouteservice.org/v2/matrix/driving-car"
@@ -127,47 +105,27 @@ export default {
         request.setRequestHeader("Content-Type", "application/json");
         request.setRequestHeader(
           "Authorization",
-          "5b3ce3597851110001cf624801e9954029634268ad5336aa3eb55140" //API Key
+          "5b3ce3597851110001cf62486cd746dbfa404187b5fee363289e8fed" //API Key
         );
         let context = this;
         request.onreadystatechange = function() {
           if (request.readyState === 4) {
-            context.arrivalTimes = JSON.parse(
-              request.responseText
-            ).durations[0];
-            context.mapETAs();
-            console.log("Status:", request.status);
-            console.log("Headers:", request.getAllResponseHeaders());
-            console.log("Body:", request.responseText);
+            if (request.status === 200) {
+              currentRtw.eta = context.secToTime(
+                JSON.parse(request.responseText).durations[1][0]
+              );
+              context.ambulancesWithETAs.push(currentRtw);
+            } else {
+              currentRtw.eta = "Fehler bei Routen Schnittstelle";
+              context.ambulancesWithETAs.push(currentRtw);
+            }
           }
         };
-        const body = `{"locations": [${rtwLocations}]}`;
+        const body = `{"locations": [${this.rtwLocations}]}`;
         request.send(body);
-      } else {
-        this.ambulancesWithETAs = this.ambulances;
-        for (var amb of this.ambulancesWithETAs) {
-          amb.eta = "Nicht berechenbar aufgrund fehlender GNSS Daten";
-        }
       }
-    },
-    mapETAs: function() {
-      for (var aIndex of this.ambulancesWithNoETA) {
-        this.arrivalTimes.splice(aIndex, 0, "No GNSS available");
-      }
-
-      for (var i = 0; i < this.ambulances.length; i++) {
-        if (!this.ambulancesWithNoETA.includes(i)) {
-          this.ambulancesWithETAs[i].eta = this.secToTime(this.arrivalTimes[i]);
-        } else {
-          this.ambulancesWithETAs[i].eta =
-            "Nicht berechenbar aufgrund fehlender GNSS Daten";
-        }
-      }
-
-      this.ambulancesWithETAs = this.ambulances;
     },
     secToTime: function(etaInSec) {
-      console.log("sectoTime: " + etaInSec);
       if (!isNaN(etaInSec)) {
         var seconds = Math.floor(etaInSec % 60).toString();
         var minutes = Math.floor(etaInSec / 60).toString();
@@ -177,32 +135,54 @@ export default {
         return minutes + " Minuten " + seconds + " Sekunden";
       }
     },
-    getGnssData(ambulanceId) {
-      var data = JSON.stringify({ ambulanceId: 1 });
-      console.log("gnss bodyy:_ " + ambulanceId);
+    getGnssData: function() {
+      for (var rtw of this.ambulances) {
+        if (rtw.ambulanceId) {
+          let config = {
+            method: "get",
+            url:
+              "http://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+              rtw.ambulanceId
+          };
 
-      var config = {
-        method: "get",
-        url:
-          "http://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        data: data
-      };
-      console.log(config);
+          axios(config)
+            .then(response => {
+              if (response.data.statusCode === "10000") {
+                this.rtwLocations.splice(
+                  1,
+                  1,
+                  `[${response.data.data.longitude}, ${response.data.data.latitude}]`
+                );
+                var currentRtw;
+                for (var c of this.ambulances) {
+                  if (response.data.data.ambulanceId === c.ambulanceId) {
+                    currentRtw = c;
+                  }
+                }
+                this.computeETA(currentRtw);
+              }
+            })
+            .catch(error => {
+              var errorId = JSON.stringify(error.config.url.slice(-1));
+              console.log("No GNSS Data for AmbulanceID: " + errorId);
+              this.stateMessage = JSON.stringify(error.message);
 
-      axios(config)
-        .then(function(response) {
-          console.log("GNSS response: " + JSON.stringify(response.data));
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+              //add I
+              for (var ea of this.ambulances) {
+                if (`"${ea.ambulanceId}"` === errorId) {
+                  console.log("TEST");
+                  ea.eta = "Keine GNSS Daten verfügbar";
+                  this.ambulancesWithETAs.push(ea);
+                  this.$forceUpdate();
+                }
+              }
+            });
+        }
+      }
     }
   },
   mounted: function() {
-    this.computeAllETAs();
+    this.getGnssData();
   }
 };
 </script>
