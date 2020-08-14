@@ -132,6 +132,7 @@ export default {
   data() {
     return {
       loaded: false,
+      timer: "",
       patient: {
         rtwId: "",
         name: "",
@@ -172,6 +173,9 @@ export default {
   },
   mounted() {
     this.fillData();
+  },
+  created() {
+    this.timer = setInterval(this.fillData, 10000);
   },
   methods: {
     fillData() {
@@ -229,6 +233,9 @@ export default {
         classABCDE = "okABCDE";
       }
       return classABCDE;
+    },
+    beforeDestroy() {
+      clearInterval(this.timer);
     },
   },
 };

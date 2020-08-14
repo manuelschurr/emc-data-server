@@ -15,7 +15,11 @@
             <br />
             <b>Pulse</b>
             <br />
-            <span class="bigFont">{{ lastPulse }}</span>
+            <span
+              v-if="lastPulse > 130 || lastpulse < 60"
+              class="bigFont notOkPulseOxy"
+            >{{ lastPulse }}</span>
+            <span v-else class="bigFont">{{ lastPulse }}</span>
             <svg
               width="1em"
               height="1em"
@@ -50,7 +54,11 @@
               <sub>2</sub>
             </b>
             <br />
-            <span class="bigFont">{{ lastSpo2 }}</span>
+            <span
+              v-if="lastSpo2 > 110 || lastSpo2 < 90"
+              class="bigFont notOkPulseOxy"
+            >{{ lastSpo2 }}</span>
+            <span v-else class="bigFont">{{ lastSpo2 }}</span>
             O
             <sub>2</sub>
             <br />SpO
@@ -64,7 +72,6 @@
 
 <script>
 import PulsOxyLine from "./pulsOxyLine.vue";
-import PulsOxy_data1 from "../assets/PulsOxy_data1.json";
 const axios = require("axios");
 
 export default {
@@ -73,19 +80,18 @@ export default {
   data() {
     return {
       loaded: false,
+      timer: "",
       pulseData: [],
       pulseLabels: [],
       spo2Data: [],
       spo2Labels: [],
-      jsonData: PulsOxy_data1,
     };
   },
   mounted() {
     this.fillData();
   },
   created() {
-    // this.getRealtimeData()
-    // this.fillData();
+    // this.timer = setInterval(this.fillData, 10000);
   },
   computed: {
     lastPulse() {
@@ -101,6 +107,7 @@ export default {
   },
   methods: {
     fillData() {
+      var vm = this;
       this.loading = true;
 
       var body = "";
@@ -112,43 +119,35 @@ export default {
         data: body,
       };
 
-      // axios(config)
-      //   .then(function (response) {
-      //     console.log(JSON.stringify(response.data));
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //   });
-
       axios(config)
         .then(function (response) {
-          this.pulseData.push(response.data.data.pulsrate.value.toString());
-          this.pulseLabels.push(response.data.data.timestamp.slice(11, 19));
-          this.spo2Data.push(response.data.data.spo2.value.toString());
-          this.spo2Labels.push(response.data.data.timestamp.slice(11, 19));
-          console.log(JSON.stringify(response.data.data));
+          if (response.data.statusCode === "10000") {
+            vm.pulseData.push(response.data.data.pulsrate.toString());
+            // vm.$pulseData.update(),
+            vm.pulseLabels.push(response.data.data.timestamp.slice(11, 19));
+            vm.spo2Data.push(response.data.data.spo2.toString());
+            vm.spo2Labels.push(response.data.data.timestamp.slice(11, 19));
+            vm.loaded = true;
+          }
         })
         .catch(function (error) {
           console.log("AXIOS ERROR: " + error);
-        })
-        .finally(() => (this.loading = false));
+        });
+      vm.loaded = true;
 
-      // for (var data of this.jsonData.slice(
-      //   this.jsonData.length - 20,
-      //   this.jsonData.length
-      // )) {
-      //   this.pulseData.push(data.pulsoxy.pulsRate.value.toString());
-      //   this.pulseLabels.push(data.pulsoxy.pulsRate.time.slice(0, 8));
-      //   this.spo2Data.push(data.pulsoxy.spo2.value.toString());
-      //   this.spo2Labels.push(data.pulsoxy.spo2.time.slice(0, 8));
-      // }
-      this.loaded = true;
+      // .finally(() => (this.loading = false));
+    },
+    beforeDestroy() {
+      clearInterval(this.timer), (this.pulseData = []), (this.spo2Data = []);
     },
   },
 };
 </script>
 
 <style>
+.notOkPulseOxy {
+  color: red;
+}
 .small {
   max-height: 220px;
   margin: 20px 0 20px;
