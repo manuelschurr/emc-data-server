@@ -6,7 +6,7 @@ export const COLLECTION_NAME = 'pulsoxy';
 
 export default interface Pulsoxy extends Document {
    patientId: number;
-   timestamp: string;
+   timestamp: Date;
    pulsrate: number;
    spo2: number;
 }
@@ -18,7 +18,7 @@ const schema = new Schema(
          required: true
       },
       timestamp: {
-         type: Schema.Types.String,
+         type: Schema.Types.Date,
          required: true
       },
       pulsrate: {

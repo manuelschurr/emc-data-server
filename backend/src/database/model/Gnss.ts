@@ -6,7 +6,7 @@ export const COLLECTION_NAME = 'gnss';
 
 export default interface Gnss extends Document {
    ambulanceId: number;
-   timestamp: string;
+   timestamp: Date;
    latitude: number;
    longitude: number;
 }
@@ -18,7 +18,7 @@ const schema = new Schema(
          required: true
       },
       timestamp: {
-         type: Schema.Types.String,
+         type: Schema.Types.Date,
          required: true
       },
       latitude: {

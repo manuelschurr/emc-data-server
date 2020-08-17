@@ -9,6 +9,10 @@ export default class AmbulanceRepo {
       return AmbulanceModel.findOne({ ambulanceId: id }).lean<Ambulance>().exec();
    }
 
+   public static findMaxAmbulanceId(): Promise<Ambulance> {
+      return AmbulanceModel.findOne({}, {ambulanceId: 1, _id: 0} ).sort({ambulanceId: -1}).lean<Ambulance>().exec();
+   }
+
    public static async create(ambulance: Ambulance): Promise<{ ambulance: Ambulance }> {
       const createdAmbulance = await AmbulanceModel.create(ambulance);
       return { ambulance: createdAmbulance.toObject() };
