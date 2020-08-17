@@ -33,7 +33,7 @@ export default {
    }),
    createPulsoxy: Joi.object().keys({
       patientId: Joi.number().required(),
-      timestamp: Joi.string().regex(TIMESTAMP_REG_EX).required(),
+      timestamp: Joi.date().required(),
       pulsrate: Joi.number().required(),
       spo2: Joi.number().required()
    }),

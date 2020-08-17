@@ -70,22 +70,22 @@ router.get(
     }),
 );
 
-// router.get(
-//     "/findPulsoxyByPatientIdAndTimestamp",
-//     validator(schema.pulsoxy, ValidationSource.QUERY),
-//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-//     asyncHandler(async (req, res, next) => {
-//         const patientId = req.query.patientId.toString();
-//         const timestamp = new Date(req.query.timestamp.toString());
-//         const pulsoxy = await PulsoxyRepo.findLatestByPatientIdAndTimestamp(parseInt(patientId), timestamp);
-//         if (!pulsoxy) {
-//             throw new BadRequestError('Pulsoxy data could not be found.');
-//         }
+router.get(
+    "/findPulsoxyByPatientIdAndTimestamp",
+    validator(schema.pulsoxy, ValidationSource.QUERY),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asyncHandler(async (req, res, next) => {
+        const patientId = req.query.patientId.toString();
+        const timestamp = new Date(req.query.timestamp.toString());
+        const pulsoxy = await PulsoxyRepo.findLatestByPatientIdAndTimestamp(parseInt(patientId), timestamp);
+        if (!pulsoxy) {
+            throw new BadRequestError('Pulsoxy data could not be found.');
+        }
 
-//         return new SuccessResponse("Successful", pulsoxy).send(res);
+        return new SuccessResponse("Successful", pulsoxy).send(res);
 
-//     }),
-// );
+    }),
+);
 
 router.post(
     "/create",
