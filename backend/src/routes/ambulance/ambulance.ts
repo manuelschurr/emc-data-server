@@ -68,22 +68,22 @@ router.get(
     }),
 );
 
-// router.get(
-//     "/findGnssByAmbulanceIdAndTimestamp",
-//     validator(schema.gnss, ValidationSource.QUERY),
-//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-//     asyncHandler(async (req, res, next) => {
-//         const ambulanceId = req.query.ambulanceId.toString();
-//         const timestamp = new Date(req.query.ambulanceId.toString());
-//         const gnss = await GnssRepo.findLatestByAmbulanceIdAndTimestamp(parseInt(ambulanceId), timestamp);
-//         if (!gnss) {
-//             throw new BadRequestError('GNSS data could not be found.');
-//         }
+router.get(
+    "/findGnssByAmbulanceIdAndTimestamp",
+    validator(schema.gnss, ValidationSource.QUERY),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asyncHandler(async (req, res, next) => {
+        const ambulanceId = req.query.ambulanceId.toString();
+        const timestamp = new Date(req.query.timestamp.toString());
+        const gnss = await GnssRepo.findLatestByAmbulanceIdAndTimestamp(parseInt(ambulanceId), timestamp);
+        if (!gnss) {
+            throw new BadRequestError('GNSS data could not be found.');
+        }
 
-//         return new SuccessResponse("Successful", gnss).send(res);
+        return new SuccessResponse("Successful", gnss).send(res);
 
-//     }),
-// );
+    }),
+);
 
 router.post(
     "/create",
