@@ -1,17 +1,24 @@
 <template>
-  <l-map :zoom="zoom" :center="center" v-bind:style="styleObject">
-    <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-    <l-marker :lat-lng="markerUMM">
-      <l-tooltip :options="{ permanent: true, interactive: true }">
-        UMM
-      </l-tooltip>
-    </l-marker>
-    <l-marker :lat-lng="markerPatient">
-      <l-tooltip :options="{ permanent: true, interactive: true }">
-        Patient
-      </l-tooltip>
-    </l-marker>
-  </l-map>
+  <div>
+    <div v-if="Rtwdocument.lat && Rtwdocument.long">
+      <l-map :zoom="zoom" :center="center" v-bind:style="styleObject">
+        <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+        <l-marker :lat-lng="markerUMM">
+          <l-tooltip :options="{ permanent: true, interactive: true }">
+            UMM
+          </l-tooltip>
+        </l-marker>
+        <l-marker :lat-lng="markerPatient">
+          <l-tooltip :options="{ permanent: true, interactive: true }">
+            Patient
+          </l-tooltip>
+        </l-marker>
+      </l-map>
+    </div>
+    <div v-else>
+      GNSS Daten werden geladen.
+    </div>
+  </div>
 </template>
 
 <script>

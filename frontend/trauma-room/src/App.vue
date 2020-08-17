@@ -15,6 +15,7 @@
         v-if="!rtwSelected && !loading"
         :selectRTW="selectRTW"
         :ambulances="rtwList"
+        :Rtwdocument="Rtwdocument"
       />
       <div v-if="rtwSelected">
         <Header :changeRTW="changeRTW" />
@@ -25,7 +26,7 @@
               <LeftSidebar :arrivalTime="selectedRTW.eta" />
             </div>
             <div class="col-8">
-              <MainComponent :Rtwdocument="Rtwdocument" />
+              <MainComponent :Rtwdocument="selectedRTW" />
             </div>
             <div class="col-2">
               <RightSidebar />
@@ -79,11 +80,12 @@ export default {
     changeRTW: function() {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = Object;
+      this.Rtwdocument.long = null;
+      this.Rtwdocument.lat = null;
     },
     selectRTW: function(rtw) {
       this.rtwSelected = !this.rtwSelected;
-      this.selectedRTW = rtw; //TODO apply a watcher on selectedRTW; if selectedRTW != null, make get request every 5 seconds to get the current value of the selected RTW;
-      //same logic for the get patient request
+      this.selectedRTW = rtw;
     },
     getGnssdata: function() {
       let config = {
@@ -100,8 +102,8 @@ export default {
             1,
             `[${response.data.data.longitude}, ${response.data.data.latitude}]`
           );
-          this.Rtwdocument.long = response.data.data.longitude;
-          this.Rtwdocument.lat = response.data.data.latitude;
+          this.selectedRTW.long = response.data.data.longitude;
+          this.selectedRTW.lat = response.data.data.latitude;
           this.computeETA();
         })
         .catch(error => {
