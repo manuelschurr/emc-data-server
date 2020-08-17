@@ -1,11 +1,21 @@
 <template>
   <div id="app">
     <div class="d-flex justify-content-center" v-if="loading">
-      <div class="spinner-border" style="position: fixed; top: 50%;" role="status"></div>
-      <div style="position: fixed; top: 55%;">Lade anfahrende Rettungswagen</div>
+      <div
+        class="spinner-border"
+        style="position: fixed; top: 50%;"
+        role="status"
+      ></div>
+      <div style="position: fixed; top: 55%;">
+        Lade anfahrende Rettungswagen
+      </div>
     </div>
     <div v-else>
-      <RtwSelection v-if="!rtwSelected && !loading" :selectRTW="selectRTW" :ambulances="rtwList" />
+      <RtwSelection
+        v-if="!rtwSelected && !loading"
+        :selectRTW="selectRTW"
+        :ambulances="rtwList"
+      />
       <div v-if="rtwSelected">
         <Header :changeRTW="changeRTW" />
         <PatientData :patientId="selectedRTW.patientId" />
@@ -15,7 +25,7 @@
               <LeftSidebar :arrivalTime="selectedRTW.eta" />
             </div>
             <div class="col-8">
-              <MainComponent :Rtwdocument="Rtwdocument" />
+              <MainComponent :Rtwdocument="rtwLocations[1]" />
             </div>
             <div class="col-2">
               <RightSidebar />
@@ -47,19 +57,19 @@ export default {
         gnssPosition: {
           time: Date,
           long: 8.4660395,
-          lat: 49.4874592,
-        },
+          lat: 49.4874592
+        }
       },
       rtwList: [
         {
           ambulanceId: 3,
           patientId: 0,
-          identifier: "Malteser Hilfsdienst - Mockobjekt",
-        },
+          identifier: "Malteser Hilfsdienst - Mockobjekt"
+        }
       ],
       loading: false,
       selectedRTW: Object,
-      rtwLocations: [`[${8.487255}, ${49.492427}]`],
+      rtwLocations: [`[${8.487255}, ${49.492427}]`]
     };
   },
   components: {
@@ -68,28 +78,28 @@ export default {
     RightSidebar,
     LeftSidebar,
     MainComponent,
-    RtwSelection,
+    RtwSelection
   },
   methods: {
-    changeRTW: function () {
+    changeRTW: function() {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = Object;
     },
-    selectRTW: function (rtw) {
+    selectRTW: function(rtw) {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = rtw; //TODO apply a watcher on selectedRTW; if selectedRTW != null, make get request every 5 seconds to get the current value of the selected RTW;
       //same logic for the get patient request
     },
-    getGnssdata: function () {
+    getGnssdata: function() {
       let config = {
         method: "get",
         url:
           "https://134.155.48.211:3000/ambulance/findGnssByAmbulanceId/" +
-          this.selectedRTW.ambulanceId,
+          this.selectedRTW.ambulanceId
       };
 
       axios(config)
-        .then((response) => {
+        .then(response => {
           this.rtwLocations.splice(
             1,
             1,
@@ -97,11 +107,11 @@ export default {
           );
           this.computeETA();
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
         });
     },
-    computeETA: function () {
+    computeETA: function() {
       let request = new XMLHttpRequest();
       if (this.rtwLocations.length > 1) {
         request.open(
@@ -119,7 +129,7 @@ export default {
           "5b3ce3597851110001cf62486cd746dbfa404187b5fee363289e8fed" //API Key
         );
         let context = this;
-        request.onreadystatechange = function () {
+        request.onreadystatechange = function() {
           if (request.readyState === 4) {
             if (request.status === 200) {
               context.selectedRTW.eta = context.secToTime(
@@ -136,8 +146,10 @@ export default {
         request.send(body);
       }
     },
-    secToTime: function (etaInSec) {
+    secToTime: function(etaInSec) {
       if (!isNaN(etaInSec)) {
+        const rtwTimeReductionFactor = 0.734;
+        etaInSec = etaInSec * rtwTimeReductionFactor;
         var seconds = Math.floor(etaInSec % 60).toString();
         var minutes = Math.floor(etaInSec / 60).toString();
         if (seconds.length === 1) {
@@ -145,7 +157,7 @@ export default {
         }
         return minutes + " Minuten " + seconds + " Sekunden";
       }
-    },
+    }
   },
   watch: {
     rtwSelected: {
@@ -158,28 +170,28 @@ export default {
         } else {
           clearInterval(this.interval);
         }
-      },
-    },
+      }
+    }
   },
-  mounted: function () {
+  mounted: function() {
     // Consume REST-API
     let rtwAPI = "https://134.155.48.211:3000/ambulance/findAll";
 
     this.loading = true;
     axios
       .get(rtwAPI)
-      .then((response) => {
+      .then(response => {
         this.rtwList = response.data.data;
         for (var r of this.rtwList) {
           r.eta = 0;
         }
       })
-      .catch((errors) => {
+      .catch(errors => {
         // react on errors.
         console.error("AXIOS ERROR: " + errors);
       })
       .finally(() => (this.loading = false));
-  },
+  }
 };
 </script>
 

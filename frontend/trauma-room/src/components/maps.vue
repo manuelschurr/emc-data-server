@@ -34,10 +34,7 @@ export default {
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       markerUMM: L.latLng(49.492427, 8.487255),
-      markerPatient: L.latLng(
-        this.Rtwdocument.gnssPosition.lat,
-        this.Rtwdocument.gnssPosition.long
-      )
+      markerPatient: L.latLng(this.Rtwdocumet[1], this.Rtwdocument[0])
     };
   },
   components: {
