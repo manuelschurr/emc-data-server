@@ -25,7 +25,7 @@
               <LeftSidebar :arrivalTime="selectedRTW.eta" />
             </div>
             <div class="col-8">
-              <MainComponent :Rtwdocument="rtwLocations[1]" />
+              <MainComponent :Rtwdocument="Rtwdocument" />
             </div>
             <div class="col-2">
               <RightSidebar />
@@ -52,13 +52,8 @@ export default {
     return {
       rtwSelected: false,
       Rtwdocument: {
-        patientID: "123",
-        identifier: "123",
-        gnssPosition: {
-          time: Date,
-          long: 8.4660395,
-          lat: 49.4874592
-        }
+        long: null,
+        lat: null
       },
       rtwList: [
         {
@@ -105,6 +100,8 @@ export default {
             1,
             `[${response.data.data.longitude}, ${response.data.data.latitude}]`
           );
+          this.Rtwdocument.long = response.data.data.longitude;
+          this.Rtwdocument.lat = response.data.data.latitude;
           this.computeETA();
         })
         .catch(error => {
