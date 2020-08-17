@@ -25,7 +25,7 @@
               <LeftSidebar :arrivalTime="selectedRTW.eta" />
             </div>
             <div class="col-8">
-              <MainComponent :Rtwdocument="Rtwdocument" />
+              <MainComponent :Rtwdocument="rtwLocations[1]" />
             </div>
             <div class="col-2">
               <RightSidebar />
