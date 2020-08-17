@@ -62,7 +62,7 @@ export default {
         {
           ambulanceId: 3,
           patientId: 0,
-          identifier: "Malteser Hilfsdienst"
+          identifier: "Malteser Hilfsdienst - Mockobjekt"
         }
       ],
       loading: false,
