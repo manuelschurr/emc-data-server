@@ -1,35 +1,21 @@
 <template>
   <div class="container-fluid patientData">
     <div v-if="showModal">
-      <transition name="modal">
-        <div class="modal-mask">
-          <div class="modal-wrapper">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Patientendaten nicht gefunden</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" @click="showModal = false">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" @click="showModal = false">Close</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </transition>
+      <i class="fas fa-exclamation-triangle"></i> {{ message }}
     </div>
     <div class="row align-items-start">
-      <h5 class="col patientDataText" style="text-align: start;">Patientendaten</h5>
+      <h5 class="col patientDataText" style="text-align: start;">
+        Patientendaten
+      </h5>
     </div>
     <div class="row align-items-start">
       <div class="col-10">
         <form class="form-inline" style="align-items: start;">
           <div class="col-5">
             <div class="form-group row columnSpacing">
-              <label for="patientName" class="col-4 col-form-label labelTitle">Name:</label>
+              <label for="patientName" class="col-4 col-form-label labelTitle"
+                >Name:</label
+              >
               <div class="col-8">
                 <input
                   type="text"
@@ -42,7 +28,11 @@
               </div>
             </div>
             <div class="form-group row columnSpacing">
-              <label for="patientGeschlecht" class="col-4 col-form-label labelTitle">Geschlecht:</label>
+              <label
+                for="patientGeschlecht"
+                class="col-4 col-form-label labelTitle"
+                >Geschlecht:</label
+              >
               <div class="col-8">
                 <input
                   type="text"
@@ -55,7 +45,9 @@
               </div>
             </div>
             <div class="form-group row columnSpacing">
-              <label for="patientAlter" class="col-4 col-form-label labelTitle">Alter:</label>
+              <label for="patientAlter" class="col-4 col-form-label labelTitle"
+                >Alter:</label
+              >
               <div class="col-8">
                 <input
                   type="text"
@@ -71,7 +63,8 @@
               <label
                 for="patientVorerkrankungen"
                 class="col-4 col-form-label labelTitle"
-              >Vorerkrankungen:</label>
+                >Vorerkrankungen:</label
+              >
               <div class="col-8">
                 <input
                   type="text"
@@ -108,7 +101,9 @@
             @click="openABCDE(patient.status.a.notes, $event)"
             :class="classABCDE(patient.status.a.isSelected)"
             v-if="loaded"
-          >A</button>
+          >
+            A
+          </button>
           <button
             type="button"
             class="btn btn-secondary"
@@ -116,7 +111,9 @@
             @click="openABCDE(patient.status.b.notes, $event)"
             :class="classABCDE(patient.status.b.isSelected)"
             v-if="loaded"
-          >B</button>
+          >
+            B
+          </button>
           <button
             type="button"
             class="btn btn-secondary"
@@ -124,7 +121,9 @@
             @click="openABCDE(patient.status.c.notes, $event)"
             :class="classABCDE(patient.status.c.isSelected)"
             v-if="loaded"
-          >C</button>
+          >
+            C
+          </button>
           <button
             type="button"
             class="btn btn-secondary"
@@ -132,7 +131,9 @@
             @click="openABCDE(patient.status.d.notes, $event)"
             :class="classABCDE(patient.status.d.isSelected)"
             v-if="loaded"
-          >D</button>
+          >
+            D
+          </button>
           <button
             type="button"
             class="btn btn-secondary"
@@ -140,7 +141,9 @@
             @click="openABCDE(patient.status.e.notes, $event)"
             :class="classABCDE(patient.status.e.isSelected)"
             v-if="loaded"
-          >E</button>
+          >
+            E
+          </button>
         </div>
       </div>
     </div>
@@ -152,6 +155,7 @@ const axios = require("axios");
 export default {
   data() {
     return {
+      message: null,
       showModal: false,
       loaded: false,
       timer: "",
@@ -161,40 +165,40 @@ export default {
         age: "",
         gender: "",
         preExistingIllness: {
-          text: "",
+          text: ""
         },
         miscellaneaous: {
-          text: "",
+          text: ""
         },
         status: {
           a: {
             isSelected: Boolean,
-            notes: "",
+            notes: ""
           },
           b: {
             isSelected: Boolean,
-            notes: "",
+            notes: ""
           },
           c: {
             isSelected: Boolean,
-            notes: "",
+            notes: ""
           },
           d: {
             isSelected: Boolean,
-            notes: "",
+            notes: ""
           },
           e: {
             isSelected: Boolean,
-            notes: "",
-          },
-        },
+            notes: ""
+          }
+        }
       },
       showABCDE: false,
-      pastEvent: null,
+      pastEvent: null
     };
   },
   props: {
-    patientId: Number,
+    patientId: Number
   },
   mounted() {
     this.fillData();
@@ -213,11 +217,11 @@ export default {
           "https://134.155.48.211:3000/patient/findByAmbulanceId/" +
           this.patientId,
         headers: {},
-        data: data,
+        data: data
       };
 
       axios(config)
-        .then(function (response) {
+        .then(function(response) {
           vm.patient.rtwId = response.data.data.ambulanceId;
           vm.patient.name = response.data.data.name;
           vm.patient.age = response.data.data.age;
@@ -236,9 +240,10 @@ export default {
           vm.patient.status.e.isSelected = response.data.data.EIsSelected;
           vm.patient.status.e.notes = response.data.data.EText;
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
           vm.showModal = true;
+          vm.message = "Keine Patienten Daten verfügbar ";
         });
       vm.loaded = true;
     },
@@ -264,8 +269,8 @@ export default {
     },
     beforeDestroy() {
       clearInterval(this.timer);
-    },
-  },
+    }
+  }
 };
 </script>
 
