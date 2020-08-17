@@ -18,7 +18,7 @@
       />
       <div v-if="rtwSelected">
         <Header :changeRTW="changeRTW" />
-        <PatientData />
+        <PatientData :patientId="selectedRTW.patientId" />
         <div class="container-fluid" v-if="rtwSelected">
           <div class="row align-items-start">
             <div class="col-2">
@@ -92,7 +92,7 @@ export default {
       let config = {
         method: "get",
         url:
-          "http://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+          "https://134.155.48.211:3000/ambulance/findGnssByAmbulanceId/" +
           this.selectedRTW.ambulanceId
       };
 
@@ -171,7 +171,7 @@ export default {
   },
   mounted: function() {
     // Consume REST-API
-    let rtwAPI = "http://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll";
+    let rtwAPI = "https://134.155.48.211:3000/ambulance/findAll";
 
     this.loading = true;
     axios
