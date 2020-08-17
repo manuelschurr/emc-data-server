@@ -26,7 +26,7 @@
               <LeftSidebar :arrivalTime="selectedRTW.eta" />
             </div>
             <div class="col-8">
-              <MainComponent :Rtwdocument="selectedRTW" />
+              <MainComponent :Rtwdocument="Rtwdocument" />
             </div>
             <div class="col-2">
               <RightSidebar />
@@ -102,8 +102,8 @@ export default {
             1,
             `[${response.data.data.longitude}, ${response.data.data.latitude}]`
           );
-          this.selectedRTW.long = response.data.data.longitude;
-          this.selectedRTW.lat = response.data.data.latitude;
+          this.Rtwdocument.long = response.data.data.longitude;
+          this.Rtwdocument.lat = response.data.data.latitude;
           this.computeETA();
         })
         .catch(error => {
@@ -125,7 +125,7 @@ export default {
         request.setRequestHeader("Content-Type", "application/json");
         request.setRequestHeader(
           "Authorization",
-          "5b3ce3597851110001cf62486cd746dbfa404187b5fee363289e8fed" //API Key
+          "5b3ce3597851110001cf6248f1cf959625d145efbf53bd55bb3dac9c" //API Key
         );
         let context = this;
         request.onreadystatechange = function() {
