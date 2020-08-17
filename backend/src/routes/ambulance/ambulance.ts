@@ -41,6 +41,19 @@ router.get(
 );
 
 router.get(
+    "/findNextAmbulanceId",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    asyncHandler(async (req, res, next) => {
+        const ambulance = await AmbulanceRepo.findMaxAmbulanceId();
+        if (!ambulance) {
+            throw new BadRequestError('AmbulanceId could not be found.');
+        }
+
+        return new SuccessResponse("Successful", ambulance.ambulanceId + 1).send(res);
+    }),
+);
+
+router.get(
     "/findGnssByAmbulanceId/:ambulanceId",
     validator(schema.ambulanceId, ValidationSource.PARAM),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -55,9 +68,26 @@ router.get(
     }),
 );
 
+// router.get(
+//     "/findGnssByAmbulanceIdAndTimestamp",
+//     validator(schema.gnss, ValidationSource.QUERY),
+//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//     asyncHandler(async (req, res, next) => {
+//         const ambulanceId = req.query.ambulanceId.toString();
+//         const timestamp = new Date(req.query.ambulanceId.toString());
+//         const gnss = await GnssRepo.findLatestByAmbulanceIdAndTimestamp(parseInt(ambulanceId), timestamp);
+//         if (!gnss) {
+//             throw new BadRequestError('GNSS data could not be found.');
+//         }
+
+//         return new SuccessResponse("Successful", gnss).send(res);
+
+//     }),
+// );
+
 router.post(
     "/create",
-    validator(schema.create),
+    validator(schema.createAmbulance),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
 
@@ -95,5 +125,24 @@ router.post(
         }).send(res);
     }),
 );
+
+router.put(
+    '/update/:ambulanceId',
+    validator(schema.ambulanceId, ValidationSource.PARAM),
+    validator(schema.updateAmbulance),
+    asyncHandler(async (req, res, next) => {
+        const { ambulanceId } = req.params;
+        const ambulance = await AmbulanceRepo.findByAmbulanceId(parseInt(ambulanceId));
+        if (ambulance == null) {
+            throw new BadRequestError('Ambulance does not exist');
+        }
+        
+        if (req.body.patientId) ambulance.patientId = req.body.patientId;
+        if (req.body.identifier) ambulance.identifier = req.body.identifier;
+        
+        await AmbulanceRepo.update(ambulance);
+        new SuccessResponse('Ambulance updated successfully', ambulance).send(res);
+    }),
+  );
 
 export default router
