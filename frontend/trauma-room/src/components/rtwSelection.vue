@@ -13,7 +13,10 @@
       </h1>
       <ul v-if="ambulances.length">
         <div v-if="ambulancesWithETAs.length">
-          <li v-for="ambulance in ambulancesWithETAs" v-bind:key="ambulance.identifier">
+          <li
+            v-for="ambulance in ambulancesWithETAs"
+            v-bind:key="ambulance.identifier"
+          >
             <p>
               <button @click="selectRTW(ambulance)">
                 <img src="../assets/ambulance.png" width="100" />
@@ -26,20 +29,27 @@
                 Diagnose: {{ ambulance.diagnosis }}
                 <br />
                 <ul>
-                  <li v-for="(value, name) in ambulance.abcde_schema" v-bind:key="name">
+                  <li
+                    v-for="(value, name) in ambulance.abcde_schema"
+                    v-bind:key="name"
+                  >
                     <div class="text-center">
                       <button
                         v-if="value === true"
                         disabled
                         pill
                         class="rounded-circle notOkABCDE"
-                      >{{ name }}</button>
+                      >
+                        {{ name }}
+                      </button>
                       <button
                         v-else-if="value === false"
                         disabled
                         pill
                         class="rounded-circle okABCDE"
-                      >{{ name }}</button>
+                      >
+                        {{ name }}
+                      </button>
                     </div>
                   </li>
                 </ul>
@@ -48,7 +58,11 @@
           </li>
         </div>
         <div v-else class="d-flex justify-content-center">
-          <div class="spinner-border" style="position: fixed; top: 50%;" role="status"></div>
+          <div
+            class="spinner-border"
+            style="position: fixed; top: 50%;"
+            role="status"
+          ></div>
           <div style="position: fixed; top: 55%;">{{ stateMessage }}</div>
         </div>
       </ul>
@@ -64,17 +78,17 @@ export default {
   name: "RtwSelection",
   props: {
     selectRTW: Function,
-    ambulances: Array,
+    ambulances: Array
   },
   data: () => ({
     arrivalTimes: [],
     ambulancesWithETAs: [],
     ambulancesWithNoETA: [],
     rtwLocations: [`[${8.487255}, ${49.492427}]`],
-    stateMessage: "Berechne geschätzte Ankunftszeit",
+    stateMessage: "Berechne geschätzte Ankunftszeit"
   }),
   methods: {
-    computeETA: function (currentRtw) {
+    computeETA: function(currentRtw) {
       let request = new XMLHttpRequest();
       if (this.rtwLocations.length > 1) {
         request.open(
@@ -92,7 +106,7 @@ export default {
           "5b3ce3597851110001cf62486cd746dbfa404187b5fee363289e8fed" //API Key
         );
         let context = this;
-        request.onreadystatechange = function () {
+        request.onreadystatechange = function() {
           if (request.readyState === 4) {
             if (request.status === 200) {
               currentRtw.eta = context.secToTime(
@@ -109,8 +123,10 @@ export default {
         request.send(body);
       }
     },
-    secToTime: function (etaInSec) {
+    secToTime: function(etaInSec) {
       if (!isNaN(etaInSec)) {
+        const rtwTimeReductionFactor = 0.734;
+        etaInSec = etaInSec * rtwTimeReductionFactor;
         var seconds = Math.floor(etaInSec % 60).toString();
         var minutes = Math.floor(etaInSec / 60).toString();
         if (seconds.length === 1) {
@@ -119,18 +135,18 @@ export default {
         return minutes + " Minuten " + seconds + " Sekunden";
       }
     },
-    getGnssData: function () {
+    getGnssData: function() {
       for (var rtw of this.ambulances) {
         if (rtw.ambulanceId) {
           let config = {
             method: "get",
             url:
               "https://134.155.48.211:3000/ambulance/findGnssByAmbulanceId/" +
-              rtw.ambulanceId,
+              rtw.ambulanceId
           };
 
           axios(config)
-            .then((response) => {
+            .then(response => {
               if (response.data.statusCode === "10000") {
                 this.rtwLocations.splice(
                   1,
@@ -146,7 +162,7 @@ export default {
                 this.computeETA(currentRtw);
               }
             })
-            .catch((error) => {
+            .catch(error => {
               var errorId = JSON.stringify(error.config.url.slice(-1));
               console.log("No GNSS Data for AmbulanceID: " + errorId);
               this.stateMessage = JSON.stringify(error.message);
@@ -163,11 +179,11 @@ export default {
             });
         }
       }
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.getGnssData();
-  },
+  }
 };
 </script>
 
