@@ -141,7 +141,7 @@ export default {
           let config = {
             method: "get",
             url:
-              "http://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+              "https://134.155.48.211:3000/ambulance/findGnssByAmbulanceId/" +
               rtw.ambulanceId
           };
 
