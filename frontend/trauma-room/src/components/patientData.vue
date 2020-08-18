@@ -54,7 +54,7 @@
                     <button type="button" class="btn btn-secondary" id="btn-e" @click="openABCDE(patient.status.e.notes, $event)" :class="classABCDE(patient.status.e.isSelected)" v-if="loaded">E</button>
                 </div>
                 <!-- Sprachnachricht noch zu implmentieren: nur oeffnen wenn audio ankommt ueber axios-->
-                <audio controls id="audio-btn" class="sprachnachricht"></audio>
+                <div id="audio" class="audio" controls></div>
             </div>
         </div>
     </div>
@@ -113,6 +113,7 @@ export default {
     },
     mounted() {
         this.fillData();
+        this.retrieveAudio();
     },
     created() {
         // this.timer = setInterval(this.fillData, 10000);
@@ -183,6 +184,34 @@ export default {
                 classABCDE = "okABCDE";
             }
             return classABCDE;
+        },
+        /**
+         * Methode zum Holen der Audio aus Server Backend
+         */
+        retrieveAudio() {
+            var audio = document.getElementById("audio");
+            var mainaudio = document.createElement("audio");
+            mainaudio.setAttribute("controls", "controls");
+            audio.appendChild(mainaudio);
+            const audioFile = axios({
+                method: "get",
+                url:
+                    "https://localhost:3000/audio/single/2020-08-05_15-38-13.mp3",
+                responseType: "arraybuffer",
+                headers: {
+                    "Content-Type": "audio/mp3",
+                },
+            });
+            const blob = new Blob([audioFile], {
+                type: "audio/mp3",
+            });
+            // var audioFile = axios.get(
+            //     "https://localhost:3000/audio/single/2020-08-05_15-38-13.mp3"
+            // );
+            mainaudio.innerHTML =
+                '<source src="' +
+                URL.createObjectURL(blob) +
+                '" type="audio/webm" />';
         },
         beforeDestroy() {
             clearInterval(this.timer);
