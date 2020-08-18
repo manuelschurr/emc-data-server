@@ -78,17 +78,55 @@ export default {
   name: "RtwSelection",
   props: {
     selectRTW: Function,
-    ambulances: Array
+    ambulances: Array,
   },
   data: () => ({
     arrivalTimes: [],
     ambulancesWithETAs: [],
     ambulancesWithNoETA: [],
     rtwLocations: [`[${8.487255}, ${49.492427}]`],
-    stateMessage: "Berechne geschätzte Ankunftszeit"
+    stateMessage: "Berechne geschätzte Ankunftszeit",
   }),
   methods: {
-    computeETA: function(currentRtw) {
+    getPatientDataByAmbulanceId: function (ambulanceId) {
+      let config = {
+        method: "get",
+        url:
+          "https://134.155.48.211:3000/patient/findByAmbulanceId/" +
+          ambulanceId,
+      };
+
+      axios(config)
+        .then((response) => {
+          if (response.data.statusCode === "10000") {
+            var patientData = {
+              diagnosis: response.data.data.miscellaneous.slice(0, 50),
+              abcde_schema: {
+                a: {
+                  isSelected: response.data.data.AIsSelected,
+                },
+                b: {
+                  isSelected: response.data.data.BIsSelected,
+                },
+                c: {
+                  isSelected: response.data.data.CIsSelected,
+                },
+                d: {
+                  isSelected: response.data.data.DIsSelected,
+                },
+                e: {
+                  isSelected: response.data.data.EIsSelected,
+                },
+              },
+            };
+            return patientData;
+          }
+        })
+        .catch((error) => {
+          console.log("AXIOS PATIENT DATA ERROR: " + error);
+        });
+    },
+    computeETA: function (currentRtw) {
       let request = new XMLHttpRequest();
       if (this.rtwLocations.length > 1) {
         request.open(
@@ -106,12 +144,18 @@ export default {
           "5b3ce3597851110001cf62486cd746dbfa404187b5fee363289e8fed" //API Key
         );
         let context = this;
-        request.onreadystatechange = function() {
+        request.onreadystatechange = function () {
           if (request.readyState === 4) {
             if (request.status === 200) {
               currentRtw.eta = context.secToTime(
                 JSON.parse(request.responseText).durations[1][0]
               );
+              var patientData = this.getPatientDataByAmbulanceId(
+                currentRtw.ambulanceId
+              );
+              currentRtw.diagnosis = patientData.diagnosis;
+              currentRtw.abcde_schema = patientData.abcde_schema;
+              console.log(JSON.stringify(currentRtw));
               context.ambulancesWithETAs.push(currentRtw);
             } else {
               currentRtw.eta = "Fehler bei Routen Schnittstelle";
@@ -123,7 +167,7 @@ export default {
         request.send(body);
       }
     },
-    secToTime: function(etaInSec) {
+    secToTime: function (etaInSec) {
       if (!isNaN(etaInSec)) {
         const rtwTimeReductionFactor = 0.734;
         etaInSec = etaInSec * rtwTimeReductionFactor;
@@ -135,18 +179,18 @@ export default {
         return minutes + " Minuten " + seconds + " Sekunden";
       }
     },
-    getGnssData: function() {
+    getGnssData: function () {
       for (var rtw of this.ambulances) {
         if (rtw.ambulanceId) {
           let config = {
             method: "get",
             url:
               "https://134.155.48.211:3000/ambulance/findGnssByAmbulanceId/" +
-              rtw.ambulanceId
+              rtw.ambulanceId,
           };
 
           axios(config)
-            .then(response => {
+            .then((response) => {
               if (response.data.statusCode === "10000") {
                 this.rtwLocations.splice(
                   1,
@@ -162,7 +206,7 @@ export default {
                 this.computeETA(currentRtw);
               }
             })
-            .catch(error => {
+            .catch((error) => {
               var errorId = JSON.stringify(error.config.url.slice(-1));
               console.log("No GNSS Data for AmbulanceID: " + errorId);
               this.stateMessage = JSON.stringify(error.message);
@@ -179,11 +223,11 @@ export default {
             });
         }
       }
-    }
+    },
   },
-  mounted: function() {
+  mounted: function () {
     this.getGnssData();
-  }
+  },
 };
 </script>
 
