@@ -42,6 +42,8 @@
                             <textarea class="form-control-plaintext" rows="4" v-model="patient.miscellaneaous.text" readonly v-if="loaded"></textarea>
                         </div>
                     </div>
+                    <!-- Sprachnachricht noch zu implementieren: nur oeffnen wenn audio ankommt ueber axios-->
+                    <div id="audioFile" class="audio" controls></div>
                 </form>
             </div>
             <div class="col-2">
@@ -53,8 +55,6 @@
                     <button type="button" class="btn btn-secondary" id="btn-d" @click="openABCDE(patient.status.d.notes, $event)" :class="classABCDE(patient.status.d.isSelected)" v-if="loaded">D</button>
                     <button type="button" class="btn btn-secondary" id="btn-e" @click="openABCDE(patient.status.e.notes, $event)" :class="classABCDE(patient.status.e.isSelected)" v-if="loaded">E</button>
                 </div>
-                <!-- Sprachnachricht noch zu implmentieren: nur oeffnen wenn audio ankommt ueber axios-->
-                <div id="audio" class="audio" controls></div>
             </div>
         </div>
     </div>
@@ -165,6 +165,53 @@ export default {
                 });
             vm.loaded = true;
         },
+        /**
+         * Methode zum Holen der Audio aus Server Backend
+         */
+        retrieveAudio() {
+            // muss natuerlich noch die eigentliche Serveradresse + ID Funktion
+            axios({
+                method: "get",
+                url:
+                    "https://localhost:3000/audio/single/2020-08-05_15-38-13.mp3",
+                responseType: "arraybuffer",
+                headers: {
+                    "Content-Type": "audio/mpeg",
+                },
+            })
+                .then(function (response) {
+                    console.log("Axios GET " + response.data);
+                    const blob = new Blob([response.data], {
+                        type: "audio/mpeg",
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    // access audio container and create audio player element in it
+                    var audioDiv = document.getElementById("audioFile");
+                    var audioPlayer = document.createElement("AUDIO");
+                    console.log("AudioPlayer " + audioPlayer);
+                    // set attributes of audio element
+                    audioPlayer.setAttribute("controls", "controls");
+                    // append the audio player to audio container
+                    audioDiv.appendChild(audioPlayer);
+                    // set inner HTML of audio player to source of blop URL
+                    audioPlayer.innerHTML =
+                        '<source src="' + url + '" type="audio/mpeg" />';
+                })
+                .catch(function (error) {
+                    console.log("Axios GET " + error);
+                });
+            // --------------------------------------------------------------------------------
+            // var audioRequest = new Audio(
+            //     require("frontend/trauma-room/src/components/audio/2020-08-05_15-38-13.mp3")
+            // );
+
+            // create audio blob and set URL
+
+            // ---------------------------------------------------------------------------------
+            // console.log("Axios Data" + audioRequest);
+            // var audioData = audioRequest.data;
+            // console.log("Audio Data " + audioData);
+        },
         openABCDE(output, event) {
             if (!this.showABCDE || event.currentTarget.id !== this.pastEvent) {
                 this.$root.$emit("textABCDE", output);
@@ -185,34 +232,7 @@ export default {
             }
             return classABCDE;
         },
-        /**
-         * Methode zum Holen der Audio aus Server Backend
-         */
-        retrieveAudio() {
-            var audio = document.getElementById("audio");
-            var mainaudio = document.createElement("audio");
-            mainaudio.setAttribute("controls", "controls");
-            audio.appendChild(mainaudio);
-            const audioFile = axios({
-                method: "get",
-                url:
-                    "https://localhost:3000/audio/single/2020-08-05_15-38-13.mp3",
-                responseType: "arraybuffer",
-                headers: {
-                    "Content-Type": "audio/mp3",
-                },
-            });
-            const blob = new Blob([audioFile], {
-                type: "audio/mp3",
-            });
-            // var audioFile = axios.get(
-            //     "https://localhost:3000/audio/single/2020-08-05_15-38-13.mp3"
-            // );
-            mainaudio.innerHTML =
-                '<source src="' +
-                URL.createObjectURL(blob) +
-                '" type="audio/webm" />';
-        },
+
         beforeDestroy() {
             clearInterval(this.timer);
         },
