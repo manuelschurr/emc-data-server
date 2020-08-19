@@ -125,7 +125,7 @@ export default {
         request.setRequestHeader("Content-Type", "application/json");
         request.setRequestHeader(
           "Authorization",
-          "5b3ce3597851110001cf6248f1cf959625d145efbf53bd55bb3dac9c" //API Key
+          "5b3ce3597851110001cf624808d1f959df534ac3adc0620256a68ec7" //API Key
         );
         let context = this;
         request.onreadystatechange = function() {
