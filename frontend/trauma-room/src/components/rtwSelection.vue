@@ -88,44 +88,6 @@ export default {
     stateMessage: "Berechne geschätzte Ankunftszeit",
   }),
   methods: {
-    getPatientDataByAmbulanceId: function (ambulanceId) {
-      let config = {
-        method: "get",
-        url:
-          "https://134.155.48.211:3000/patient/findByAmbulanceId/" +
-          ambulanceId,
-      };
-
-      axios(config)
-        .then((response) => {
-          if (response.data.statusCode === "10000") {
-            var patientData = {
-              diagnosis: response.data.data.miscellaneous.slice(0, 50),
-              abcde_schema: {
-                a: {
-                  isSelected: response.data.data.AIsSelected,
-                },
-                b: {
-                  isSelected: response.data.data.BIsSelected,
-                },
-                c: {
-                  isSelected: response.data.data.CIsSelected,
-                },
-                d: {
-                  isSelected: response.data.data.DIsSelected,
-                },
-                e: {
-                  isSelected: response.data.data.EIsSelected,
-                },
-              },
-            };
-            return patientData;
-          }
-        })
-        .catch((error) => {
-          console.log("AXIOS PATIENT DATA ERROR: " + error);
-        });
-    },
     computeETA: function (currentRtw) {
       let request = new XMLHttpRequest();
       if (this.rtwLocations.length > 1) {
@@ -141,7 +103,7 @@ export default {
         request.setRequestHeader("Content-Type", "application/json");
         request.setRequestHeader(
           "Authorization",
-          "5b3ce3597851110001cf62486cd746dbfa404187b5fee363289e8fed" //API Key
+          "5b3ce3597851110001cf624808d1f959df534ac3adc0620256a68ec7" //API Key
         );
         let context = this;
         request.onreadystatechange = function () {
@@ -150,13 +112,38 @@ export default {
               currentRtw.eta = context.secToTime(
                 JSON.parse(request.responseText).durations[1][0]
               );
-              var patientData = this.getPatientDataByAmbulanceId(
-                currentRtw.ambulanceId
-              );
-              currentRtw.diagnosis = patientData.diagnosis;
-              currentRtw.abcde_schema = patientData.abcde_schema;
-              console.log(JSON.stringify(currentRtw));
-              context.ambulancesWithETAs.push(currentRtw);
+              let config = {
+                method: "get",
+                url:
+                  "https://134.155.48.211:3000/patient/findByAmbulanceId/" +
+                  currentRtw.ambulanceId,
+              };
+              var patientData = {};
+              axios(config)
+                .then((response) => {
+                  if (response.data.statusCode === "10000") {
+                    patientData = {
+                      patientId: response.data.data.patientId,
+                      diagnosis: response.data.data.miscellaneous.slice(0, 50),
+                      abcde_schema: {
+                        A: response.data.data.AIsSelected,
+                        B: response.data.data.BIsSelected,
+                        C: response.data.data.CIsSelected,
+                        D: response.data.data.DIsSelected,
+                        E: response.data.data.EIsSelected,
+                      },
+                    };
+                  }
+                })
+                .catch((error) => {
+                  console.log("AXIOS PATIENT DATA ERROR: " + error);
+                })
+                .then(() => {
+                  currentRtw.patientId = patientData.patientId;
+                  currentRtw.diagnosis = patientData.diagnosis;
+                  currentRtw.abcde_schema = patientData.abcde_schema;
+                  context.ambulancesWithETAs.push(currentRtw);
+                });
             } else {
               currentRtw.eta = "Fehler bei Routen Schnittstelle";
               context.ambulancesWithETAs.push(currentRtw);
