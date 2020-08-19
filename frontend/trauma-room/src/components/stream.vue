@@ -1,19 +1,25 @@
 <template>
   <div class="camera">
-    <video autoplay controls class="feed">
+    <video autoplay controls v-bind:style="styleObject">
       <p>Aktuell läuft kein Livestream.</p>
     </video>
     <!--- <button class="snap" @click="$emit('takePicture')"> -->
-    <button class="btn btn-warning btn-lg" style="margin-top: 15px; margin-bottom: 15px" @click="this.takePicture">
+    <button
+      class="btn btn-warning btn-lg"
+      style="margin-top: 15px; margin-bottom: 15px;"
+      @click="this.takePicture"
+    >
       <b>Screenshot</b>
     </button>
   </div>
 </template>
 
 <script>
-
 export default {
   name: "camera",
+  props: {
+    selectedElements: Number
+  },
   methods: {
     // initialize Webcam Livestream
     init() {
@@ -69,16 +75,39 @@ export default {
   //Webcam shall be initialized when Livestream Button is selected
   mounted() {
     this.init();
+  },
+  computed: {
+    styleObject: function() {
+      if (this.selectedElements === 1) {
+        return {
+          display: "block",
+          width: "100%",
+          "max-width": "1280px",
+          "box-shadow": "4px 4px 12px 0px rgba(0, 0, 0, 0.25)",
+          margin: "0 auto",
+          "background-color": "#171717"
+        };
+      } else {
+        return {
+          display: "block",
+          width: "50%",
+          "max-width": "1280px",
+          "box-shadow": "4px 4px 12px 0px rgba(0, 0, 0, 0.25)",
+          margin: "0 auto",
+          "background-color": "#171717"
+        };
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
 .camera {
-  width: 65vw;
+  width: 45vw;
   height: 25vh;
   padding: 25px;
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
 }
 
 .feed {

@@ -74,12 +74,13 @@ export default {
   computed: {
     styleObject: function() {
       if (this.selectedElements === 1) {
-        return { height: "400px", width: "700px" };
-      } else if (this.selectedElements === 2) {
+        return { height: "400px" /* , width: "700px"  */ };
+      } else {
         return { height: "400px", width: "350px" };
-      } else if (this.selectedElements === 3) {
+      } /* else if (this.selectedElements === 3) {
         return { height: "400px", width: "175px" };
       } else return { height: "400px", width: "700px" };
+    } */
     }
   }
 };

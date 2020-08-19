@@ -9,7 +9,7 @@
         ></component>
       </div>
     </div>
-    <div class="row" v-if="componentArray.length === 2">
+    <div class="row" v-if="componentArray.length >= 2">
       <div v-for="child in componentArray" :key="child.name">
         <div class="col-4">
           <component
@@ -18,15 +18,6 @@
             :selectedElements="componentArray.length"
           ></component>
         </div>
-      </div>
-    </div>
-    <div class="row" v-if="componentArray.length === 3">
-      <div class="col" v-for="child in componentArray" :key="child.name">
-        <component
-          :is="child"
-          :Rtwdocument="Rtwdocument"
-          :selectedElements="componentArray.length"
-        ></component>
       </div>
     </div>
   </div>
@@ -55,8 +46,8 @@ export default {
     this.$root.$on("selectedComponent", data => {
       this.componentArray = [];
       for (var d of data) {
-        console.log(d);
-        if (d === "btn-puls") {
+        //console.log(d);
+        if (this.componentArray.length === 0 && d === "btn-puls") {
           this.componentArray.push(PulsOxy);
         }
         if (d === "btn-stream") {
@@ -65,8 +56,13 @@ export default {
         if (d === "btn-position") {
           this.componentArray.push(Maps);
         }
+        if (this.componentArray.length > 1) {
+          this.componentArray = this.componentArray.filter(e => e !== PulsOxy);
+        }
       }
     });
   }
 };
 </script>
+<style scoped>
+</style>
