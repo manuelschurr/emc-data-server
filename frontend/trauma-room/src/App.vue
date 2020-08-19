@@ -54,18 +54,18 @@ export default {
       rtwSelected: false,
       Rtwdocument: {
         long: null,
-        lat: null
+        lat: null,
       },
       rtwList: [
         {
           ambulanceId: 3,
           patientId: 0,
-          identifier: "Malteser Hilfsdienst - Mockobjekt"
-        }
+          identifier: "Malteser Hilfsdienst - Mockobjekt",
+        },
       ],
       loading: false,
       selectedRTW: Object,
-      rtwLocations: [`[${8.487255}, ${49.492427}]`]
+      rtwLocations: [`[${8.487255}, ${49.492427}]`],
     };
   },
   components: {
@@ -74,29 +74,29 @@ export default {
     RightSidebar,
     LeftSidebar,
     MainComponent,
-    RtwSelection
+    RtwSelection,
   },
   methods: {
-    changeRTW: function() {
+    changeRTW: function () {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = Object;
       this.Rtwdocument.long = null;
       this.Rtwdocument.lat = null;
     },
-    selectRTW: function(rtw) {
+    selectRTW: function (rtw) {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = rtw;
     },
-    getGnssdata: function() {
+    getGnssdata: function () {
       let config = {
         method: "get",
         url:
           "https://134.155.48.211:3000/ambulance/findGnssByAmbulanceId/" +
-          this.selectedRTW.ambulanceId
+          this.selectedRTW.ambulanceId,
       };
 
       axios(config)
-        .then(response => {
+        .then((response) => {
           this.rtwLocations.splice(
             1,
             1,
@@ -106,11 +106,11 @@ export default {
           this.Rtwdocument.lat = response.data.data.latitude;
           this.computeETA();
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     },
-    computeETA: function() {
+    computeETA: function () {
       let request = new XMLHttpRequest();
       if (this.rtwLocations.length > 1) {
         request.open(
@@ -128,7 +128,7 @@ export default {
           "5b3ce3597851110001cf624808d1f959df534ac3adc0620256a68ec7" //API Key
         );
         let context = this;
-        request.onreadystatechange = function() {
+        request.onreadystatechange = function () {
           if (request.readyState === 4) {
             if (request.status === 200) {
               context.selectedRTW.eta = context.secToTime(
@@ -145,7 +145,7 @@ export default {
         request.send(body);
       }
     },
-    secToTime: function(etaInSec) {
+    secToTime: function (etaInSec) {
       if (!isNaN(etaInSec)) {
         const rtwTimeReductionFactor = 0.734;
         etaInSec = etaInSec * rtwTimeReductionFactor;
@@ -156,7 +156,7 @@ export default {
         }
         return minutes + " Minuten " + seconds + " Sekunden";
       }
-    }
+    },
   },
   watch: {
     rtwSelected: {
@@ -169,28 +169,28 @@ export default {
         } else {
           clearInterval(this.interval);
         }
-      }
-    }
+      },
+    },
   },
-  mounted: function() {
+  mounted: function () {
     // Consume REST-API
     let rtwAPI = "https://134.155.48.211:3000/ambulance/findAll";
 
     this.loading = true;
     axios
       .get(rtwAPI)
-      .then(response => {
+      .then((response) => {
         this.rtwList = response.data.data;
         for (var r of this.rtwList) {
           r.eta = 0;
         }
       })
-      .catch(errors => {
+      .catch((errors) => {
         // react on errors.
         console.error("AXIOS ERROR: " + errors);
       })
       .finally(() => (this.loading = false));
-  }
+  },
 };
 </script>
 
