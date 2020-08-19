@@ -100,15 +100,14 @@ export default {
       spo2Labels: []
     };
   },
-  props: {
-    Rtwdocument: Object,
-    selectedElements: Number
-  },
+  // props: {
+  //   Rtwdocument: Object,
+  // },
   mounted() {
     this.fillData();
   },
   created() {
-    this.timer = setInterval(this.fillData, 10000);
+    this.timer = setInterval(this.fillData, 1000);
   },
   computed: {
     lastPulseCompute() {
@@ -127,75 +126,176 @@ export default {
       var vm = this;
       this.loading = true;
 
-      var body = "";
+      if (vm.pulseData.length == 0) {
+        var body = "";
+        var config = {
+          method: "get",
+          url: "https://134.155.48.211:3000/patient/findByPatientId/" + "1",
+          // vm.Rtwdocument.patientID,
+          headers: {},
+          data: body,
+        };
 
-      var config = {
-        method: "get",
-        url:
-          "https://134.155.48.211:3000/patient/findPulsoxyByPatientId/" +
-          vm.Rtwdocument.patientID,
-        headers: {},
-        data: body
-      };
+        axios(config)
+          .then(function (responsePatient) {
+            if (responsePatient.data.statusCode === "10000") {
+              var bodySecond = "";
+              var configSecond = {
+                method: "get",
+                url:
+                  "https://134.155.48.211:3000/patient/findPulsoxyByPatientIdAndTimestamp?patientId=" +
+                  "1" +
+                  "&timestamp=" +
+                  responsePatient.data.data.createdAt,
+                // vm.Rtwdocument.patientID,
+                headers: {},
+                data: bodySecond,
+              };
 
-      axios(config)
-        .then(function(response) {
-          if (response.data.statusCode === "10000") {
-            vm.pulseData.push(response.data.data.pulsrate.toString());
-            vm.pulseLabels.push(response.data.data.timestamp.slice(11, 19));
-            vm.spo2Data.push(response.data.data.spo2.toString());
-            vm.spo2Labels.push(response.data.data.timestamp.slice(11, 19));
-            if (
-              vm.pulseData.length >= 20 ||
-              vm.pulseLabels.length >= 20 ||
-              vm.spo2Data.length >= 20 ||
-              vm.spo2Labels.length >= 20
-            ) {
-              vm.pulseData.shift();
-              vm.pulseLabels.shift();
-              vm.spo2Data.shift();
-              vm.spo2Labels.shift();
+              axios(configSecond).then(function (responsePulseOxy) {
+                if (responsePulseOxy.data.statusCode === "10000") {
+                  console.log(responsePulseOxy.data);
+                  var i;
+                  for (
+                    i = responsePulseOxy.data.data.length - 20;
+                    i < responsePulseOxy.data.data.length;
+                    i++
+                  ) {
+                    vm.pulseData.push(
+                      responsePulseOxy.data.data[i].pulsrate.toString()
+                    );
+                    vm.pulseLabels.push(
+                      responsePulseOxy.data.data[i].timestamp.slice(11, 19)
+                    );
+                    vm.spo2Data.push(
+                      responsePulseOxy.data.data[i].spo2.toString()
+                    );
+                    vm.spo2Labels.push(
+                      responsePulseOxy.data.data[i].timestamp.slice(11, 19)
+                    );
+                  }
+                  vm.pulseChartData = {
+                    labels: vm.pulseLabels,
+                    datasets: [
+                      {
+                        label: "Pulse",
+                        borderColor: "#36d7e7",
+                        pointBackgroundColor: "white",
+                        borderWidth: 2,
+                        pointBorderColor: "#36d7e7",
+                        backgroundColor: "transparent",
+                        pointRadius: 0,
+                        data: vm.pulseData,
+                      },
+                    ],
+                  };
+                  vm.spo2ChartData = {
+                    labels: vm.pulseLabels,
+                    datasets: [
+                      {
+                        label: "Spo2",
+                        borderColor: "#36c1e7",
+                        pointBackgroundColor: "white",
+                        borderWidth: 2,
+                        pointBorderColor: "#36c1e7",
+                        backgroundColor: "transparent",
+                        pointRadius: 0,
+                        data: vm.spo2Data,
+                      },
+                    ],
+                  };
+                  vm.lastPulse = vm.lastPulseCompute;
+                  vm.lastSpo2 = vm.lastSpo2Compute;
+                  vm.loaded = true;
+                }
+              });
             }
-            vm.pulseChartData = {
-              labels: vm.pulseLabels,
-              datasets: [
-                {
-                  label: "Pulse",
-                  borderColor: "#36d7e7",
-                  pointBackgroundColor: "white",
-                  borderWidth: 2,
-                  pointBorderColor: "#36d7e7",
-                  backgroundColor: "transparent",
-                  pointRadius: 0,
-                  data: vm.pulseData
-                }
-              ]
-            };
-            vm.spo2ChartData = {
-              labels: vm.pulseLabels,
-              datasets: [
-                {
-                  label: "Spo2",
-                  borderColor: "#36c1e7",
-                  pointBackgroundColor: "white",
-                  borderWidth: 2,
-                  pointBorderColor: "#36c1e7",
-                  backgroundColor: "transparent",
-                  pointRadius: 0,
-                  data: vm.spo2Data
-                }
-              ]
-            };
-            vm.lastPulse = vm.lastPulseCompute;
-            vm.lastSpo2 = vm.lastSpo2Compute;
-            vm.loaded = true;
-          }
-        })
-        .catch(function(error) {
-          console.log("AXIOS ERROR: " + error);
-        })
-        .finally(() => (this.loading = false));
-      await this.$nextTick();
+          })
+          .catch(function (error) {
+            console.log("AXIOS ERROR: " + error);
+          })
+          .finally(() => (this.loading = false));
+        await this.$nextTick();
+      } else {
+        var bodyPulsoxy = "";
+        var configPulsoxy = {
+          method: "get",
+          url:
+            "https://134.155.48.211:3000/patient/findPulsoxyByPatientId/" + "1",
+          // vm.Rtwdocument.patientID,
+          headers: {},
+          data: bodyPulsoxy,
+        };
+
+        axios(configPulsoxy)
+          .then(function (responsePulseOxy) {
+            if (responsePulseOxy.data.statusCode === "10000") {
+              // if (
+              //   responsePulseOxy.data.data.timestamp.slice(11, 19) !=
+              //   vm.pulseLabels[vm.pulseLabels.length - 1]
+              // ) {
+              vm.pulseData.push(responsePulseOxy.data.data.pulsrate.toString());
+              vm.pulseLabels.push(
+                responsePulseOxy.data.data.timestamp.slice(11, 19)
+              );
+              vm.spo2Data.push(responsePulseOxy.data.data.spo2.toString());
+              vm.spo2Labels.push(
+                responsePulseOxy.data.data.timestamp.slice(11, 19)
+              );
+              // }
+
+              if (
+                vm.pulseData.length >= 20 ||
+                vm.pulseLabels.length >= 20 ||
+                vm.spo2Data.length >= 20 ||
+                vm.spo2Labels.length >= 20
+              ) {
+                vm.pulseData.shift();
+                vm.pulseLabels.shift();
+                vm.spo2Data.shift();
+                vm.spo2Labels.shift();
+              }
+              vm.pulseChartData = {
+                labels: vm.pulseLabels,
+                datasets: [
+                  {
+                    label: "Pulse",
+                    borderColor: "#36d7e7",
+                    pointBackgroundColor: "white",
+                    borderWidth: 2,
+                    pointBorderColor: "#36d7e7",
+                    backgroundColor: "transparent",
+                    pointRadius: 0,
+                    data: vm.pulseData,
+                  },
+                ],
+              };
+              vm.spo2ChartData = {
+                labels: vm.pulseLabels,
+                datasets: [
+                  {
+                    label: "Spo2",
+                    borderColor: "#36c1e7",
+                    pointBackgroundColor: "white",
+                    borderWidth: 2,
+                    pointBorderColor: "#36c1e7",
+                    backgroundColor: "transparent",
+                    pointRadius: 0,
+                    data: vm.spo2Data,
+                  },
+                ],
+              };
+              vm.lastPulse = vm.lastPulseCompute;
+              vm.lastSpo2 = vm.lastSpo2Compute;
+              vm.loaded = true;
+            }
+          })
+          .catch(function (error) {
+            console.log("AXIOS ERROR: " + error);
+          })
+          .finally(() => (this.loading = false));
+        await this.$nextTick();
+      }
     },
     beforeDestroy() {
       clearInterval(this.timer),

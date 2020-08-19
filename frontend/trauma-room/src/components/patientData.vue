@@ -42,12 +42,11 @@
                             <textarea class="form-control-plaintext" rows="4" v-model="patient.miscellaneaous.text" readonly v-if="loaded"></textarea>
                         </div>
                     </div>
-                    <!-- Sprachnachricht noch zu implementieren: nur oeffnen wenn audio ankommt ueber axios-->
-                    <div id="audioFile" class="audio" controls></div>
                 </form>
             </div>
             <div class="col-2">
-                <br />
+                <!-- Audio nur oeffnen wenn audio ankommt ueber GET -->
+                <div id="audioFile" class="audio" controls></div>
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-secondary" id="btn-a" @click="openABCDE(patient.status.a.notes, $event)" :class="classABCDE(patient.status.a.isSelected)" v-if="loaded">A</button>
                     <button type="button" class="btn btn-secondary" id="btn-b" @click="openABCDE(patient.status.b.notes, $event)" :class="classABCDE(patient.status.b.isSelected)" v-if="loaded">B</button>
@@ -169,7 +168,7 @@ export default {
          * Methode zum Holen der Audio aus Server Backend
          */
         retrieveAudio() {
-            // muss natuerlich noch die eigentliche Serveradresse + ID Funktion
+            // muss natuerlich noch die eigentliche Serveradresse + fiel+ID
             axios({
                 method: "get",
                 url:
@@ -191,6 +190,11 @@ export default {
                     console.log("AudioPlayer " + audioPlayer);
                     // set attributes of audio element
                     audioPlayer.setAttribute("controls", "controls");
+                    audioPlayer.setAttribute("preload", "auto");
+                    audioPlayer.setAttribute(
+                        "style",
+                        "display: inline-block; width: 15vw; "
+                    );
                     // append the audio player to audio container
                     audioDiv.appendChild(audioPlayer);
                     // set inner HTML of audio player to source of blop URL
@@ -200,17 +204,6 @@ export default {
                 .catch(function (error) {
                     console.log("Axios GET " + error);
                 });
-            // --------------------------------------------------------------------------------
-            // var audioRequest = new Audio(
-            //     require("frontend/trauma-room/src/components/audio/2020-08-05_15-38-13.mp3")
-            // );
-
-            // create audio blob and set URL
-
-            // ---------------------------------------------------------------------------------
-            // console.log("Axios Data" + audioRequest);
-            // var audioData = audioRequest.data;
-            // console.log("Audio Data " + audioData);
         },
         openABCDE(output, event) {
             if (!this.showABCDE || event.currentTarget.id !== this.pastEvent) {
@@ -266,10 +259,5 @@ export default {
 .columnSpacing {
     height: 28px;
     text-align: center;
-}
-.sprachnachricht {
-    position: relative;
-    margin: 2px auto;
-    width: 99%;
 }
 </style>
