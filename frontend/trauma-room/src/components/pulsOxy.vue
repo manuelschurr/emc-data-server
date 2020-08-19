@@ -100,9 +100,10 @@ export default {
       spo2Labels: []
     };
   },
-  // props: {
-  //   Rtwdocument: Object,
-  // },
+  props: {
+    Rtwdocument: Object,
+    selectedElements: Number
+  },
   mounted() {
     this.fillData();
   },
@@ -133,11 +134,11 @@ export default {
           url: "https://134.155.48.211:3000/patient/findByPatientId/" + "1",
           // vm.Rtwdocument.patientID,
           headers: {},
-          data: body,
+          data: body
         };
 
         axios(config)
-          .then(function (responsePatient) {
+          .then(function(responsePatient) {
             if (responsePatient.data.statusCode === "10000") {
               var bodySecond = "";
               var configSecond = {
@@ -149,10 +150,10 @@ export default {
                   responsePatient.data.data.createdAt,
                 // vm.Rtwdocument.patientID,
                 headers: {},
-                data: bodySecond,
+                data: bodySecond
               };
 
-              axios(configSecond).then(function (responsePulseOxy) {
+              axios(configSecond).then(function(responsePulseOxy) {
                 if (responsePulseOxy.data.statusCode === "10000") {
                   console.log(responsePulseOxy.data);
                   var i;
@@ -185,9 +186,9 @@ export default {
                         pointBorderColor: "#36d7e7",
                         backgroundColor: "transparent",
                         pointRadius: 0,
-                        data: vm.pulseData,
-                      },
-                    ],
+                        data: vm.pulseData
+                      }
+                    ]
                   };
                   vm.spo2ChartData = {
                     labels: vm.pulseLabels,
@@ -200,9 +201,9 @@ export default {
                         pointBorderColor: "#36c1e7",
                         backgroundColor: "transparent",
                         pointRadius: 0,
-                        data: vm.spo2Data,
-                      },
-                    ],
+                        data: vm.spo2Data
+                      }
+                    ]
                   };
                   vm.lastPulse = vm.lastPulseCompute;
                   vm.lastSpo2 = vm.lastSpo2Compute;
@@ -211,7 +212,7 @@ export default {
               });
             }
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log("AXIOS ERROR: " + error);
           })
           .finally(() => (this.loading = false));
@@ -224,11 +225,11 @@ export default {
             "https://134.155.48.211:3000/patient/findPulsoxyByPatientId/" + "1",
           // vm.Rtwdocument.patientID,
           headers: {},
-          data: bodyPulsoxy,
+          data: bodyPulsoxy
         };
 
         axios(configPulsoxy)
-          .then(function (responsePulseOxy) {
+          .then(function(responsePulseOxy) {
             if (responsePulseOxy.data.statusCode === "10000") {
               // if (
               //   responsePulseOxy.data.data.timestamp.slice(11, 19) !=
@@ -266,9 +267,9 @@ export default {
                     pointBorderColor: "#36d7e7",
                     backgroundColor: "transparent",
                     pointRadius: 0,
-                    data: vm.pulseData,
-                  },
-                ],
+                    data: vm.pulseData
+                  }
+                ]
               };
               vm.spo2ChartData = {
                 labels: vm.pulseLabels,
@@ -281,16 +282,16 @@ export default {
                     pointBorderColor: "#36c1e7",
                     backgroundColor: "transparent",
                     pointRadius: 0,
-                    data: vm.spo2Data,
-                  },
-                ],
+                    data: vm.spo2Data
+                  }
+                ]
               };
               vm.lastPulse = vm.lastPulseCompute;
               vm.lastSpo2 = vm.lastSpo2Compute;
               vm.loaded = true;
             }
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log("AXIOS ERROR: " + error);
           })
           .finally(() => (this.loading = false));
