@@ -1,14 +1,37 @@
 <template>
   <div id="app">
-    <RtwSelection v-if="!rtwSelected" :selectRTW="selectRTW" />
-    <div v-if="rtwSelected">
-      <Header :changeRTW="changeRTW" />
-      <PatientData />
-      <div class="container-fluid" v-if="rtwSelected">
-        <div class="row align-items-start">
-          <div class="col-2"><LeftSidebar :arrivalTime="arrivalTime" /></div>
-          <div class="col-8"><MainComponent :Rtwdocument="Rtwdocument" /></div>
-          <div class="col-2"><RightSidebar /></div>
+    <div class="d-flex justify-content-center" v-if="loading">
+      <div
+        class="spinner-border"
+        style="position: fixed; top: 50%;"
+        role="status"
+      ></div>
+      <div style="position: fixed; top: 55%;">
+        Lade anfahrende Rettungswagen
+      </div>
+    </div>
+    <div v-else>
+      <RtwSelection
+        v-if="!rtwSelected && !loading"
+        :selectRTW="selectRTW"
+        :ambulances="rtwList"
+        :Rtwdocument="Rtwdocument"
+      />
+      <div v-if="rtwSelected">
+        <Header :changeRTW="changeRTW" />
+        <PatientData :patientId="selectedRTW.patientId" />
+        <div class="container-fluid" v-if="rtwSelected">
+          <div class="row align-items-start">
+            <div class="col-2">
+              <LeftSidebar :arrivalTime="selectedRTW.eta" />
+            </div>
+            <div class="col-8">
+              <MainComponent :Rtwdocument="Rtwdocument" />
+            </div>
+            <div class="col-2">
+              <RightSidebar />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -22,6 +45,7 @@ import RightSidebar from "./components/rightSidebar.vue";
 import LeftSidebar from "./components/leftSidebar.vue";
 import MainComponent from "./components/mainComponent.vue";
 import RtwSelection from "./components/rtwSelection.vue";
+const axios = require("axios");
 
 export default {
   name: "App",
@@ -29,16 +53,19 @@ export default {
     return {
       rtwSelected: false,
       Rtwdocument: {
-        patientID: "123",
-        identifier: "123",
-        gnssPosition: {
-          time: Date,
-          long: 8.4660395,
-          lat: 49.4874592
-        }
+        long: null,
+        lat: null
       },
-      arrivalTime: Number,
-      test: Number
+      rtwList: [
+        {
+          ambulanceId: 3,
+          patientId: 0,
+          identifier: "Malteser Hilfsdienst - Mockobjekt"
+        }
+      ],
+      loading: false,
+      selectedRTW: Object,
+      rtwLocations: [`[${8.487255}, ${49.492427}]`]
     };
   },
   components: {
@@ -52,55 +79,117 @@ export default {
   methods: {
     changeRTW: function() {
       this.rtwSelected = !this.rtwSelected;
+      this.selectedRTW = Object;
+      this.Rtwdocument.long = null;
+      this.Rtwdocument.lat = null;
     },
-    selectRTW: function() {
+    selectRTW: function(rtw) {
       this.rtwSelected = !this.rtwSelected;
+      this.selectedRTW = rtw;
     },
-    calculateRoute: function() {
-      let request = new XMLHttpRequest();
-
-      request.open(
-        "POST",
-        "https://api.openrouteservice.org/v2/matrix/driving-car"
-      );
-
-      request.setRequestHeader(
-        "Accept",
-        "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8"
-      );
-      request.setRequestHeader("Content-Type", "application/json");
-      request.setRequestHeader(
-        "Authorization",
-        "5b3ce3597851110001cf624801e9954029634268ad5336aa3eb55140" //API Key
-      );
-      let context = this;
-      request.onreadystatechange = function() {
-        if (request.readyState === 4) {
-          context.arrivalTime = JSON.parse(
-            request.responseText
-          ).durations[0][1];
-          console.log("Status:", request.status);
-          console.log("Headers:", request.getAllResponseHeaders());
-          console.log("Body:", request.responseText);
-        }
+    getGnssdata: function() {
+      let config = {
+        method: "get",
+        url:
+          "https://134.155.48.211:3000/ambulance/findGnssByAmbulanceId/" +
+          this.selectedRTW.ambulanceId
       };
-      let patientLoc = `[${this.Rtwdocument.gnssPosition.long},${this.Rtwdocument.gnssPosition.lat}]`;
-      let ummLoc = `[8.487255, 49.492427]`;
-      const body = `{"locations":[${patientLoc},${ummLoc}],"metrics":["duration"],"resolve_locations":"false","units":"m"}`;
 
-      request.send(body);
+      axios(config)
+        .then(response => {
+          this.rtwLocations.splice(
+            1,
+            1,
+            `[${response.data.data.longitude}, ${response.data.data.latitude}]`
+          );
+          this.Rtwdocument.long = response.data.data.longitude;
+          this.Rtwdocument.lat = response.data.data.latitude;
+          this.computeETA();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    computeETA: function() {
+      let request = new XMLHttpRequest();
+      if (this.rtwLocations.length > 1) {
+        request.open(
+          "POST",
+          "https://api.openrouteservice.org/v2/matrix/driving-car"
+        );
+
+        request.setRequestHeader(
+          "Accept",
+          "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8"
+        );
+        request.setRequestHeader("Content-Type", "application/json");
+        request.setRequestHeader(
+          "Authorization",
+          "5b3ce3597851110001cf6248f1cf959625d145efbf53bd55bb3dac9c" //API Key
+        );
+        let context = this;
+        request.onreadystatechange = function() {
+          if (request.readyState === 4) {
+            if (request.status === 200) {
+              context.selectedRTW.eta = context.secToTime(
+                JSON.parse(request.responseText).durations[1][0]
+              );
+              context.$forceUpdate();
+            } else {
+              context.selectedRTW = "Fehler bei Routen Schnittstelle";
+              context.$forceUpdate();
+            }
+          }
+        };
+        const body = `{"locations": [${this.rtwLocations}]}`;
+        request.send(body);
+      }
+    },
+    secToTime: function(etaInSec) {
+      if (!isNaN(etaInSec)) {
+        const rtwTimeReductionFactor = 0.734;
+        etaInSec = etaInSec * rtwTimeReductionFactor;
+        var seconds = Math.floor(etaInSec % 60).toString();
+        var minutes = Math.floor(etaInSec / 60).toString();
+        if (seconds.length === 1) {
+          seconds = "0" + seconds;
+        }
+        return minutes + " Minuten " + seconds + " Sekunden";
+      }
     }
   },
   watch: {
-    Rtwdocument: {
+    rtwSelected: {
       handler() {
-        this.calculateRoute();
-      },
-      deep: true
+        // Request GNSS Data from Server every 10 Seconds
+        if (this.rtwSelected) {
+          this.interval = setInterval(() => {
+            this.getGnssdata();
+          }, 10000);
+        } else {
+          clearInterval(this.interval);
+        }
+      }
     }
   },
   mounted: function() {
-    this.calculateRoute();
+    // Consume REST-API
+    let rtwAPI = "https://134.155.48.211:3000/ambulance/findAll";
+
+    this.loading = true;
+    axios
+      .get(rtwAPI)
+      .then(response => {
+        this.rtwList = response.data.data;
+        for (var r of this.rtwList) {
+          r.eta = 0;
+        }
+      })
+      .catch(errors => {
+        // react on errors.
+        console.error("AXIOS ERROR: " + errors);
+      })
+      .finally(() => (this.loading = false));
   }
 };
 </script>

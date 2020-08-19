@@ -3,6 +3,9 @@
 ## Project setup
 ```
 npm install
+
+npm install --save-dev @fortawesome/fontawesome-free
+npm install axios
 ```
 
 ### Compiles and hot-reloads for development

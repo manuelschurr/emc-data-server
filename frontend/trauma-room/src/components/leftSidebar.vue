@@ -9,16 +9,18 @@
       >
         Puls Oxy
         <br />
-        Puls: {{lastPulse}}
+        Puls: {{ lastPulse }}
         <br />
-        SpO2: {{lastSpo2}}
+        SpO2: {{ lastSpo2 }}
       </button>
       <button
         @click="setSelection($event)"
         id="btn-stream"
         class="btn btn-secondary"
         :class="toggleButton(showComponentStream)"
-      >Live Bild</button>
+      >
+        Live Bild
+      </button>
       <button
         @click="setSelection($event)"
         id="btn-position"
@@ -27,7 +29,7 @@
       >
         Position
         <br />
-        ETA: {{ arrivalTime ? arrivalTime : "-" | secToTime }}
+        ETA: {{ arrivalTime ? arrivalTime : "-" }}
       </button>
     </div>
   </div>
@@ -43,19 +45,26 @@ export default {
       pastEvent: null,
       selection: [],
       lastPulse: null,
-      lastSpo2: null,
+      lastSpo2: null
     };
   },
   mounted() {
-    this.$root.$on("lastPulseData", (data) => {
+    this.$root.$on("lastPulseData", data => {
       this.lastPulse = data;
     });
-    this.$root.$on("lastSpo2Data", (data) => {
+    this.$root.$on("lastSpo2Data", data => {
       this.lastSpo2 = data;
     });
+    this.$watch(
+      "arrivalTime",
+      arrivalTime => {
+        this.arrivalTime = arrivalTime;
+      },
+      { immediate: true }
+    );
   },
   props: {
-    arrivalTime: Number,
+    arrivalTime: String
   },
   methods: {
     setSelection(event) {
@@ -83,18 +92,8 @@ export default {
         buttonClass = "okABCDE";
       }
       return buttonClass;
-    },
-  },
-  filters: {
-    secToTime: function (value) {
-      var seconds = Math.floor(value % 60).toString();
-      var minutes = Math.floor(value / 60).toString();
-      if (seconds.length === 1) {
-        seconds = "0" + seconds;
-      }
-      return minutes + ":" + seconds;
-    },
-  },
+    }
+  }
 };
 </script>
 <style scoped>

@@ -25,7 +25,7 @@ export default {
           yAxes: [
             {
               ticks: {
-                beginAtZero: false,
+                beginAtZero: true,
               },
               gridLines: {
                 display: true,
@@ -49,23 +49,7 @@ export default {
     };
   },
   mounted() {
-    this.renderChart(
-      {
-        labels: this.chartLabels,
-        datasets: [
-          {
-            borderColor: "#249EBF",
-            pointBackgroundColor: "white",
-            borderWidth: 1,
-            pointBorderColor: "#249EBF",
-            backgroundColor: "transparent",
-            pointRadius: 0,
-            data: this.chartData,
-          },
-        ],
-      },
-      this.options
-    );
+    this.renderChart(this.chartData, this.options);
   },
 };
 </script>
