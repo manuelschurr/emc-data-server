@@ -3,20 +3,65 @@
     <div class="row align-items-start">
       <div class="col-12">
         <form class="form-inline" style="align-items: center;">
-          <div class="col-9">
-            <puls-oxy-line class="small" v-if="loaded" :chart-data="pulseChartData" />
+          <div v-if="selectedElements < 2" class="col-9">
+            <puls-oxy-line
+              class="small"
+              v-if="loaded"
+              :chart-data="pulseChartData"
+            />
           </div>
-          <div class="col-3 pulseColor">
+          <div v-if="selectedElements < 2" class="col-3 pulseColor">
             <br />
             <b>Pulse</b>
             <br />
             <span
-              v-if="loaded && lastPulse > 130 || lastPulse < 60"
+              v-if="(loaded && lastPulse > 130) || lastPulse < 60"
               class="bigFont notOkPulseOxy"
-            >{{ lastPulse }}</span>
+              >{{ lastPulse }}</span
+            >
             <span v-else class="bigFont">{{ lastPulse }}</span>
             <svg
-              v-if="loaded && lastPulse > 130 || lastPulse < 60"
+              v-if="(loaded && lastPulse > 130) || lastPulse < 60"
+              width="1em"
+              height="1em"
+              viewBox="0 0 16 16"
+              class="bi bi-heart notOkPulseOxy"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8 2.748l-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"
+              />
+            </svg>
+            <svg
+              v-else
+              width="1em"
+              height="1em"
+              viewBox="0 0 16 16"
+              class="bi bi-heart"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8 2.748l-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"
+              />
+            </svg>
+            <br />PR/min
+          </div>
+          <div v-if="selectedElements >= 2" class="col-3 pulseColor">
+            <br />
+            <b>Pulse</b>
+            <br />
+            <span
+              v-if="(loaded && lastPulse > 130) || lastPulse < 60"
+              class="bigFont notOkPulseOxy"
+              >{{ lastPulse }}</span
+            >
+            <span v-else class="bigFont">{{ lastPulse }}</span>
+            <svg
+              v-if="(loaded && lastPulse > 130) || lastPulse < 60"
               width="1em"
               height="1em"
               viewBox="0 0 16 16"
@@ -50,21 +95,23 @@
       <div class="col-12">
         <form class="form-inline" style="align-items: center;">
           <div class="col-9">
-            <puls-oxy-line class="small" v-if="loaded" :chart-data="spo2ChartData" />
+            <puls-oxy-line
+              class="small"
+              v-if="loaded"
+              :chart-data="spo2ChartData"
+            />
           </div>
           <div class="col-3 spo2Color">
             <br />
-            <b>
-              SpO<sub>2</sub>
-            </b>
+            <b> SpO<sub>2</sub> </b>
             <br />
             <span
-              v-if="loaded && lastSpo2 >= 100 || lastSpo2 < 90"
+              v-if="(loaded && lastSpo2 >= 100) || lastSpo2 < 90"
               class="bigFont notOkPulseOxy"
-            >{{ lastSpo2 }}</span>
+              >{{ lastSpo2 }}</span
+            >
             <span v-else class="bigFont">{{ lastSpo2 }}</span>
-            O<sub>2</sub>
-            <br />SpO<sub>2</sub>%
+            O<sub>2</sub> <br />SpO<sub>2</sub>%
           </div>
         </form>
       </div>
@@ -90,11 +137,12 @@ export default {
       pulseLabels: [],
       spo2Data: [],
       lastSpo2: "",
-      spo2Labels: [],
+      spo2Labels: []
     };
   },
   props: {
     Rtwdocument: Object,
+    selectedElements: Number
   },
   mounted() {
     this.fillData();
@@ -127,11 +175,11 @@ export default {
           "https://134.155.48.211:3000/patient/findPulsoxyByPatientId/" +
           vm.Rtwdocument.patientID,
         headers: {},
-        data: body,
+        data: body
       };
 
       axios(config)
-        .then(function (response) {
+        .then(function(response) {
           if (response.data.statusCode === "10000") {
             vm.pulseData.push(response.data.data.pulsrate.toString());
             vm.pulseLabels.push(response.data.data.timestamp.slice(11, 19));
@@ -159,9 +207,9 @@ export default {
                   pointBorderColor: "#36d7e7",
                   backgroundColor: "transparent",
                   pointRadius: 0,
-                  data: vm.pulseData,
-                },
-              ],
+                  data: vm.pulseData
+                }
+              ]
             };
             vm.spo2ChartData = {
               labels: vm.pulseLabels,
@@ -174,16 +222,16 @@ export default {
                   pointBorderColor: "#36c1e7",
                   backgroundColor: "transparent",
                   pointRadius: 0,
-                  data: vm.spo2Data,
-                },
-              ],
+                  data: vm.spo2Data
+                }
+              ]
             };
             vm.lastPulse = vm.lastPulseCompute;
             vm.lastSpo2 = vm.lastSpo2Compute;
             vm.loaded = true;
           }
         })
-        .catch(function (error) {
+        .catch(function(error) {
           console.log("AXIOS ERROR: " + error);
         })
         .finally(() => (this.loading = false));
@@ -195,8 +243,8 @@ export default {
         (this.spo2Data = []),
         (this.pulseChartData = null),
         (this.spo2ChartData = null);
-    },
-  },
+    }
+  }
 };
 </script>
 
