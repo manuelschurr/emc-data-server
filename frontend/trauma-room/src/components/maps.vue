@@ -16,7 +16,7 @@
       </l-map>
     </div>
     <div v-else>
-      GNSS Daten werden geladen.
+      Karte wird geladen ...
     </div>
   </div>
 </template>
@@ -74,13 +74,10 @@ export default {
   computed: {
     styleObject: function() {
       if (this.selectedElements === 1) {
-        return { height: "400px" /* , width: "700px"  */ };
+        return { height: "65vh", width: "62vw" };
       } else {
-        return { height: "400px", width: "350px" };
-      } /* else if (this.selectedElements === 3) {
-        return { height: "400px", width: "175px" };
-      } else return { height: "400px", width: "700px" };
-    } */
+        return { height: "25vh", width: "62vw" };
+      }
     }
   }
 };

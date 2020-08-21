@@ -78,17 +78,17 @@ export default {
   name: "RtwSelection",
   props: {
     selectRTW: Function,
-    ambulances: Array,
+    ambulances: Array
   },
   data: () => ({
     arrivalTimes: [],
     ambulancesWithETAs: [],
     ambulancesWithNoETA: [],
     rtwLocations: [`[${8.487255}, ${49.492427}]`],
-    stateMessage: "Berechne geschätzte Ankunftszeit",
+    stateMessage: "Berechne geschätzte Ankunftszeit"
   }),
   methods: {
-    computeETA: function (currentRtw) {
+    computeETA: function(currentRtw) {
       let request = new XMLHttpRequest();
       if (this.rtwLocations.length > 1) {
         request.open(
@@ -106,7 +106,7 @@ export default {
           "5b3ce3597851110001cf624808d1f959df534ac3adc0620256a68ec7" //API Key
         );
         let context = this;
-        request.onreadystatechange = function () {
+        request.onreadystatechange = function() {
           if (request.readyState === 4) {
             if (request.status === 200) {
               currentRtw.eta = context.secToTime(
@@ -116,11 +116,11 @@ export default {
                 method: "get",
                 url:
                   "https://134.155.48.211:3000/patient/findByAmbulanceId/" +
-                  currentRtw.ambulanceId,
+                  currentRtw.ambulanceId
               };
               var patientData = {};
               axios(config)
-                .then((response) => {
+                .then(response => {
                   if (response.data.statusCode === "10000") {
                     patientData = {
                       patientId: response.data.data.patientId,
@@ -130,12 +130,12 @@ export default {
                         B: response.data.data.BIsSelected,
                         C: response.data.data.CIsSelected,
                         D: response.data.data.DIsSelected,
-                        E: response.data.data.EIsSelected,
-                      },
+                        E: response.data.data.EIsSelected
+                      }
                     };
                   }
                 })
-                .catch((error) => {
+                .catch(error => {
                   console.log("AXIOS PATIENT DATA ERROR: " + error);
                 })
                 .then(() => {
@@ -154,7 +154,7 @@ export default {
         request.send(body);
       }
     },
-    secToTime: function (etaInSec) {
+    secToTime: function(etaInSec) {
       if (!isNaN(etaInSec)) {
         const rtwTimeReductionFactor = 0.734;
         etaInSec = etaInSec * rtwTimeReductionFactor;
@@ -166,18 +166,18 @@ export default {
         return minutes + " Minuten " + seconds + " Sekunden";
       }
     },
-    getGnssData: function () {
+    getGnssData: function() {
       for (var rtw of this.ambulances) {
         if (rtw.ambulanceId) {
           let config = {
             method: "get",
             url:
               "https://134.155.48.211:3000/ambulance/findGnssByAmbulanceId/" +
-              rtw.ambulanceId,
+              rtw.ambulanceId
           };
 
           axios(config)
-            .then((response) => {
+            .then(response => {
               if (response.data.statusCode === "10000") {
                 this.rtwLocations.splice(
                   1,
@@ -193,15 +193,16 @@ export default {
                 this.computeETA(currentRtw);
               }
             })
-            .catch((error) => {
+            .catch(error => {
               var errorId = JSON.stringify(error.config.url.slice(-1));
-              console.log("No GNSS Data for AmbulanceID: " + errorId);
+              console.log(
+                "Keine GNSS Daten verfügbar für AmbulanceID: " + errorId
+              );
               this.stateMessage = JSON.stringify(error.message);
 
               //add I
               for (var ea of this.ambulances) {
                 if (`"${ea.ambulanceId}"` === errorId) {
-                  console.log("TEST");
                   ea.eta = "Keine GNSS Daten verfügbar";
                   this.ambulancesWithETAs.push(ea);
                   this.$forceUpdate();
@@ -210,11 +211,11 @@ export default {
             });
         }
       }
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.getGnssData();
-  },
+  }
 };
 </script>
 
