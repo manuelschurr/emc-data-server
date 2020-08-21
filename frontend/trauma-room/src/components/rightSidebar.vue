@@ -1,30 +1,31 @@
 <template>
-  <div>
-    <!-- Notes zu ABCDE -->
-    {{ output }}
-    <!-- Gallery for Screenshots -->
-    <b>Screenshots</b>
-    <Gallery />
+    <div>
+        <!-- Notes zu ABCDE -->
+        {{ output }}
+        <!-- Gallery for Screenshots -->
+        <b>
+            <u>Screenshots</u>
+        </b>
+        <Gallery />
     </div>
 </template>
 
 <script>
 import Gallery from "./Gallery";
 export default {
-  components: {
-    Gallery
-  },
-  data() {
-    return {
-      output: ""
-    };
-  },
-  mounted() {
-    this.$root.$on("textABCDE", data => {
-      this.output = data;
-    });
-    
-  }
+    components: {
+        Gallery,
+    },
+    data() {
+        return {
+            output: "",
+        };
+    },
+    mounted() {
+        this.$root.$on("textABCDE", (data) => {
+            this.output = data;
+        });
+    },
 };
 </script>
 

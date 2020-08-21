@@ -187,7 +187,7 @@ export default {
                     // access audio container and create audio player element in it
                     var audioDiv = document.getElementById("audioFile");
                     var audioPlayer = document.createElement("AUDIO");
-                    console.log("AudioPlayer " + audioPlayer);
+                    // console.log("AudioPlayer " + audioPlayer);
                     // set attributes of audio element
                     audioPlayer.setAttribute("controls", "controls");
                     audioPlayer.setAttribute("preload", "auto");
