@@ -77,10 +77,7 @@ export default {
         return { height: "65vh", width: "62vw" };
       } else {
         return { height: "25vh", width: "62vw" };
-      } /* else if (this.selectedElements === 3) {
-        return { height: "400px", width: "175px" };
-      } else return { height: "400px", width: "700px" };
-    } */
+      }
     }
   }
 };
