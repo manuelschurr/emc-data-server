@@ -11,13 +11,11 @@
     </div>
     <div class="row" v-if="componentArray.length >= 2">
       <div v-for="child in componentArray" :key="child.name">
-        <div class="col-4">
-          <component
-            :is="child"
-            :Rtwdocument="Rtwdocument"
-            :selectedElements="componentArray.length"
-          ></component>
-        </div>
+        <component
+          :is="child"
+          :Rtwdocument="Rtwdocument"
+          :selectedElements="componentArray.length"
+        ></component>
       </div>
     </div>
   </div>
@@ -43,23 +41,13 @@ export default {
     Rtwdocument: Object
   },
   mounted() {
+    this.componentArray = [Maps, Stream];
+    this.$root.$emit("selectedComponent", "btn-position + btn-stream");
+
     this.$root.$on("selectedComponent", data => {
-      this.componentArray = [];
-      for (var d of data) {
-        //console.log(d);
-        if (this.componentArray.length === 0 && d === "btn-puls") {
-          this.componentArray.push(PulsOxy);
-        }
-        if (d === "btn-stream") {
-          this.componentArray.push(Stream);
-        }
-        if (d === "btn-position") {
-          this.componentArray.push(Maps);
-        }
-        if (this.componentArray.length > 1) {
-          this.componentArray = this.componentArray.filter(e => e !== PulsOxy);
-        }
-      }
+      this.componentArray = data;
+      /*       console.log(data[0]);
+      this.$forceUpdate(); */
     });
   }
 };

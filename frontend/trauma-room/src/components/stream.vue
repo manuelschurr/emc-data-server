@@ -104,7 +104,7 @@ export default {
 
 <style scoped>
 .camera {
-  width: 45vw;
+  width: 60vw;
   height: 25vh;
   padding: 25px;
   /* box-sizing: border-box; */
