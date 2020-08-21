@@ -11,6 +11,7 @@ process.on("uncaughtException", (e:any) => {
     Logger.error(e)
 })
 
+// get certificate for TLS usage, created with OpenSSL
 var fs = require('fs')
 var https = require('https')
 var privateKey  = fs.readFileSync('./certificates/key.pem', 'utf8')
@@ -43,6 +44,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     return ApiError.handle(new InternalError(), res)
 })
 
+// start server to only respond to HTTPS requests to ensure data privacy
 var httpsServer = https.createServer(credentials, app);
 
 export default httpsServer
