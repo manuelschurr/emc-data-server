@@ -3,12 +3,12 @@
     <div class="btn-group-vertical" data-toggel="buttons" role="group">
       <button
         @click="setSelection($event)"
-        id="btn-position + btn-stream"
+        id="multi-selection"
         class="btn btn-secondary"
-        :disabled="showComponentStreamMap"
-        :class="toggleButton(showComponentStreamMap)"
+        :disabled="showComponentMultiSelection"
+        :class="toggleButton(showComponentMultiSelection)"
       >
-        Live Bild und Stream
+        Gesamtübersicht
       </button>
       <button
         @click="setSelection($event)"
@@ -60,7 +60,7 @@ export default {
       showComponentMap: false,
       showComponentStream: false,
       showComponentPulsoxy: false,
-      showComponentStreamMap: false,
+      showComponentMultiSelection: false,
       pastEvent: null,
       selection: [],
       lastPulse: null,
@@ -83,10 +83,11 @@ export default {
       } else if (data === "btn-position") {
         this.selection = [];
         this.selection.push(Maps);
-      } else if (data === "btn-position + btn-stream") {
+      } else if (data === "multi-selection") {
         this.selection = [];
         this.selection.push(Maps);
         this.selection.push(Stream);
+        this.selection.push(PulsOxy);
       }
     });
 
@@ -120,7 +121,7 @@ export default {
         this.showComponentPulsoxy = !this.showComponentPulsoxy;
         this.showComponentMap = false;
         this.showComponentStream = false;
-        this.showComponentStreamMap = false;
+        this.showComponentMultiSelection = false;
         this.selection = [];
         this.selection.push(PulsOxy);
         //component = PulsOxy;
@@ -128,24 +129,25 @@ export default {
         this.showComponentStream = !this.showComponentStream;
         this.showComponentPulsoxy = false;
         this.showComponentMap = false;
-        this.showComponentStreamMap = false;
+        this.showComponentMultiSelection = false;
         this.selection = [];
         this.selection.push(Stream);
       } else if (event.currentTarget.id === "btn-position") {
         this.showComponentMap = !this.showComponentMap;
         this.showComponentPulsoxy = false;
         this.showComponentStream = false;
-        this.showComponentStreamMap = false;
+        this.showComponentMultiSelection = false;
         this.selection = [];
         this.selection.push(Maps);
-      } else if (event.currentTarget.id === "btn-position + btn-stream") {
-        this.showComponentStreamMap = !this.showComponentStreamMap;
+      } else if (event.currentTarget.id === "multi-selection") {
+        this.showComponentMultiSelection = !this.showComponentMultiSelection;
         this.showComponentPulsoxy = false;
         this.showComponentStream = false;
         this.showComponentMap = false;
         this.selection = [];
         this.selection.push(Maps);
         this.selection.push(Stream);
+        this.selection.push(PulsOxy);
       }
 
       this.$root.$emit("selectedComponent", this.selection);

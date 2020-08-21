@@ -76,6 +76,60 @@
         </form>
       </div>
     </div>
+    <div class="row" v-else>
+      <div class="col pulseColor">
+        <br />
+        <b>Pulse</b>
+        <br />
+        <span
+          v-if="(loaded && lastPulse > 130) || lastPulse < 60"
+          class="bigFont notOkPulseOxy"
+          >{{ lastPulse }}</span
+        >
+        <span v-else class="bigFont">{{ lastPulse }}</span>
+        <svg
+          v-if="(loaded && lastPulse > 130) || lastPulse < 60"
+          width="1em"
+          height="1em"
+          viewBox="0 0 16 16"
+          class="bi bi-heart notOkPulseOxy"
+          fill="currentColor"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M8 2.748l-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"
+          />
+        </svg>
+        <svg
+          v-else
+          width="1em"
+          height="1em"
+          viewBox="0 0 16 16"
+          class="bi bi-heart"
+          fill="currentColor"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M8 2.748l-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"
+          />
+        </svg>
+        <br />PR/min
+      </div>
+      <div class="col spo2Color">
+        <br />
+        <b> SpO<sub>2</sub> </b>
+        <br />
+        <span
+          v-if="(loaded && lastSpo2 >= 100) || lastSpo2 < 90"
+          class="bigFont notOkPulseOxy"
+          >{{ lastSpo2 }}</span
+        >
+        <span v-else class="bigFont">{{ lastSpo2 }}</span>
+        O<sub>2</sub> <br />SpO<sub>2</sub>%
+      </div>
+    </div>
   </div>
 </template>
 

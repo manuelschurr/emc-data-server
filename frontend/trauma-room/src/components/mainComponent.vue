@@ -41,13 +41,11 @@ export default {
     Rtwdocument: Object
   },
   mounted() {
-    this.componentArray = [Maps, Stream];
-    this.$root.$emit("selectedComponent", "btn-position + btn-stream");
+    this.componentArray = [Maps, Stream, PulsOxy];
+    this.$root.$emit("selectedComponent", "multi-selection");
 
     this.$root.$on("selectedComponent", data => {
       this.componentArray = data;
-      /*       console.log(data[0]);
-      this.$forceUpdate(); */
     });
   }
 };
