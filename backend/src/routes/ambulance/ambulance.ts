@@ -137,8 +137,8 @@ router.put(
             throw new BadRequestError('Ambulance does not exist');
         }
         
-        if (req.body.patientId) ambulance.patientId = req.body.patientId;
-        if (req.body.identifier) ambulance.identifier = req.body.identifier;
+        if (req.body.hasOwnProperty('patientId')) ambulance.patientId = req.body.patientId;
+        if (req.body.hasOwnProperty('identifier')) ambulance.identifier = req.body.identifier;
         
         await AmbulanceRepo.update(ambulance);
         new SuccessResponse('Ambulance updated successfully', ambulance).send(res);

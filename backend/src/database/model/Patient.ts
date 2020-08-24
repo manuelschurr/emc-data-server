@@ -5,8 +5,8 @@ export const COLLECTION_NAME = 'patients';
 
 export const enum Gender {
    M = 'M',
-   F = 'F',
-   D = 'D'
+   W = 'W',
+   E = '' //empty
 };
 
 export default interface Patient extends Document {
@@ -43,66 +43,57 @@ const schema = new Schema(
       },
       name: {
          type: Schema.Types.String,
-         required: true,
          trim: true,
          maxlength: 150
       },
       gender: {
          type: Schema.Types.String,
-         required: true,
-         enum: [Gender.M, Gender.F, Gender.D]
+         enum: [Gender.M, Gender.W, Gender.E]
       },
       age: {
          type: Schema.Types.Number,
          required: true
       },
       preExistingIllness: {
-         type: Schema.Types.String,
-         required: true
+         type: Schema.Types.String
       },
       miscellaneous: {
-         type: Schema.Types.String,
-         required: true
+         type: Schema.Types.String
       },
       AIsSelected: {
          type: Schema.Types.Boolean,
          required: true
       },
       AText: {
-         type: Schema.Types.String,
-         required: true
+         type: Schema.Types.String
       },
       BIsSelected: {
          type: Schema.Types.Boolean,
          required: true
       },
       BText: {
-         type: Schema.Types.String,
-         required: true
+         type: Schema.Types.String
       },
       CIsSelected: {
          type: Schema.Types.Boolean,
          required: true
       },
       CText: {
-         type: Schema.Types.String,
-         required: true
+         type: Schema.Types.String
       },
       DIsSelected: {
          type: Schema.Types.Boolean,
          required: true
       },
       DText: {
-         type: Schema.Types.String,
-         required: true
+         type: Schema.Types.String
       },
       EIsSelected: {
          type: Schema.Types.Boolean,
          required: true
       },
       EText: {
-         type: Schema.Types.String,
-         required: true
+         type: Schema.Types.String
       },
       createdAt: {
          type: Schema.Types.Date,

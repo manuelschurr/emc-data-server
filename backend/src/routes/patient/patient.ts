@@ -149,7 +149,7 @@ router.post(
 router.put(
     '/update/:patientId',
     validator(schema.patientId, ValidationSource.PARAM),
-    validator(schema.createPatient),
+    validator(schema.updatePatient),
     asyncHandler(async (req, res, next) => {
         const { patientId } = req.params;
         const patient = await PatientRepo.findByPatientId(parseInt(patientId));
@@ -157,22 +157,22 @@ router.put(
             throw new BadRequestError('Patient does not exist');
         }
 
-        if (req.body.ambulanceId) patient.ambulanceId = req.body.ambulanceId;
-        if (req.body.name) patient.name = req.body.name;
-        if (req.body.gender) patient.gender = req.body.gender;
-        if (req.body.age) patient.age = req.body.age;
-        if (req.body.preExistingIllness) patient.preExistingIllness = req.body.preExistingIllness;
-        if (req.body.miscellaneous) patient.miscellaneous = req.body.miscellaneous;
-        if (req.body.AIsSelected) patient.AIsSelected = req.body.AIsSelected;
-        if (req.body.AText) patient.AText = req.body.AText;
-        if (req.body.BIsSelected) patient.BIsSelected = req.body.BIsSelected;
-        if (req.body.BText) patient.BText = req.body.BText;
-        if (req.body.CIsSelected) patient.CIsSelected = req.body.CIsSelected;
-        if (req.body.CText) patient.CText = req.body.CText;
-        if (req.body.DIsSelected) patient.DIsSelected = req.body.DIsSelected;
-        if (req.body.DText) patient.DText = req.body.DText;
-        if (req.body.EIsSelected) patient.EIsSelected = req.body.EIsSelected;
-        if (req.body.EText) patient.EText = req.body.EText;
+        if (req.body.hasOwnProperty('ambulanceId')) patient.ambulanceId = req.body.ambulanceId;
+        if (req.body.hasOwnProperty('name')) patient.name = req.body.name;
+        if (req.body.hasOwnProperty('gender')) patient.gender = req.body.gender;
+        if (req.body.hasOwnProperty('age')) patient.age = req.body.age;
+        if (req.body.hasOwnProperty('preExistingIllness')) patient.preExistingIllness = req.body.preExistingIllness;
+        if (req.body.hasOwnProperty('miscellaneous')) patient.miscellaneous = req.body.miscellaneous;
+        if (req.body.hasOwnProperty('AIsSelected')) patient.AIsSelected = req.body.AIsSelected;
+        if (req.body.hasOwnProperty('AText')) patient.AText = req.body.AText;
+        if (req.body.hasOwnProperty('BIsSelected')) patient.BIsSelected = req.body.BIsSelected;
+        if (req.body.hasOwnProperty('BText')) patient.BText = req.body.BText;
+        if (req.body.hasOwnProperty('CIsSelected')) patient.CIsSelected = req.body.CIsSelected;
+        if (req.body.hasOwnProperty('CText')) patient.CText = req.body.CText;
+        if (req.body.hasOwnProperty('DIsSelected')) patient.DIsSelected = req.body.DIsSelected;
+        if (req.body.hasOwnProperty('DText')) patient.DText = req.body.DText;
+        if (req.body.hasOwnProperty('EIsSelected')) patient.EIsSelected = req.body.EIsSelected;
+        if (req.body.hasOwnProperty('EText')) patient.EText = req.body.EText;
 
         await PatientRepo.update(patient);
         new SuccessResponse('Patient updated successfully', patient).send(res);
