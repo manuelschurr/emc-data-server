@@ -16,7 +16,12 @@
       </l-map>
     </div>
     <div v-else>
-      Karte wird geladen ...
+      <div v-if="typeof Rtwdocument.eta === 'string'">
+        {{ Rtwdocument.eta }} - Komponente kann aktuell nicht geladen werden.
+      </div>
+      <div v-else>
+        {{ stateMessage }}
+      </div>
     </div>
   </div>
 </template>
@@ -41,7 +46,8 @@ export default {
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       markerUMM: L.latLng(49.492427, 8.487255),
-      markerPatient: L.latLng(this.Rtwdocument.lat, this.Rtwdocument.long)
+      markerPatient: L.latLng(this.Rtwdocument.lat, this.Rtwdocument.long),
+      stateMessage: "Karte wird geladen..."
     };
   },
   components: {
@@ -58,11 +64,11 @@ export default {
     Rtwdocument: {
       handler() {
         this.adjustPosition(this.Rtwdocument.lat, this.Rtwdocument.long);
+        if (typeof this.Rtwdocument.eta === "string") {
+          this.stateMessage = this.Rtwdocument.eta;
+        }
       },
       deep: true
-    },
-    selectedElements: function(newV, oldV) {
-      console.log(newV, oldV);
     }
   },
   methods: {
