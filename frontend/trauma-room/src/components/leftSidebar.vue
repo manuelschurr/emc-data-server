@@ -106,7 +106,7 @@ export default {
     );
     this.setSelection({
       currentTarget: {
-        id: "btn-position + btn-stream"
+        id: "multi-selection"
       }
     });
   },

@@ -190,6 +190,8 @@ export default {
                     currentRtw = c;
                   }
                 }
+                currentRtw.long = response.data.data.longitude;
+                currentRtw.lat = response.data.data.latitude;
                 this.computeETA(currentRtw);
               }
             })
