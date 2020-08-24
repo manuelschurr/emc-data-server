@@ -21,6 +21,7 @@ export default {
       latitude: Joi.number().required()
    }),
    updateAmbulance: Joi.object().keys({
+      ambulanceId: Joi.number(),
       patientId: Joi.number().required(),
       identifier: Joi.string().required()
    }),
