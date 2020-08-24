@@ -89,6 +89,8 @@ export default {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = rtw;
       this.Rtwdocument.eta = rtw.eta;
+      this.Rtwdocument.long = rtw.long;
+      this.Rtwdocument.lat = rtw.lat;
     },
     getGnssdata: function() {
       let config = {
