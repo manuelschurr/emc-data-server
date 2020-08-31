@@ -22,13 +22,13 @@
 </template>
 
 <script>
-import PulsOxy from "./pulsOxy.vue";
+import PulseOxy from "./pulseOxy.vue";
 import Stream from "./stream.vue";
 import Maps from "./maps.vue";
 //import MainComponent from "./components/mainComponent.vue";
 export default {
   components: {
-    PulsOxy,
+    PulseOxy,
     Stream,
     Maps
   },
@@ -41,7 +41,7 @@ export default {
     Rtwdocument: Object
   },
   mounted() {
-    this.componentArray = [Maps, Stream, PulsOxy];
+    this.componentArray = [Maps, Stream, PulseOxy];
     this.$root.$emit("selectedComponent", "multi-selection");
 
     this.$root.$on("selectedComponent", data => {
