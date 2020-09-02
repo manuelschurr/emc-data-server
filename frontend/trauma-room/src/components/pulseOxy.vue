@@ -4,7 +4,11 @@
       <div class="col-12">
         <form class="form-inline" style="align-items: center;">
           <div class="col-9">
-            <puls-oxy-line class="small" v-if="loaded" :chart-data="pulseChartData" />
+            <puls-oxy-line
+              class="small"
+              v-if="loaded"
+              :chart-data="pulseChartData"
+            />
           </div>
           <div class="col-3 pulseColor">
             <br />
@@ -13,7 +17,8 @@
             <span
               v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
               class="bigFont notOkPulseOxy"
-            >{{ lastPulse }}</span>
+              >{{ lastPulse }}</span
+            >
             <span v-else class="bigFont">{{ lastPulse }}</span>
             <svg
               v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
@@ -50,7 +55,11 @@
       <div class="col-12">
         <form class="form-inline" style="align-items: center;">
           <div class="col-9">
-            <puls-oxy-line class="small" v-if="loaded" :chart-data="spo2ChartData" />
+            <puls-oxy-line
+              class="small"
+              v-if="loaded"
+              :chart-data="spo2ChartData"
+            />
           </div>
           <div class="col-3 spo2Color">
             <br />
@@ -61,7 +70,8 @@
             <span
               v-if="loaded && (lastSpo2 >= 100 || lastSpo2 < 90)"
               class="bigFont notOkPulseOxy"
-            >{{ lastSpo2 }}</span>
+              >{{ lastSpo2 }}</span
+            >
             <span v-else class="bigFont">{{ lastSpo2 }}</span>
             O<sub>2</sub>
             <br />SpO<sub>2</sub>%
@@ -77,7 +87,8 @@
         <span
           v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
           class="bigFont notOkPulseOxy"
-        >{{ lastPulse }}</span>
+          >{{ lastPulse }}</span
+        >
         <span v-else class="bigFont">{{ lastPulse }}</span>
         <svg
           v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
@@ -117,8 +128,8 @@
         <br />
         <span
           v-if="loaded && (lastSpo2 >= 100 || lastSpo2 < 90)"
-          class="bigFont notOkPulseOxy"
-        >{{ lastSpo2 }}</span>
+          class="bigFont notOkPulseOxy">{{ lastSpo2 }}
+        </span>
         <span v-else class="bigFont">{{ lastSpo2 }}</span>
         O<sub>2</sub>
         <br />SpO<sub>2</sub>%
@@ -149,7 +160,7 @@ export default {
     };
   },
   props: {
-    patientId: Object,
+    patientId: Number,
     selectedElements: Number,
   },
   // Fill the chart with data and display it
@@ -186,8 +197,9 @@ export default {
         var body = "";
         var config = {
           method: "get",
-          url: "https://134.155.48.211:3000/patient/findByPatientId/" + "1",
-          // vm.patientID,
+          url:
+            "https://134.155.48.211:3000/patient/findByPatientId/" +
+            vm.patientId,
           headers: {},
           data: body,
         };
@@ -201,8 +213,7 @@ export default {
                 method: "get",
                 url:
                   "https://134.155.48.211:3000/patient/findPulsoxyByPatientIdAndTimestamp?patientId=" +
-                // vm.patientID,
-                  "1" +
+                  vm.patientId +
                   "&timestamp=" +
                   responsePatient.data.data.createdAt,
                 headers: {},
@@ -299,8 +310,8 @@ export default {
         var configPulseoxy = {
           method: "get",
           url:
-            "https://134.155.48.211:3000/patient/findPulsoxyByPatientId/" + "1",
-          // vm.patientID,
+            "https://134.155.48.211:3000/patient/findPulsoxyByPatientId/" +
+            vm.patientId,
           headers: {},
           data: bodyPulseoxy,
         };
