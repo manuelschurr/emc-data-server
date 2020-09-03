@@ -19,10 +19,13 @@
       >
         Puls Oxy
         <br />
-        <div v-if="lastPulse < 50 || lastPulse > 120" class="notOkPulseOxy">Puls: {{ lastPulse }}</div>
+        <div v-if="lastPulse < 50 || lastPulse > 120" class="notOkPulseOxy">
+          Puls: {{ lastPulse }}
+        </div>
         <div v-else class="okPulseOxy">Puls: {{ lastPulse }}</div>
-        <br />
-        <div v-if="lastSpo2 < 90" class="notOkPulseOxy">SpO2: {{ lastSpo2 }}</div>
+        <div v-if="lastSpo2 < 90" class="notOkPulseOxy">
+          SpO2: {{ lastSpo2 }}
+        </div>
         <div v-else class="okPulseOxy">SpO2: {{ lastSpo2 }}</div>
       </button>
       <button
