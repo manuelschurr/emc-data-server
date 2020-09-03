@@ -36,7 +36,7 @@
                     >
                       <div class="text-center">
                         <button
-                          v-if="value === true"
+                          v-if="value === false"
                           disabled
                           pill
                           class="rounded-circle notOkABCDE"
@@ -44,7 +44,7 @@
                           {{ name }}
                         </button>
                         <button
-                          v-else-if="value === false"
+                          v-else-if="value === true"
                           disabled
                           pill
                           class="rounded-circle okABCDE"
@@ -244,9 +244,11 @@ li {
   margin: 5px 5px;
 }
 .okABCDE {
-  background-color: lightgreen;
+  background-color: green;
+  color: white;
 }
 .notOkABCDE {
-  background-color: lightcoral;
+  background-color: red;
+  color: white;
 }
 </style>
