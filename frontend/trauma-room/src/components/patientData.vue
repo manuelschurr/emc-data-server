@@ -147,18 +147,6 @@
             E
           </button>
         </div>
-        <div>
-          <div class="form-group row labelTitle">
-            <label>ABCDE-Notizen</label>
-            <textarea
-              class="form-control-plaintext"
-              rows="2"
-              v-model="notesABCDE"
-              readonly
-              v-if="loaded"
-            ></textarea>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -258,6 +246,7 @@ export default {
           vm.patient.status.d.notes = response.data.DText;
           vm.patient.status.e.isSelected = response.data.data.EIsSelected;
           vm.patient.status.e.notes = response.data.data.EText;
+          vm.$root.$emit("patientDataSidebar", vm.patient);
           vm.showModal = false;
         })
         .catch(function(error) {
@@ -308,22 +297,23 @@ export default {
         });
     },
     openABCDE(output, event) {
-      if (!this.showABCDE || event.currentTarget.id !== this.pastEvent) {
-        this.notesABCDE = output;
-        this.showABCDE = true;
-        this.pastEvent = event.currentTarget.id;
-      } else if (event.currentTarget.id == this.pastEvent) {
-        this.notesABCDE = "";
-        this.showABCDE = false;
-        this.pastEvent = event.currentTarget.id;
-      }
+      console.log(output, event);
+      // if (!this.showABCDE || event.currentTarget.id !== this.pastEvent) {
+      //   this.notesABCDE = output;
+      //   this.showABCDE = true;
+      //   this.pastEvent = event.currentTarget.id;
+      // } else if (event.currentTarget.id == this.pastEvent) {
+      //   this.notesABCDE = "";
+      //   this.showABCDE = false;
+      //   this.pastEvent = event.currentTarget.id;
+      // }
     },
     classABCDE(status) {
       let classABCDE = "";
-      if (status) {
-        classABCDE = "notOkABCDE";
+      if (!status) {
+        classABCDE = "btn-danger";
       } else {
-        classABCDE = "okABCDE";
+        classABCDE = "btn-success";
       }
       return classABCDE;
     },

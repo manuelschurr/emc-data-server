@@ -174,7 +174,7 @@ export default {
 </script>
 <style scoped>
 .okABCDE {
-  background-color: lightgreen;
+  background-color: #5cb85c;
 }
 .notOkABCDE {
   background-color: red;
