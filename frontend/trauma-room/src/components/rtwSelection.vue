@@ -26,7 +26,7 @@
                 <br />
                 ETA: {{ ambulance.eta }}
                 <br />
-                Diagnose: {{ ambulance.diagnosis }}
+                Informationen: {{ ambulance.miscellaneous }}
                 <br />
                 <ul>
                   <li
@@ -112,7 +112,7 @@ export default {
               currentRtw.eta = context.secToTime(
                 JSON.parse(request.responseText).durations[1][0]
               );
-              // After computing the ETA, the patient diagnosis (50 first characters of the miscellaneous) 
+              // After computing the ETA, the patient miscellaneous informations (50 first characters of the miscellaneous) 
               // and ABCDE Schema is fetched from the server.
               let config = {
                 method: "get",
@@ -126,7 +126,7 @@ export default {
                   if (response.data.statusCode === "10000") {
                     patientData = {
                       patientId: response.data.data.patientId,
-                      diagnosis: response.data.data.miscellaneous.slice(0, 50),
+                      miscellaneous: response.data.data.miscellaneous.slice(0, 50),
                       abcde_schema: {
                         A: response.data.data.AIsSelected,
                         B: response.data.data.BIsSelected,
@@ -142,7 +142,7 @@ export default {
                 })
                 .then(() => {
                   currentRtw.patientId = patientData.patientId;
-                  currentRtw.diagnosis = patientData.diagnosis;
+                  currentRtw.miscellaneous = patientData.miscellaneous;
                   currentRtw.abcde_schema = patientData.abcde_schema;
                   context.ambulancesWithETAs.push(currentRtw);
                 });

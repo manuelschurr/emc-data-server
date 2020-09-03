@@ -11,11 +11,11 @@
             <b>Pulse</b>
             <br />
             <div v-if="loaded && (lastPulse > 130 || lastPulse < 50)">
-              <div v-if="!soundPlayed">{{ this.playSound()}} {{ this.soundPlayed = true }}</div>
+              <div v-if="!pulseSoundPlayed">{{ this.playSound()}} {{ this.pulseSoundPlayed = true }}</div>
               <span class="bigFont notOkPulseOxy">{{ lastPulse }}</span>
             </div>
             <div v-else>
-              {{ this.soundPlayed = false }}
+              {{ this.pulseSoundPlayed = false }}
               <span class="bigFont">{{ lastPulse }}</span>
             </div>
             <svg
@@ -62,11 +62,11 @@
             </b>
             <br />
             <div v-if="loaded && (lastSpo2 >= 100 || lastSpo2 < 90)">
-              <div v-if="!soundPlayed">{{ this.playSound()}} {{ this.soundPlayed = true }}</div>
+              <div v-if="!spo2SoundPlayed">{{ this.playSound()}} {{ this.spo2SoundPlayed = true }}</div>
               <span class="bigFont notOkPulseOxy">{{ lastSpo2 }}</span>
             </div>
             <div v-else>
-              {{ this.soundPlayed = false }}
+              {{ this.spo2SoundPlayed = false }}
               <span class="bigFont">{{ lastSpo2 }}</span>
             </div>O<sub>2</sub>
             <br />SpO<sub>2</sub>%
@@ -80,11 +80,11 @@
         <b>Pulse</b>
         <br />
         <div v-if="loaded && (lastPulse > 130 || lastPulse < 50)">
-          <div v-if="!soundPlayed">{{ this.playSound()}} {{ this.soundPlayed = true }}</div>
+          <div v-if="!pulseSoundPlayed">{{ this.playSound()}} {{ this.pulseSoundPlayed = true }}</div>
           <span class="bigFont notOkPulseOxy">{{ lastPulse }}</span>
         </div>
         <div v-else>
-          {{ this.soundPlayed = false }}
+          {{ this.pulseSoundPlayed = false }}
           <span class="bigFont">{{ lastPulse }}</span>
         </div>
         <svg
@@ -124,14 +124,13 @@
         </b>
         <br />
         <div v-if="loaded && (lastSpo2 >= 100 || lastSpo2 < 90)">
-          <div v-if="!soundPlayed">{{ this.playSound()}} {{ this.soundPlayed = true }}</div>
+          <div v-if="!spo2SoundPlayed">{{ this.playSound()}} {{ this.spo2SoundPlayed = true }}</div>
           <span class="bigFont notOkPulseOxy">{{ lastSpo2 }}</span>
         </div>
         <div v-else>
-          {{ this.soundPlayed = false }}
+          {{ this.spo2SoundPlayed = false }}
           <span class="bigFont">{{ lastSpo2 }}</span>
-        </div>
-        O<sub>2</sub>
+        </div>O<sub>2</sub>
         <br />SpO<sub>2</sub>%
       </div>
     </div>
@@ -148,7 +147,8 @@ export default {
   data() {
     return {
       loaded: false,
-      soundPlayed: false,
+      pulseSoundPlayed: false,
+      spo2SoundPlayed: false,
       timer: "",
       pulseChartData: null,
       spo2ChartData: null,
@@ -248,7 +248,7 @@ export default {
                     }
                   } else {
                     for (
-                      i = responsePulseOxy.data.data.length - 20;
+                      i = responsePulseOxy.data.data.length - 21;
                       i < responsePulseOxy.data.data.length;
                       i++
                     ) {
@@ -329,25 +329,27 @@ export default {
               // with the latest data and if the array contains more than 20 entries,
               // the oldest entry is removed to ensure displaying the most relevant data.
 
-              // if (
-              //   responsePulseOxy.data.data.timestamp.slice(11, 19) !=
-              //   vm.pulseLabels[vm.pulseLabels.length - 1]
-              // ) {
-              vm.pulseData.push(responsePulseOxy.data.data.pulsrate.toString());
-              vm.pulseLabels.push(
-                responsePulseOxy.data.data.timestamp.slice(11, 19)
-              );
-              vm.spo2Data.push(responsePulseOxy.data.data.spo2.toString());
-              vm.spo2Labels.push(
-                responsePulseOxy.data.data.timestamp.slice(11, 19)
-              );
-              // }
+              if (
+                responsePulseOxy.data.data.timestamp.slice(11, 19) !=
+                vm.pulseLabels[vm.pulseLabels.length - 1]
+              ) {
+                vm.pulseData.push(
+                  responsePulseOxy.data.data.pulsrate.toString()
+                );
+                vm.pulseLabels.push(
+                  responsePulseOxy.data.data.timestamp.slice(11, 19)
+                );
+                vm.spo2Data.push(responsePulseOxy.data.data.spo2.toString());
+                vm.spo2Labels.push(
+                  responsePulseOxy.data.data.timestamp.slice(11, 19)
+                );
+              }
 
               if (
-                vm.pulseData.length >= 20 ||
-                vm.pulseLabels.length >= 20 ||
-                vm.spo2Data.length >= 20 ||
-                vm.spo2Labels.length >= 20
+                vm.pulseData.length > 20 ||
+                vm.pulseLabels.length > 20 ||
+                vm.spo2Data.length > 20 ||
+                vm.spo2Labels.length > 20
               ) {
                 vm.pulseData.shift();
                 vm.pulseLabels.shift();
