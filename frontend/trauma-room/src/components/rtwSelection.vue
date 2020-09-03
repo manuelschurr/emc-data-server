@@ -186,7 +186,7 @@ export default {
       }
     },
     getGnssData: function() {
-      for (var rtw of this.ambulances) {
+      for (var rtw of this.activeAmbulances) {
         if (rtw.ambulanceId && rtw.patientId != 0) {
           let config = {
             method: "get",
