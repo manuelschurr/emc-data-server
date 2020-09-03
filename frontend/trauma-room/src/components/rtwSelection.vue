@@ -17,44 +17,46 @@
             v-for="ambulance in ambulancesWithETAs"
             v-bind:key="ambulance.identifier"
           >
-            <p>
-              <button @click="selectRTW(ambulance)">
-                <img src="../assets/ambulance.png" width="100" />
-                <br />
-                <br />
-                RTW - {{ ambulance.identifier }}
-                <br />
-                ETA: {{ ambulance.eta }}
-                <br />
-                Informationen: {{ ambulance.miscellaneous }}
-                <br />
-                <ul>
-                  <li
-                    v-for="(value, name) in ambulance.abcde_schema"
-                    v-bind:key="name"
-                  >
-                    <div class="text-center">
-                      <button
-                        v-if="value === true"
-                        disabled
-                        pill
-                        class="rounded-circle notOkABCDE"
-                      >
-                        {{ name }}
-                      </button>
-                      <button
-                        v-else-if="value === false"
-                        disabled
-                        pill
-                        class="rounded-circle okABCDE"
-                      >
-                        {{ name }}
-                      </button>
-                    </div>
-                  </li>
-                </ul>
-              </button>
-            </p>
+            <div v-if="ambulance.patientId">
+              <p>
+                <button @click="selectRTW(ambulance)">
+                  <img src="../assets/ambulance.png" width="100" />
+                  <br />
+                  <br />
+                  RTW - {{ ambulance.identifier }}
+                  <br />
+                  ETA: {{ ambulance.eta }}
+                  <br />
+                  Informationen: {{ ambulance.miscellaneous }}
+                  <br />
+                  <ul>
+                    <li
+                      v-for="(value, name) in ambulance.abcde_schema"
+                      v-bind:key="name"
+                    >
+                      <div class="text-center">
+                        <button
+                          v-if="value === true"
+                          disabled
+                          pill
+                          class="rounded-circle notOkABCDE"
+                        >
+                          {{ name }}
+                        </button>
+                        <button
+                          v-else-if="value === false"
+                          disabled
+                          pill
+                          class="rounded-circle okABCDE"
+                        >
+                          {{ name }}
+                        </button>
+                      </div>
+                    </li>
+                  </ul>
+                </button>
+              </p>
+            </div>
           </li>
         </div>
         <div v-else class="d-flex justify-content-center">
@@ -112,7 +114,7 @@ export default {
               currentRtw.eta = context.secToTime(
                 JSON.parse(request.responseText).durations[1][0]
               );
-              // After computing the ETA, the patient miscellaneous informations (50 first characters of the miscellaneous) 
+              // After computing the ETA, the patient miscellaneous informations (50 first characters of the miscellaneous)
               // and ABCDE Schema is fetched from the server.
               let config = {
                 method: "get",
@@ -126,7 +128,10 @@ export default {
                   if (response.data.statusCode === "10000") {
                     patientData = {
                       patientId: response.data.data.patientId,
-                      miscellaneous: response.data.data.miscellaneous.slice(0, 50),
+                      miscellaneous: response.data.data.miscellaneous.slice(
+                        0,
+                        50
+                      ),
                       abcde_schema: {
                         A: response.data.data.AIsSelected,
                         B: response.data.data.BIsSelected,
