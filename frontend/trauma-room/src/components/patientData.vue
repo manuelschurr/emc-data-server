@@ -258,6 +258,7 @@ export default {
           vm.patient.status.d.notes = response.data.DText;
           vm.patient.status.e.isSelected = response.data.data.EIsSelected;
           vm.patient.status.e.notes = response.data.data.EText;
+          vm.showModal = false;
         })
         .catch(function(error) {
           console.log(error);
