@@ -10,92 +10,65 @@
           width="150"
         />
         Universitätsklinikum Mannheim
-
-        <button :class="classArchiveButton()" @click="toggleArchive">
-          Archiv
-        </button>
       </h1>
-      <div v-if="!archive">
-        <ul v-if="activeAmbulances.length">
-          <div v-if="ambulancesWithETAs.length">
-            <li
-              v-for="ambulance in ambulancesWithETAs"
-              v-bind:key="ambulance.identifier"
-            >
-              <div v-if="ambulance.patientId">
-                <p>
-                  <button @click="selectRTW(ambulance)">
-                    <img src="../assets/ambulance.png" width="100" />
-                    <br />
-                    <br />
-                    RTW - {{ ambulance.identifier }}
-                    <br />
-                    ETA: {{ ambulance.eta }}
-                    <br />
-                    Informationen: {{ ambulance.miscellaneous }}
-                    <br />
-                    <ul>
-                      <li
-                        v-for="(value, name) in ambulance.abcde_schema"
-                        v-bind:key="name"
-                      >
-                        <div class="text-center">
-                          <button
-                            v-if="value === false"
-                            disabled
-                            pill
-                            class="rounded-circle notOkABCDE"
-                          >
-                            {{ name }}
-                          </button>
-                          <button
-                            v-else-if="value === true"
-                            disabled
-                            pill
-                            class="rounded-circle okABCDE"
-                          >
-                            {{ name }}
-                          </button>
-                        </div>
-                      </li>
-                    </ul>
-                  </button>
-                </p>
-              </div>
-            </li>
-          </div>
-          <div v-else class="d-flex justify-content-center">
-            <div
-              class="spinner-border"
-              style="position: fixed; top: 50%;"
-              role="status"
-            ></div>
-            <div style="position: fixed; top: 55%;">{{ stateMessage }}</div>
-          </div>
-        </ul>
-        <h3 v-else>... Aktuell fahren keine RTW's das UMM an ...</h3>
-      </div>
-      <div v-else>
-        <ul v-if="inactiveAmbulances.length">
+      <ul v-if="activeAmbulances.length">
+        <div v-if="ambulancesWithETAs.length">
           <li
-            v-for="ambulance in inactiveAmbulances"
+            v-for="ambulance in ambulancesWithETAs"
             v-bind:key="ambulance.identifier"
           >
-            <p>
-              <button @click="selectRTW(ambulance)">
-                <img src="../assets/ambulance.png" width="100" />
-                <br />
-                <br />
-                RTW - {{ ambulance.identifier }}
-                <br />
-                Informationen: {{ ambulance.miscellaneous }}
-                <br />
-              </button>
-            </p>
+            <div v-if="ambulance.patientId">
+              <p>
+                <button @click="selectRTW(ambulance)">
+                  <img src="../assets/ambulance.png" width="100" />
+                  <br />
+                  <br />
+                  RTW - {{ ambulance.identifier }}
+                  <br />
+                  ETA: {{ ambulance.eta }}
+                  <br />
+                  Informationen: {{ ambulance.miscellaneous }}
+                  <br />
+                  <ul>
+                    <li
+                      v-for="(value, name) in ambulance.abcde_schema"
+                      v-bind:key="name"
+                    >
+                      <div class="text-center">
+                        <button
+                          v-if="value === false"
+                          disabled
+                          pill
+                          class="rounded-circle notOkABCDE"
+                        >
+                          {{ name }}
+                        </button>
+                        <button
+                          v-else-if="value === true"
+                          disabled
+                          pill
+                          class="rounded-circle okABCDE"
+                        >
+                          {{ name }}
+                        </button>
+                      </div>
+                    </li>
+                  </ul>
+                </button>
+              </p>
+            </div>
           </li>
-        </ul>
-        <h3 v-else>... Aktuell sind keine RTW's im Archiv ...</h3>
-      </div>
+        </div>
+        <div v-else class="d-flex justify-content-center">
+          <div
+            class="spinner-border"
+            style="position: fixed; top: 50%;"
+            role="status"
+          ></div>
+          <div style="position: fixed; top: 55%;">{{ stateMessage }}</div>
+        </div>
+      </ul>
+      <h3 v-else>... Aktuell fahren keine RTW's das UMM an ...</h3>
     </div>
   </div>
 </template>
