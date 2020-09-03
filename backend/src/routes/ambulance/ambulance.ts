@@ -1,7 +1,6 @@
 import express from "express";
 import _ from "lodash";
-import { BadRequestError } from "../../core/ApiError";
-import { SuccessResponse } from "../../core/ApiResponse";
+import { NotFoundResponse, SuccessResponse } from "../../core/ApiResponse";
 import Ambulance from "../../database/model/Ambulance";
 import Gnss from "../../database/model/Gnss";
 import AmbulanceRepo from "../../database/repository/AmbulanceRepo";
@@ -18,7 +17,7 @@ router.get(
     asyncHandler(async (req, res, next) => {
         const ambulances = await AmbulanceRepo.findAll();
         if (!ambulances) {
-            throw new BadRequestError('Ambulance data could not be found.');
+            throw new NotFoundResponse('Ambulance data could not be found.');
         }
 
         return new SuccessResponse("Successful", ambulances).send(res);
@@ -33,7 +32,7 @@ router.get(
         const { ambulanceId } = req.params;
         const ambulance = await AmbulanceRepo.findByAmbulanceId(parseInt(ambulanceId));
         if (!ambulance) {
-            throw new BadRequestError('Ambulance data could not be found.');
+            throw new NotFoundResponse('Ambulance data could not be found.');
         }
 
         return new SuccessResponse("Successful", ambulance).send(res);
@@ -46,7 +45,7 @@ router.get(
     asyncHandler(async (req, res, next) => {
         const ambulance = await AmbulanceRepo.findMaxAmbulanceId();
         if (!ambulance) {
-            throw new BadRequestError('AmbulanceId could not be found.');
+            throw new NotFoundResponse('AmbulanceId could not be found.');
         }
 
         return new SuccessResponse("Successful", ambulance.ambulanceId + 1).send(res);
@@ -61,7 +60,7 @@ router.get(
         const { ambulanceId } = req.params;
         const gnss = await GnssRepo.findLatestByAmbulanceId(parseInt(ambulanceId));
         if (!gnss) {
-            throw new BadRequestError('GNSS data could not be found.');
+            throw new NotFoundResponse('GNSS data could not be found.');
         }
 
         return new SuccessResponse("Successful", gnss).send(res);
@@ -77,7 +76,7 @@ router.get(
         const timestamp = new Date(req.query.timestamp.toString());
         const gnss = await GnssRepo.findLatestByAmbulanceIdAndTimestamp(parseInt(ambulanceId), timestamp);
         if (!gnss) {
-            throw new BadRequestError('GNSS data could not be found.');
+            throw new NotFoundResponse('GNSS data could not be found.');
         }
 
         return new SuccessResponse("Successful", gnss).send(res);
@@ -134,7 +133,7 @@ router.put(
         const { ambulanceId } = req.params;
         const ambulance = await AmbulanceRepo.findByAmbulanceId(parseInt(ambulanceId));
         if (ambulance == null) {
-            throw new BadRequestError('Ambulance does not exist');
+            throw new NotFoundResponse('Ambulance does not exist');
         }
         
         if (req.body.hasOwnProperty('patientId')) ambulance.patientId = req.body.patientId;

@@ -18,6 +18,7 @@ export default {
       required: false,
     },
   },
+  // Returns the options of the PulseOxy chart.
   data() {
     return {
       options: {
@@ -48,6 +49,7 @@ export default {
       },
     };
   },
+  // Redndering chart with the transmitted chartdata and the options defined above in data()
   mounted() {
     this.renderChart(this.chartData, this.options);
   },

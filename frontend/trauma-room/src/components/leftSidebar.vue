@@ -14,8 +14,8 @@
         @click="setSelection($event)"
         id="btn-puls"
         class="btn btn-secondary"
-        :disabled="showComponentPulsoxy"
-        :class="toggleButton(showComponentPulsoxy)"
+        :disabled="showComponentPulseoxy"
+        :class="toggleButton(showComponentPulseoxy)"
       >
         Puls Oxy
         <br />
@@ -43,7 +43,7 @@
         <br />
         ETA: {{ arrivalTime ? arrivalTime : "Fehler bei Routen Schnittstelle" }}
       </button>
-      <PulsOxy v-if="false" />
+      <PulseOxy v-if="false" />
       <Stream v-if="false" />
       <Maps v-if="false" />
     </div>
@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import PulsOxy from "./pulsOxy.vue";
+import PulseOxy from "./pulseOxy.vue";
 import Stream from "./stream.vue";
 import Maps from "./maps.vue";
 export default {
@@ -59,7 +59,7 @@ export default {
     return {
       showComponentMap: false,
       showComponentStream: false,
-      showComponentPulsoxy: false,
+      showComponentPulseoxy: false,
       showComponentMultiSelection: false,
       pastEvent: null,
       selection: [],
@@ -68,7 +68,7 @@ export default {
     };
   },
   components: {
-    PulsOxy,
+    PulseOxy,
     Stream,
     Maps
   },
@@ -76,7 +76,7 @@ export default {
     this.$root.$on("selectedComponent", data => {
       if (data === "btn-puls") {
         this.selection = [];
-        this.selection.push(PulsOxy);
+        this.selection.push(PulseOxy);
       } else if (data === "btn-stream") {
         this.selection = [];
         this.selection.push(Stream);
@@ -87,7 +87,7 @@ export default {
         this.selection = [];
         this.selection.push(Maps);
         this.selection.push(Stream);
-        this.selection.push(PulsOxy);
+        this.selection.push(PulseOxy);
       }
     });
 
@@ -118,36 +118,36 @@ export default {
       //var component = null;
 
       if (event.currentTarget.id === "btn-puls") {
-        this.showComponentPulsoxy = !this.showComponentPulsoxy;
+        this.showComponentPulseoxy = !this.showComponentPulseoxy;
         this.showComponentMap = false;
         this.showComponentStream = false;
         this.showComponentMultiSelection = false;
         this.selection = [];
-        this.selection.push(PulsOxy);
-        //component = PulsOxy;
+        this.selection.push(PulseOxy);
+        //component = PulseOxy;
       } else if (event.currentTarget.id === "btn-stream") {
         this.showComponentStream = !this.showComponentStream;
-        this.showComponentPulsoxy = false;
+        this.showComponentPulseoxy = false;
         this.showComponentMap = false;
         this.showComponentMultiSelection = false;
         this.selection = [];
         this.selection.push(Stream);
       } else if (event.currentTarget.id === "btn-position") {
         this.showComponentMap = !this.showComponentMap;
-        this.showComponentPulsoxy = false;
+        this.showComponentPulseoxy = false;
         this.showComponentStream = false;
         this.showComponentMultiSelection = false;
         this.selection = [];
         this.selection.push(Maps);
       } else if (event.currentTarget.id === "multi-selection") {
         this.showComponentMultiSelection = !this.showComponentMultiSelection;
-        this.showComponentPulsoxy = false;
+        this.showComponentPulseoxy = false;
         this.showComponentStream = false;
         this.showComponentMap = false;
         this.selection = [];
         this.selection.push(Maps);
         this.selection.push(Stream);
-        this.selection.push(PulsOxy);
+        this.selection.push(PulseOxy);
       }
 
       this.$root.$emit("selectedComponent", this.selection);

@@ -5,6 +5,7 @@
         <component
           :is="child"
           :Rtwdocument="Rtwdocument"
+          :patientId="patientId"
           :selectedElements="componentArray.length"
         ></component>
       </div>
@@ -14,6 +15,7 @@
         <component
           :is="child"
           :Rtwdocument="Rtwdocument"
+          :patientId="patientId"
           :selectedElements="componentArray.length"
         ></component>
       </div>
@@ -22,33 +24,33 @@
 </template>
 
 <script>
-import PulsOxy from "./pulsOxy.vue";
+import PulseOxy from "./pulseOxy.vue";
 import Stream from "./stream.vue";
 import Maps from "./maps.vue";
 //import MainComponent from "./components/mainComponent.vue";
 export default {
   components: {
-    PulsOxy,
+    PulseOxy,
     Stream,
-    Maps
+    Maps,
   },
   data() {
     return {
-      componentArray: []
+      componentArray: [],
     };
   },
   props: {
-    Rtwdocument: Object
+    Rtwdocument: Object,
+    patientId: Number,
   },
   mounted() {
-    this.componentArray = [Maps, Stream, PulsOxy];
+    this.componentArray = [Maps, Stream, PulseOxy];
     this.$root.$emit("selectedComponent", "multi-selection");
 
-    this.$root.$on("selectedComponent", data => {
+    this.$root.$on("selectedComponent", (data) => {
       this.componentArray = data;
     });
-  }
+  },
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

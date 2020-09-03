@@ -15,13 +15,13 @@
             <b>Pulse</b>
             <br />
             <span
-              v-if="(loaded && lastPulse > 130) || lastPulse < 60"
+              v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
               class="bigFont notOkPulseOxy"
               >{{ lastPulse }}</span
             >
             <span v-else class="bigFont">{{ lastPulse }}</span>
             <svg
-              v-if="(loaded && lastPulse > 130) || lastPulse < 60"
+              v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
               width="1em"
               height="1em"
               viewBox="0 0 16 16"
@@ -63,15 +63,18 @@
           </div>
           <div class="col-3 spo2Color">
             <br />
-            <b> SpO<sub>2</sub> </b>
+            <b>
+              SpO<sub>2</sub>
+            </b>
             <br />
             <span
-              v-if="(loaded && lastSpo2 >= 100) || lastSpo2 < 90"
+              v-if="loaded && (lastSpo2 >= 100 || lastSpo2 < 90)"
               class="bigFont notOkPulseOxy"
               >{{ lastSpo2 }}</span
             >
             <span v-else class="bigFont">{{ lastSpo2 }}</span>
-            O<sub>2</sub> <br />SpO<sub>2</sub>%
+            O<sub>2</sub>
+            <br />SpO<sub>2</sub>%
           </div>
         </form>
       </div>
@@ -82,13 +85,13 @@
         <b>Pulse</b>
         <br />
         <span
-          v-if="(loaded && lastPulse > 130) || lastPulse < 60"
+          v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
           class="bigFont notOkPulseOxy"
           >{{ lastPulse }}</span
         >
         <span v-else class="bigFont">{{ lastPulse }}</span>
         <svg
-          v-if="(loaded && lastPulse > 130) || lastPulse < 60"
+          v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
           width="1em"
           height="1em"
           viewBox="0 0 16 16"
@@ -119,22 +122,24 @@
       </div>
       <div class="col spo2Color">
         <br />
-        <b> SpO<sub>2</sub> </b>
+        <b>
+          SpO<sub>2</sub>
+        </b>
         <br />
         <span
-          v-if="(loaded && lastSpo2 >= 100) || lastSpo2 < 90"
-          class="bigFont notOkPulseOxy"
-          >{{ lastSpo2 }}</span
-        >
+          v-if="loaded && (lastSpo2 >= 100 || lastSpo2 < 90)"
+          class="bigFont notOkPulseOxy">{{ lastSpo2 }}
+        </span>
         <span v-else class="bigFont">{{ lastSpo2 }}</span>
-        O<sub>2</sub> <br />SpO<sub>2</sub>%
+        O<sub>2</sub>
+        <br />SpO<sub>2</sub>%
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import PulsOxyLine from "./pulsOxyLine.vue";
+import PulsOxyLine from "./pulseOxyLine.vue";
 const axios = require("axios");
 
 export default {
@@ -151,19 +156,22 @@ export default {
       pulseLabels: [],
       spo2Data: [],
       lastSpo2: "",
-      spo2Labels: []
+      spo2Labels: [],
     };
   },
   props: {
-    Rtwdocument: Object,
-    selectedElements: Number
+    patientId: Number,
+    selectedElements: Number,
   },
+  // Fill the chart with data and display it
   mounted() {
     this.fillData();
   },
+  // Refreshes the PulseOxy chart every second with the data from the server.
   created() {
     this.timer = setInterval(this.fillData, 1000);
   },
+  // Compute the last number of the pulse and the Spo2 rate by getting the last element of the data arrays.
   computed: {
     lastPulseCompute() {
       var lastPulseData = this.pulseData[this.pulseData.length - 1];
@@ -174,61 +182,85 @@ export default {
       var lastSpo2Data = this.spo2Data[this.spo2Data.length - 1];
       this.$root.$emit("lastSpo2Data", lastSpo2Data);
       return lastSpo2Data;
-    }
+    },
   },
   methods: {
+    // Request the PulseOxy data from the server and depending on whether the
+    // pulseOxy data array of the chart already has 20 entries or not,
+    // gets the last 20 entries or only gets the newest entry.
     async fillData() {
       var vm = this;
       this.loading = true;
 
-      if (vm.pulseData.length == 0) {
+      if (vm.pulseData.length < 20) {
+        // The first server request is to find the patient by the given patient ID
         var body = "";
         var config = {
           method: "get",
-          url: "https://134.155.48.211:3000/patient/findByPatientId/" + "1",
-          // vm.Rtwdocument.patientID,
+          url:
+            "https://134.155.48.211:3000/patient/findByPatientId/" +
+            vm.patientId,
           headers: {},
-          data: body
+          data: body,
         };
 
         axios(config)
-          .then(function(responsePatient) {
+          .then(function (responsePatient) {
             if (responsePatient.data.statusCode === "10000") {
+              // When the request is successful, the new request gets all the stored data of the patient.
               var bodySecond = "";
               var configSecond = {
                 method: "get",
                 url:
                   "https://134.155.48.211:3000/patient/findPulsoxyByPatientIdAndTimestamp?patientId=" +
-                  "1" +
+                  vm.patientId +
                   "&timestamp=" +
                   responsePatient.data.data.createdAt,
-                // vm.Rtwdocument.patientID,
                 headers: {},
-                data: bodySecond
+                data: bodySecond,
               };
 
-              axios(configSecond).then(function(responsePulseOxy) {
+              axios(configSecond).then(function (responsePulseOxy) {
                 if (responsePulseOxy.data.statusCode === "10000") {
-                  console.log(responsePulseOxy.data);
+                  // When the request is successful, the pulseOxy data for the two charts is filled
+                  // depending on whether there are already 20 entries in the server database or not.
                   var i;
-                  for (
-                    i = responsePulseOxy.data.data.length - 20;
-                    i < responsePulseOxy.data.data.length;
-                    i++
-                  ) {
-                    vm.pulseData.push(
-                      responsePulseOxy.data.data[i].pulsrate.toString()
-                    );
-                    vm.pulseLabels.push(
-                      responsePulseOxy.data.data[i].timestamp.slice(11, 19)
-                    );
-                    vm.spo2Data.push(
-                      responsePulseOxy.data.data[i].spo2.toString()
-                    );
-                    vm.spo2Labels.push(
-                      responsePulseOxy.data.data[i].timestamp.slice(11, 19)
-                    );
+                  if (responsePulseOxy.data.data.length < 20) {
+                    for (i = 0; i < responsePulseOxy.data.data.length; i++) {
+                      vm.pulseData.push(
+                        responsePulseOxy.data.data[i].pulsrate.toString()
+                      );
+                      vm.pulseLabels.push(
+                        responsePulseOxy.data.data[i].timestamp.slice(11, 19)
+                      );
+                      vm.spo2Data.push(
+                        responsePulseOxy.data.data[i].spo2.toString()
+                      );
+                      vm.spo2Labels.push(
+                        responsePulseOxy.data.data[i].timestamp.slice(11, 19)
+                      );
+                    }
+                  } else {
+                    for (
+                      i = responsePulseOxy.data.data.length - 20;
+                      i < responsePulseOxy.data.data.length;
+                      i++
+                    ) {
+                      vm.pulseData.push(
+                        responsePulseOxy.data.data[i].pulsrate.toString()
+                      );
+                      vm.pulseLabels.push(
+                        responsePulseOxy.data.data[i].timestamp.slice(11, 19)
+                      );
+                      vm.spo2Data.push(
+                        responsePulseOxy.data.data[i].spo2.toString()
+                      );
+                      vm.spo2Labels.push(
+                        responsePulseOxy.data.data[i].timestamp.slice(11, 19)
+                      );
+                    }
                   }
+                  // Settings of the two charts with their respective data gathered before.
                   vm.pulseChartData = {
                     labels: vm.pulseLabels,
                     datasets: [
@@ -240,9 +272,9 @@ export default {
                         pointBorderColor: "#36d7e7",
                         backgroundColor: "transparent",
                         pointRadius: 0,
-                        data: vm.pulseData
-                      }
-                    ]
+                        data: vm.pulseData,
+                      },
+                    ],
                   };
                   vm.spo2ChartData = {
                     labels: vm.pulseLabels,
@@ -255,9 +287,9 @@ export default {
                         pointBorderColor: "#36c1e7",
                         backgroundColor: "transparent",
                         pointRadius: 0,
-                        data: vm.spo2Data
-                      }
-                    ]
+                        data: vm.spo2Data,
+                      },
+                    ],
                   };
                   vm.lastPulse = vm.lastPulseCompute;
                   vm.lastSpo2 = vm.lastSpo2Compute;
@@ -266,25 +298,31 @@ export default {
               });
             }
           })
-          .catch(function(error) {
+          .catch(function (error) {
             console.log("AXIOS ERROR: " + error);
           })
           .finally(() => (this.loading = false));
         await this.$nextTick();
       } else {
-        var bodyPulsoxy = "";
-        var configPulsoxy = {
+        // This server request is to find the patient by the given
+        // patient ID with only the latest pulse and Spo2 date.
+        var bodyPulseoxy = "";
+        var configPulseoxy = {
           method: "get",
           url:
-            "https://134.155.48.211:3000/patient/findPulsoxyByPatientId/" + "1",
-          // vm.Rtwdocument.patientID,
+            "https://134.155.48.211:3000/patient/findPulsoxyByPatientId/" +
+            vm.patientId,
           headers: {},
-          data: bodyPulsoxy
+          data: bodyPulseoxy,
         };
 
-        axios(configPulsoxy)
-          .then(function(responsePulseOxy) {
+        axios(configPulseoxy)
+          .then(function (responsePulseOxy) {
             if (responsePulseOxy.data.statusCode === "10000") {
+              // When the request is successful, the pulseOxy chart arrays are updated
+              // with the latest data and if the array contains more than 20 entries,
+              // the oldest entry is removed to ensure displaying the most relevant data.
+
               // if (
               //   responsePulseOxy.data.data.timestamp.slice(11, 19) !=
               //   vm.pulseLabels[vm.pulseLabels.length - 1]
@@ -310,6 +348,7 @@ export default {
                 vm.spo2Data.shift();
                 vm.spo2Labels.shift();
               }
+              // Settings of the two charts with their respective data gathered before.
               vm.pulseChartData = {
                 labels: vm.pulseLabels,
                 datasets: [
@@ -321,9 +360,9 @@ export default {
                     pointBorderColor: "#36d7e7",
                     backgroundColor: "transparent",
                     pointRadius: 0,
-                    data: vm.pulseData
-                  }
-                ]
+                    data: vm.pulseData,
+                  },
+                ],
               };
               vm.spo2ChartData = {
                 labels: vm.pulseLabels,
@@ -336,30 +375,31 @@ export default {
                     pointBorderColor: "#36c1e7",
                     backgroundColor: "transparent",
                     pointRadius: 0,
-                    data: vm.spo2Data
-                  }
-                ]
+                    data: vm.spo2Data,
+                  },
+                ],
               };
               vm.lastPulse = vm.lastPulseCompute;
               vm.lastSpo2 = vm.lastSpo2Compute;
               vm.loaded = true;
             }
           })
-          .catch(function(error) {
+          .catch(function (error) {
             console.log("AXIOS ERROR: " + error);
           })
           .finally(() => (this.loading = false));
         await this.$nextTick();
       }
     },
+    // When the PulseOxy component is deactivated, the data is cleared and the refreshing timer is stopped.
     beforeDestroy() {
       clearInterval(this.timer),
         (this.pulseData = []),
         (this.spo2Data = []),
         (this.pulseChartData = null),
         (this.spo2ChartData = null);
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -1,7 +1,6 @@
 import express from "express";
 import _ from "lodash";
-import { BadRequestError } from "../../core/ApiError";
-import { SuccessResponse } from "../../core/ApiResponse";
+import { NotFoundResponse, SuccessResponse } from "../../core/ApiResponse";
 import Patient from "../../database/model/Patient";
 import Pulsoxy from "../../database/model/Pulsoxy";
 import PatientRepo from "../../database/repository/PatientRepo";
@@ -20,7 +19,7 @@ router.get(
         const { patientId } = req.params;
         const patient = await PatientRepo.findByPatientId(parseInt(patientId));
         if (!patient) {
-            throw new BadRequestError('Patient could not be found.');
+            throw new NotFoundResponse('Patient could not be found.');
         }
 
         return new SuccessResponse("Successful", patient).send(res);
@@ -35,7 +34,7 @@ router.get(
         const { ambulanceId } = req.params;
         const patient = await PatientRepo.findByAmbulanceId(parseInt(ambulanceId));
         if (!patient) {
-            throw new BadRequestError('Patient could not be found.');
+            throw new NotFoundResponse('Patient could not be found.');
         }
 
         return new SuccessResponse("Successful", patient).send(res);
@@ -48,7 +47,7 @@ router.get(
     asyncHandler(async (req, res, next) => {
         const patient = await PatientRepo.findMaxAmbulanceId();
         if (!patient) {
-            throw new BadRequestError('AmbulanceId could not be found.');
+            throw new NotFoundResponse('AmbulanceId could not be found.');
         }
 
         return new SuccessResponse("Successful", patient.patientId + 1).send(res);
@@ -63,7 +62,7 @@ router.get(
         const { patientId } = req.params;
         const pulsoxy = await PulsoxyRepo.findLatestByPatientId(parseInt(patientId));
         if (!pulsoxy) {
-            throw new BadRequestError('Pulsoxy data could not be found.');
+            throw new NotFoundResponse('Pulsoxy data could not be found.');
         }
 
         return new SuccessResponse("Successful", pulsoxy).send(res);
@@ -79,7 +78,7 @@ router.get(
         const timestamp = new Date(req.query.timestamp.toString());
         const pulsoxy = await PulsoxyRepo.findLatestByPatientIdAndTimestamp(parseInt(patientId), timestamp);
         if (!pulsoxy) {
-            throw new BadRequestError('Pulsoxy data could not be found.');
+            throw new NotFoundResponse('Pulsoxy data could not be found.');
         }
 
         return new SuccessResponse("Successful", pulsoxy).send(res);
@@ -94,7 +93,7 @@ router.post(
     asyncHandler(async (req, res, next) => {
         const patient = await PatientRepo.findByPatientId(req.body.patientId);
         if (patient) {
-            throw new BadRequestError('Patient already exists');
+            throw new NotFoundResponse('Patient already exists');
         }
 
         const { patient: createdPatient } = await PatientRepo.create(
@@ -154,7 +153,7 @@ router.put(
         const { patientId } = req.params;
         const patient = await PatientRepo.findByPatientId(parseInt(patientId));
         if (patient == null) {
-            throw new BadRequestError('Patient does not exist');
+            throw new NotFoundResponse('Patient does not exist');
         }
 
         if (req.body.hasOwnProperty('ambulanceId')) patient.ambulanceId = req.body.ambulanceId;

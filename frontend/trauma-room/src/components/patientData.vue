@@ -220,10 +220,12 @@ export default {
     this.fillData();
     this.retrieveAudio();
   },
+  // Refreshes the patient data every 10 seconds with the data from the server.
   created() {
-    // this.timer = setInterval(this.fillData, 10000);
+    this.timer = setInterval(this.fillData, 10000);
   },
   methods: {
+    // Requests the data from the server to get the patient data
     fillData() {
       var vm = this;
       var data = "";
@@ -231,7 +233,7 @@ export default {
       var config = {
         method: "get",
         url:
-          "https://134.155.48.211:3000/patient/findByAmbulanceId/" +
+          "https://134.155.48.211:3000/patient/findByPatientId/" +
           this.patientId,
         headers: {},
         data: data
@@ -324,7 +326,7 @@ export default {
       }
       return classABCDE;
     },
-
+    // When the rtw is switched, the refreshing timer is stopped.
     beforeDestroy() {
       clearInterval(this.timer);
     }
