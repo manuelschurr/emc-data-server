@@ -237,13 +237,13 @@ export default {
             response.data.data.preExistingIllness;
           vm.patient.miscellaneaous.text = response.data.data.miscellaneous;
           vm.patient.status.a.isSelected = response.data.data.AIsSelected;
-          vm.patient.status.a.notes = response.data.AText;
+          vm.patient.status.a.notes = response.data.data.AText;
           vm.patient.status.b.isSelected = response.data.data.BIsSelected;
-          vm.patient.status.b.notes = response.data.BText;
+          vm.patient.status.b.notes = response.data.data.BText;
           vm.patient.status.c.isSelected = response.data.data.CIsSelected;
-          vm.patient.status.c.notes = response.data.CText;
+          vm.patient.status.c.notes = response.data.data.CText;
           vm.patient.status.d.isSelected = response.data.data.DIsSelected;
-          vm.patient.status.d.notes = response.data.DText;
+          vm.patient.status.d.notes = response.data.data.DText;
           vm.patient.status.e.isSelected = response.data.data.EIsSelected;
           vm.patient.status.e.notes = response.data.data.EText;
           vm.$root.$emit("patientDataSidebar", vm.patient);
