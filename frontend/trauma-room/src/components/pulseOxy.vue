@@ -4,24 +4,22 @@
       <div class="col-12">
         <form class="form-inline" style="align-items: center;">
           <div class="col-9">
-            <puls-oxy-line
-              class="small"
-              v-if="loaded"
-              :chart-data="pulseChartData"
-            />
+            <puls-oxy-line class="small" v-if="loaded" :chart-data="pulseChartData" />
           </div>
           <div class="col-3 pulseColor">
             <br />
             <b>Pulse</b>
             <br />
-            <span
-              v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
-              class="bigFont notOkPulseOxy"
-              >{{ lastPulse }}</span
-            >
-            <span v-else class="bigFont">{{ lastPulse }}</span>
+            <div v-if="loaded && (lastPulse > 130 || lastPulse < 50)">
+              <div v-if="!soundPlayed">{{ this.playSound()}} {{ this.soundPlayed = true }}</div>
+              <span class="bigFont notOkPulseOxy">{{ lastPulse }}</span>
+            </div>
+            <div v-else>
+              {{ this.soundPlayed = false }}
+              <span class="bigFont">{{ lastPulse }}</span>
+            </div>
             <svg
-              v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
+              v-if="loaded && (lastPulse > 130 || lastPulse < 50)"
               width="1em"
               height="1em"
               viewBox="0 0 16 16"
@@ -55,11 +53,7 @@
       <div class="col-12">
         <form class="form-inline" style="align-items: center;">
           <div class="col-9">
-            <puls-oxy-line
-              class="small"
-              v-if="loaded"
-              :chart-data="spo2ChartData"
-            />
+            <puls-oxy-line class="small" v-if="loaded" :chart-data="spo2ChartData" />
           </div>
           <div class="col-3 spo2Color">
             <br />
@@ -67,13 +61,14 @@
               SpO<sub>2</sub>
             </b>
             <br />
-            <span
-              v-if="loaded && (lastSpo2 >= 100 || lastSpo2 < 90)"
-              class="bigFont notOkPulseOxy"
-              >{{ lastSpo2 }}</span
-            >
-            <span v-else class="bigFont">{{ lastSpo2 }}</span>
-            O<sub>2</sub>
+            <div v-if="loaded && (lastSpo2 >= 100 || lastSpo2 < 90)">
+              <div v-if="!soundPlayed">{{ this.playSound()}} {{ this.soundPlayed = true }}</div>
+              <span class="bigFont notOkPulseOxy">{{ lastSpo2 }}</span>
+            </div>
+            <div v-else>
+              {{ this.soundPlayed = false }}
+              <span class="bigFont">{{ lastSpo2 }}</span>
+            </div>O<sub>2</sub>
             <br />SpO<sub>2</sub>%
           </div>
         </form>
@@ -84,14 +79,16 @@
         <br />
         <b>Pulse</b>
         <br />
-        <span
-          v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
-          class="bigFont notOkPulseOxy"
-          >{{ lastPulse }}</span
-        >
-        <span v-else class="bigFont">{{ lastPulse }}</span>
+        <div v-if="loaded && (lastPulse > 130 || lastPulse < 50)">
+          <div v-if="!soundPlayed">{{ this.playSound()}} {{ this.soundPlayed = true }}</div>
+          <span class="bigFont notOkPulseOxy">{{ lastPulse }}</span>
+        </div>
+        <div v-else>
+          {{ this.soundPlayed = false }}
+          <span class="bigFont">{{ lastPulse }}</span>
+        </div>
         <svg
-          v-if="loaded && (lastPulse > 130 || lastPulse < 60)"
+          v-if="loaded && (lastPulse > 130 || lastPulse < 50)"
           width="1em"
           height="1em"
           viewBox="0 0 16 16"
@@ -126,11 +123,14 @@
           SpO<sub>2</sub>
         </b>
         <br />
-        <span
-          v-if="loaded && (lastSpo2 >= 100 || lastSpo2 < 90)"
-          class="bigFont notOkPulseOxy">{{ lastSpo2 }}
-        </span>
-        <span v-else class="bigFont">{{ lastSpo2 }}</span>
+        <div v-if="loaded && (lastSpo2 >= 100 || lastSpo2 < 90)">
+          <div v-if="!soundPlayed">{{ this.playSound()}} {{ this.soundPlayed = true }}</div>
+          <span class="bigFont notOkPulseOxy">{{ lastSpo2 }}</span>
+        </div>
+        <div v-else>
+          {{ this.soundPlayed = false }}
+          <span class="bigFont">{{ lastSpo2 }}</span>
+        </div>
         O<sub>2</sub>
         <br />SpO<sub>2</sub>%
       </div>
@@ -148,6 +148,7 @@ export default {
   data() {
     return {
       loaded: false,
+      soundPlayed: false,
       timer: "",
       pulseChartData: null,
       spo2ChartData: null,
@@ -185,6 +186,11 @@ export default {
     },
   },
   methods: {
+    // Play a warning sound when the pulse or the Spo2 rate is critical.
+    playSound() {
+      var sound = new Audio(require("../assets/warning_sound.mp3"));
+      return sound.play();
+    },
     // Request the PulseOxy data from the server and depending on whether the
     // pulseOxy data array of the chart already has 20 entries or not,
     // gets the last 20 entries or only gets the newest entry.
