@@ -1,6 +1,11 @@
 <template>
     <div class="gallery" id="mainDiv">
-        <canvas class="galleryCanvas" id="galleryCanvas"></canvas>
+        <canvas ref="canvas" class="galleryCanvas" id="galleryCanvas" width="640" height="480" :captures="capture"></canvas>
+        <ul>
+            <li v-for="screenshot in captures" :key="screenshot.id">
+                <img v-bind:src="screenshot" height="50" />
+            </li>
+        </ul>
         <!-- <div class="canvas" id="galleryCanvas"></div> -->
     </div>
 </template>
@@ -9,6 +14,10 @@
 // Gallery for storing and displaying all screenshots taken
 export default {
     name: "gallery",
+
+    props: {
+        captures: Array,
+    },
 };
 
 // ToDo: Array aus Bilder Scrollable
@@ -16,7 +25,14 @@ export default {
 </script>
 
 <style scoped>
-.gallery {
+#canvas {
+    display: none;
+}
+li {
+    display: inline;
+    padding: 5px;
+}
+/* .gallery {
     display: block;
     padding: 25px;
     box-sizing: border-box;
@@ -31,5 +47,5 @@ export default {
     overflow-y: auto;
     text-align: justify;
     overflow: scroll;
-}
+} */
 </style>
