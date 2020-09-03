@@ -46,11 +46,12 @@ router.get(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const patient = await PatientRepo.findMaxAmbulanceId();
-        if (!patient) {
-            throw new NotFoundResponse('AmbulanceId could not be found.');
+        var patientId = 1;
+        if (patient) {
+            patientId = patient.patientId + 1;
         }
 
-        return new SuccessResponse("Successful", patient.patientId + 1).send(res);
+        return new SuccessResponse("Successful", patientId).send(res);
     }),
 );
 
