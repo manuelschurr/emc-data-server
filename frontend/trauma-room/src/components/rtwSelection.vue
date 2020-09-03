@@ -204,7 +204,7 @@ export default {
                   `[${response.data.data.longitude}, ${response.data.data.latitude}]`
                 );
                 var currentRtw;
-                for (var c of this.ambulances) {
+                for (var c of this.activeAmbulances) {
                   if (response.data.data.ambulanceId === c.ambulanceId) {
                     currentRtw = c;
                   }
@@ -222,7 +222,7 @@ export default {
               this.stateMessage = JSON.stringify(error.message);
 
               //add I
-              for (var ea of this.ambulances) {
+              for (var ea of this.activeAmbulances) {
                 if (`"${ea.ambulanceId}"` === errorId) {
                   ea.eta = "Keine GNSS Daten verfügbar";
                   this.ambulancesWithETAs.push(ea);

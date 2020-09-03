@@ -47,7 +47,25 @@ export default {
     return {
       screenshots: [],
       output: "",
-      patient: Object
+      patient: {
+        status: {
+          a: {
+            notes: ""
+          },
+          b: {
+            notes: ""
+          },
+          c: {
+            notes: ""
+          },
+          d: {
+            notes: ""
+          },
+          e: {
+            notes: ""
+          }
+        }
+      }
     };
   },
   mounted() {

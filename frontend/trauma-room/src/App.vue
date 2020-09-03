@@ -64,9 +64,9 @@ export default {
       activeAmbulances: [
         // {
         //   ambulanceId: 3,
-        //   patientId: 0,
-        //   identifier: "Malteser Hilfsdienst - Mockobjekt",
-        // },
+        //   patientId: 1,
+        //   identifier: "Malteser Hilfsdienst - Mockobjekt"
+        // }
       ],
       inactiveAmbulances: [],
       loading: false,
@@ -86,6 +86,7 @@ export default {
     changeRTW: function() {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = Object;
+      this.activeAmbulances = [];
       this.Rtwdocument.long = null;
       this.Rtwdocument.lat = null;
       this.Rtwdocument.eta = null;
