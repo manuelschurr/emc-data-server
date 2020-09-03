@@ -6,7 +6,7 @@
           <div class="col-9">
             <puls-oxy-line class="small" v-if="loaded" :chart-data="pulseChartData" />
           </div>
-          <div v-if="lastPulse > 130 || lastPulse < 50" class="col-3 notOkPulseOxyColor">
+          <div v-if="lastPulse > 120 || lastPulse < 50" class="col-3 notOkPulseOxyColor">
             <br />
             <b>Pulse</b>
             <br />
@@ -87,7 +87,7 @@
       </div>
     </div>
     <div class="row" v-else>
-      <div v-if="lastPulse > 130 || lastPulse < 50" class="col notOkPulseOxyColor">
+      <div v-if="lastPulse > 120 || lastPulse < 50" class="col notOkPulseOxyColor">
         <br />
         <b>Pulse</b>
         <br />
