@@ -11,7 +11,7 @@
             <b>Pulse</b>
             <br />
             <div v-if="loaded">
-              <div v-show="false" v-if="!pulseSoundPlayed">{{ this.playSound()}} {{ this.pulseSoundPlayed = true }}</div>
+              <div v-if="!pulseSoundPlayed" class="hide">{{ this.playSound()}} {{ this.pulseSoundPlayed = true }}</div>
               <span class="bigFont">{{ lastPulse }}</span>
             </div>
             <svg
@@ -66,7 +66,7 @@
             </b>
             <br />
             <div v-if="loaded">
-              <div v-show="false" v-if="!spo2SoundPlayed">{{ this.playSound()}} {{ this.spo2SoundPlayed = true }}</div>
+              <div v-if="!spo2SoundPlayed" class="hide">{{ this.playSound()}} {{ this.spo2SoundPlayed = true }}</div>
               <span class="bigFont">{{ lastSpo2 }}</span>
             </div>O<sub>2</sub>
             <br />SpO<sub>2</sub>%
@@ -92,7 +92,7 @@
         <b>Pulse</b>
         <br />
         <div v-if="loaded">
-          <div v-show="false" v-if="!pulseSoundPlayed">{{ this.playSound()}} {{ this.pulseSoundPlayed = true }}</div>
+          <div v-if="!pulseSoundPlayed" class="hide">{{ this.playSound()}} {{ this.pulseSoundPlayed = true }}</div>
           <span class="bigFont">{{ lastPulse }}</span>
         </div>
         <svg
@@ -140,7 +140,7 @@
         </b>
         <br />
         <div v-if="loaded">
-          <div v-show="false" v-if="!spo2SoundPlayed">{{ this.playSound()}} {{ this.spo2SoundPlayed = true }}</div>
+          <div v-if="!spo2SoundPlayed" class="hide">{{ this.playSound()}} {{ this.spo2SoundPlayed = true }}</div>
           <span class="bigFont">{{ lastSpo2 }}</span>
         </div>O<sub>2</sub>
         <br />SpO<sub>2</sub>%
@@ -460,5 +460,8 @@ export default {
 }
 .bigFont {
   font-size: 64px;
+}
+.hide {
+  visibility: hidden;
 }
 </style>
