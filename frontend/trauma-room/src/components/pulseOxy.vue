@@ -11,7 +11,6 @@
             <b>Pulse</b>
             <br />
             <div v-if="loaded">
-              <div v-if="!pulseSoundPlayed" class="hide">{{ this.playSound()}} {{ this.pulseSoundPlayed = true }}</div>
               <span class="bigFont">{{ lastPulse }}</span>
             </div>
             <svg
@@ -66,7 +65,6 @@
             </b>
             <br />
             <div v-if="loaded">
-              <div v-if="!spo2SoundPlayed" class="hide">{{ this.playSound()}} {{ this.spo2SoundPlayed = true }}</div>
               <span class="bigFont">{{ lastSpo2 }}</span>
             </div>O<sub>2</sub>
             <br />SpO<sub>2</sub>%
@@ -92,7 +90,6 @@
         <b>Pulse</b>
         <br />
         <div v-if="loaded">
-          <div v-if="!pulseSoundPlayed" class="hide">{{ this.playSound()}} {{ this.pulseSoundPlayed = true }}</div>
           <span class="bigFont">{{ lastPulse }}</span>
         </div>
         <svg
@@ -140,7 +137,6 @@
         </b>
         <br />
         <div v-if="loaded">
-          <div v-if="!spo2SoundPlayed" class="hide">{{ this.playSound()}} {{ this.spo2SoundPlayed = true }}</div>
           <span class="bigFont">{{ lastSpo2 }}</span>
         </div>O<sub>2</sub>
         <br />SpO<sub>2</sub>%
@@ -419,8 +415,16 @@ export default {
           .catch(function (error) {
             console.log("AXIOS ERROR: " + error);
           })
-          .finally(() => (this.loading = false));
-        await this.$nextTick();
+          .finally(() => (vm.loading = false));
+        await vm.$nextTick();
+      }
+      if (!vm.pulseSoundPlayed && (vm.lastPulse > 120 || vm.lastPulse < 50)) {
+        vm.playSound();
+        vm.pulseSoundPlayed = true;
+      }
+      if (!vm.spo2SoundPlayed && vm.lastSpo2 < 90) {
+        vm.playSound();
+        vm.spo2SoundPlayed = true; 
       }
     },
     // When the PulseOxy component is deactivated, the data is cleared and the refreshing timer is stopped.
@@ -460,8 +464,5 @@ export default {
 }
 .bigFont {
   font-size: 64px;
-}
-.hide {
-  visibility: hidden;
 }
 </style>
