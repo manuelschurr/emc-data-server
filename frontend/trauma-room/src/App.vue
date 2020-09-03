@@ -14,7 +14,8 @@
       <RtwSelection
         v-if="!rtwSelected && !loading"
         :selectRTW="selectRTW"
-        :ambulances="rtwList"
+        :activeAmbulances="activeAmbulances"
+        :inactiveAmbulances="inactiveAmbulances"
         :Rtwdocument="Rtwdocument"
       />
       <div v-if="rtwSelected">
@@ -60,13 +61,14 @@ export default {
         lat: null,
         eta: null
       },
-      rtwList: [
+      activeAmbulances: [
         // {
         //   ambulanceId: 3,
         //   patientId: 0,
         //   identifier: "Malteser Hilfsdienst - Mockobjekt",
         // },
       ],
+      inactiveAmbulances: [],
       loading: false,
       selectedRTW: Object,
       rtwLocations: [`[${8.487255}, ${49.492427}]`]
@@ -189,8 +191,14 @@ export default {
     axios
       .get(rtwAPI)
       .then(response => {
-        this.rtwList = response.data.data;
-        for (var r of this.rtwList) {
+        for (var ambulance of response.data.data) {
+          if (ambulance.patientId != 0) {
+            this.activeAmbulances.push(ambulance);
+          } else {
+            this.inactiveAmbulances.push(ambulance);
+          }
+        }
+        for (var r of this.activeAmbulances) {
           r.eta = 0;
         }
       })
