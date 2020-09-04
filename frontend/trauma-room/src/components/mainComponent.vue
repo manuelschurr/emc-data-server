@@ -10,7 +10,17 @@
         ></component>
       </div>
     </div>
-    <div class="row" v-if="componentArray.length >= 2">
+    <div v-else-if="componentArray.length === 2">
+      <div v-for="child in componentArray" :key="child.name">
+        <component
+          :is="child"
+          :Rtwdocument="Rtwdocument"
+          :patientId="patientId"
+          :selectedElements="componentArray.length"
+        ></component>
+      </div>
+    </div>
+    <div class="row" v-else-if="componentArray.length > 2">
       <div v-for="child in componentArray" :key="child.name">
         <component
           :is="child"
@@ -27,7 +37,6 @@
 import PulseOxy from "./pulseOxy.vue";
 import Stream from "./stream.vue";
 import Maps from "./maps.vue";
-//import MainComponent from "./components/mainComponent.vue";
 export default {
   components: {
     PulseOxy,
@@ -49,6 +58,9 @@ export default {
 
     this.$root.$on("selectedComponent", (data) => {
       this.componentArray = data;
+      if (this.componentArray[0] != PulseOxy) {
+        this.componentArray.push(PulseOxy);
+      }
     });
   },
 };
