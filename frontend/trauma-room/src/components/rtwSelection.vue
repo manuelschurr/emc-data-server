@@ -105,7 +105,7 @@ export default {
     rtwLocations: [`[${8.487255}, ${49.492427}]`],
     stateMessage: "Berechne geschätzte Ankunftszeit",
     apiKeyOpenRoute: "",
-    openRouteError: true,
+    openRouteError: false,
     apiButtonIsDisabled: true
   }),
   methods: {
