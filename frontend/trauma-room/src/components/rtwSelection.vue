@@ -11,6 +11,19 @@
         />
         Universitätsklinikum Mannheim
       </h1>
+      <div v-if="openRouteError">
+        <i class="fas fa-exclamation-triangle"></i>
+        Der API-Token ist abgelaufen. Bitte neuen hinzufügen.
+        <input size="60" v-model="apiKeyOpenRoute" />
+        <button
+          type="button"
+          class="btn btn-primary"
+          v-on:click="changeApiToken"
+        >
+          Schließen
+        </button>
+        <hr style="width: 100%; text-align: left; margin-left: 0;" />
+      </div>
       <ul v-if="activeAmbulances.length">
         <div v-if="ambulancesWithETAs.length">
           <li
@@ -89,18 +102,26 @@ export default {
     ambulancesWithNoETA: [],
     rtwLocations: [`[${8.487255}, ${49.492427}]`],
     stateMessage: "Berechne geschätzte Ankunftszeit",
-    archive: false
+    apiKeyOpenRoute: String,
+    openRouteError: false
   }),
   methods: {
-    classArchiveButton: function() {
-      if (this.archive) {
-        return "btn btn-success";
-      } else {
-        return "btn btn-secondary";
-      }
-    },
-    toggleArchive: function() {
-      this.archive = !this.archive;
+    getApiKey: function() {
+      var context = this;
+      var config = {
+        method: "get",
+        //TO CHANGE
+        url: "https://localhost:3000/apiKey/findAll",
+        headers: {}
+      };
+
+      axios(config)
+        .then(function(response) {
+          context.apiKeyOpenRoute = response.data.data[0].value;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
     computeETA: function(currentRtw) {
       let request = new XMLHttpRequest();
@@ -165,7 +186,9 @@ export default {
                 });
             } else {
               currentRtw.eta = "Fehler bei Routen Schnittstelle";
+              context.stateMessage = "Fehler bei Routen Schnittstelle";
               context.ambulancesWithETAs.push(currentRtw);
+              context.openRouteError = true;
             }
           }
         };
@@ -235,6 +258,7 @@ export default {
     }
   },
   mounted: function() {
+    this.getApiKey();
     this.getGnssData();
   }
 };
