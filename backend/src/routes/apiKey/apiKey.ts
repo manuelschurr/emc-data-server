@@ -51,7 +51,7 @@ router.put(
         if (req.body.hasOwnProperty("value")) apiKey.value = req.body.value
 
         await ApiKeyRepo.update(apiKey)
-        new SuccessResponse("Ambulance updated successfully", apiKey).send(res)
+        new SuccessResponse("API Key updated successfully", apiKey).send(res)
     }),
 )
 

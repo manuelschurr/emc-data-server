@@ -13,14 +13,16 @@
       </h1>
       <div v-if="openRouteError">
         <i class="fas fa-exclamation-triangle"></i>
-        Der API-Token ist abgelaufen. Bitte neuen hinzufügen.
+        Der API-Token ist abgelaufen. Bitte updaten.
         <input size="60" v-model="apiKeyOpenRoute" />
         <button
           type="button"
+          id="btn-api-key"
           class="btn btn-primary"
-          v-on:click="changeApiToken"
+          v-on:click="updateApiKey"
+          :disabled="apiButtonIsDisabled"
         >
-          Schließen
+          Update
         </button>
         <hr style="width: 100%; text-align: left; margin-left: 0;" />
       </div>
@@ -102,10 +104,33 @@ export default {
     ambulancesWithNoETA: [],
     rtwLocations: [`[${8.487255}, ${49.492427}]`],
     stateMessage: "Berechne geschätzte Ankunftszeit",
-    apiKeyOpenRoute: String,
-    openRouteError: false
+    apiKeyOpenRoute: "",
+    openRouteError: true,
+    apiButtonIsDisabled: true
   }),
   methods: {
+    updateApiKey: function() {
+      var context = this;
+      var config = {
+        method: "put",
+        //TO CHANGE
+        url: "https://localhost:3000/apiKey/update/1",
+        headers: {},
+        data: {
+          apiKeyId: 1,
+          value: this.apiKeyOpenRoute
+        }
+      };
+
+      axios(config)
+        .then(function(response) {
+          context.openRouteError = false;
+          console.log(JSON.stringify(response.data));
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
     getApiKey: function() {
       var context = this;
       var config = {
@@ -260,6 +285,17 @@ export default {
   mounted: function() {
     this.getApiKey();
     this.getGnssData();
+  },
+  watch: {
+    apiKeyOpenRoute: {
+      handler() {
+        if (this.apiKeyOpenRoute.length === 56) {
+          this.apiButtonIsDisabled = false;
+        } else {
+          this.apiButtonIsDisabled = true;
+        }
+      }
+    }
   }
 };
 </script>
