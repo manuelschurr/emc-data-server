@@ -20,7 +20,7 @@
             <div v-if="ambulance.patientId">
               <p>
                 <button @click="selectRTW(ambulance)">
-                  <img src="../assets/ambulance.png" width="100" />
+                  <img src="../assets/umm_team_logo.png" width="100" />
                   <br />
                   <br />
                   RTW - {{ ambulance.identifier }}
