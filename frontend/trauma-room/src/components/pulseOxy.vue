@@ -394,7 +394,7 @@ export default {
                 datasets: [
                   {
                     label: "Pulse",
-                    borderColor: "#36d7e7",
+                    borderColor: "#4db6ac",
                     pointBackgroundColor: "white",
                     borderWidth: 2,
                     pointBorderColor: "#36d7e7",
@@ -409,7 +409,7 @@ export default {
                 datasets: [
                   {
                     label: "Spo2",
-                    borderColor: "#36c1e7",
+                    borderColor: "#1d4189",
                     pointBackgroundColor: "white",
                     borderWidth: 2,
                     pointBorderColor: "#36c1e7",
@@ -465,13 +465,13 @@ export default {
 .pulseColor {
   margin: 20px 0 20px;
   align-self: stretch;
-  background-color: #36d7e7;
+  background-color: #4db6ac;
   color: white;
 }
 .spo2Color {
   margin: 20px 0 20px;
   align-self: stretch;
-  background-color: #36c1e7;
+  background-color: #1d4189;
   color: white;
 }
 .small {

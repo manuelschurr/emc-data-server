@@ -1,7 +1,9 @@
 <template>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">
-            <img alt="Universitätsklinikum Mannheim logo" src="../assets/umm_logo.png" height="50" width="150" />
+            Team
+            <img alt="Teamproject University of Mannheim Logo" src="../assets/project_logo.png" height="45" width="75" />
+            Uni Mannheim
         </a>
         <form class="form-inline">
             <button class="btn btn-outline-dark rtwButton btn-sm" type="button" @click="changeRTW">
