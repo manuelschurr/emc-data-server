@@ -6,7 +6,6 @@ export const COLLECTION_NAME = "apiKey"
 export default interface ApiKey extends Document {
     apiKeyId: number
     value: number
-    timestamp: number
 }
 
 const schema = new Schema(
@@ -17,10 +16,6 @@ const schema = new Schema(
         },
         value: {
             type: Schema.Types.String,
-            required: true,
-        },
-        timestamp: {
-            type: Schema.Types.Date,
             required: true,
         },
     },

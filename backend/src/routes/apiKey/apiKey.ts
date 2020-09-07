@@ -30,7 +30,6 @@ router.post(
         const { apiKey: createdApiKey } = await ApiKeyRepo.create({
             apiKeyId: req.body.apiKeyId,
             value: req.body.value,
-            timestamp: req.body.timestamp,
         } as ApiKey)
 
         new SuccessResponse("ApiKey successfully created", {
@@ -50,7 +49,6 @@ router.put(
         }
 
         if (req.body.hasOwnProperty("value")) apiKey.value = req.body.value
-        if (req.body.hasOwnProperty("timestamp")) apiKey.timestamp = req.body.timestamp
 
         await ApiKeyRepo.update(apiKey)
         new SuccessResponse("Ambulance updated successfully", apiKey).send(res)
