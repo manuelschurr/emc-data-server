@@ -58,7 +58,7 @@ export default {
 
     this.$root.$on("selectedComponent", (data) => {
       this.componentArray = data;
-      if (this.componentArray[0] != PulseOxy) {
+      if (this.componentArray.length <= 2 && this.componentArray[0] != PulseOxy) {
         this.componentArray.push(PulseOxy);
       }
     });
