@@ -106,7 +106,8 @@ export default {
     rtwLocations: [`[${8.487255}, ${49.492427}]`],
     stateMessage: "Berechne geschätzte Ankunftszeit",
     openRouteError: false,
-    apiButtonIsDisabled: true
+    apiButtonIsDisabled: true,
+    token: ""
   }),
   methods: {
     updateApiKey: function() {
@@ -114,8 +115,8 @@ export default {
       var config = {
         method: "put",
         //TO CHANGE
-        url: "https://134.155.48.211:3000/apiKey/update/1",
-        headers: {},
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/update/1",
+        headers: { "x-access-token": this.token },
         data: {
           apiKeyId: 1,
           value: this.apiKeyOpenRoute
@@ -140,8 +141,8 @@ export default {
       var config = {
         method: "get",
         //TO CHANGE
-        url: "https://134.155.48.211:3000/apiKey/findAll",
-        headers: {}
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/findAll",
+        headers: { "x-access-token": this.token }
       };
 
       axios(config)
@@ -181,8 +182,9 @@ export default {
               let config = {
                 method: "get",
                 url:
-                  "https://134.155.48.211:3000/patient/findByAmbulanceId/" +
-                  currentRtw.ambulanceId
+                  "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByAmbulanceId/" +
+                  currentRtw.ambulanceId,
+                headers: { "x-access-token": this.token }
               };
               var patientData = {};
               axios(config)
@@ -260,8 +262,9 @@ export default {
           let config = {
             method: "get",
             url:
-              "https://134.155.48.211:3000/ambulance/findGnssByAmbulanceId/" +
-              rtw.ambulanceId
+              "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+              rtw.ambulanceId,
+            headers: { "x-access-token": this.token }
           };
 
           axios(config)
@@ -305,6 +308,9 @@ export default {
   },
   mounted: function() {
     //this.getApiKey();
+    this.$root.$on("token", data => {
+      this.token = data;
+    });
     this.getGnssData();
   },
   watch: {
