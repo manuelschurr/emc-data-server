@@ -111,7 +111,7 @@ export default {
         method: "put",
         //TO CHANGE
         url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/update/1",
-        headers: { "x-access-token": this.token }
+        headers: { "x-access-token": this.token },
         data: {
           apiKeyId: 1,
           value: this.apiKeyOpenRoute
@@ -167,7 +167,7 @@ export default {
         url:
           "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
           this.selectedRTW.ambulanceId,
-          headers: { "x-access-token": this.token }
+        headers: { "x-access-token": this.token }
       };
 
       axios(config)
