@@ -48,19 +48,24 @@ export default {
       imageStrings: [],
       chosenImage: null,
       loading: false,
+      token: ""
     };
   },
   props: {
-    selectedElements: Number,
+    selectedElements: Number
   },
   mounted() {
+    this.$root.$on("token", data => {
+      this.token = data;
+    });
+
     this.fillData();
   },
   created() {
     this.timer = setInterval(this.fillData, 5000);
   },
   methods: {
-    clickMethod: function (event) {
+    clickMethod: function(event) {
       this.chosenImage = event.currentTarget.src;
     },
     async fillData() {
@@ -71,12 +76,12 @@ export default {
       var config = {
         method: "get",
         //"https://localhost:3000/img/all",
-        url: "https://134.155.48.211:3000/img/all",
-        headers: {},
-        data: body,
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/img/all",
+        headers: { "x-access-token": this.token },
+        data: body
       };
 
-      axios(config).then(function (response) {
+      axios(config).then(function(response) {
         if (response.data.statusCode === "10000") {
           var newImageStrings = response.data.data;
           var newToAdd = [];
@@ -91,12 +96,14 @@ export default {
             var configGetImages = {
               method: "get",
               //"https://localhost:3000/img/single/" + imageStr,
-              url: "https://134.155.48.211:3000/img/single/" + imageStr,
+              url:
+                "https://wifo1-29.bwl.uni-mannheim.de:3000/img/single/" +
+                imageStr,
               responseType: "blob",
-              headers: {},
-              data: bodyTwo,
+              headers: { "x-access-token": this.token },
+              data: bodyTwo
             };
-            axios(configGetImages).then(function (responseImages) {
+            axios(configGetImages).then(function(responseImages) {
               if (response.data.statusCode === "10000") {
                 var pic = URL.createObjectURL(responseImages.data);
                 vm.captures.push(pic);
@@ -106,8 +113,8 @@ export default {
           }
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -1,14 +1,19 @@
 <template>
   <div>
     <div class="row align-items-start" v-if="selectedElements == 1">
-      <div
-        v-if="pulseData.length == 0 && spo2Data.length == 0"
-      >Keine Puls und SpO2 Daten verfügbar, die Komponente kann aktuell nicht geladen werden.</div>
+      <div v-if="pulseData.length == 0 && spo2Data.length == 0">
+        Keine Puls und SpO2 Daten verfügbar, die Komponente kann aktuell nicht
+        geladen werden.
+      </div>
       <div v-else>
         <div class="col-12">
           <form class="form-inline" style="align-items: center;">
             <div class="col-9" width="100%">
-              <puls-oxy-line class="pulseLineMargin" v-if="loaded" :chart-data="pulseChartData"/>
+              <puls-oxy-line
+                class="pulseLineMargin"
+                v-if="loaded"
+                :chart-data="pulseChartData"
+              />
             </div>
             <div
               v-if="lastPulse != '' && (lastPulse > 120 || lastPulse < 50)"
@@ -62,29 +67,32 @@
         <div class="col-12">
           <form class="form-inline" style="align-items: center;">
             <div class="col-9">
-              <puls-oxy-line class="pulseLineMargin" v-if="loaded" :chart-data="spo2ChartData" />
+              <puls-oxy-line
+                class="pulseLineMargin"
+                v-if="loaded"
+                :chart-data="spo2ChartData"
+              />
             </div>
-            <div v-if="lastSpo2 != '' && lastSpo2 < 90" class="col-3 notOkPulseOxyColor">
+            <div
+              v-if="lastSpo2 != '' && lastSpo2 < 90"
+              class="col-3 notOkPulseOxyColor"
+            >
               <br />
-              <b>
-                SpO<sub>2</sub>
-              </b>
+              <b> SpO<sub>2</sub> </b>
               <br />
               <div v-if="loaded">
                 <span class="bigFont">{{ lastSpo2 }}</span>
-              </div>O<sub>2</sub>
-              <br />SpO<sub>2</sub>%
+              </div>
+              O<sub>2</sub> <br />SpO<sub>2</sub>%
             </div>
             <div v-else class="col-3 spo2Color">
               <br />
-              <b>
-                SpO<sub>2</sub>
-              </b>
+              <b> SpO<sub>2</sub> </b>
               <br />
               <div v-if="loaded">
                 <span class="bigFont">{{ lastSpo2 }}</span>
-              </div>O<sub>2</sub>
-              <br />SpO<sub>2</sub>%
+              </div>
+              O<sub>2</sub> <br />SpO<sub>2</sub>%
             </div>
           </form>
         </div>
@@ -139,27 +147,26 @@
         </svg>
         <br />PR/min
       </div>
-      <div v-if="lastSpo2 != '' && lastSpo2 < 90" class="col notOkPulseOxyColor">
+      <div
+        v-if="lastSpo2 != '' && lastSpo2 < 90"
+        class="col notOkPulseOxyColor"
+      >
         <br />
-        <b>
-          SpO<sub>2</sub>
-        </b>
+        <b> SpO<sub>2</sub> </b>
         <br />
         <div v-if="loaded">
           <span v-show="loaded" class="bigFont">{{ lastSpo2 }}</span>
-        </div>O<sub>2</sub>
-        <br />SpO<sub>2</sub>%
+        </div>
+        O<sub>2</sub> <br />SpO<sub>2</sub>%
       </div>
       <div v-else class="col spo2Color">
         <br />
-        <b>
-          SpO<sub>2</sub>
-        </b>
+        <b> SpO<sub>2</sub> </b>
         <br />
         <div v-if="loaded">
           <span class="bigFont">{{ lastSpo2 }}</span>
-        </div>O<sub>2</sub>
-        <br />SpO<sub>2</sub>%
+        </div>
+        O<sub>2</sub> <br />SpO<sub>2</sub>%
       </div>
     </div>
   </div>
@@ -186,14 +193,18 @@ export default {
       spo2Data: [],
       lastSpo2: "",
       spo2Labels: [],
+      token: ""
     };
   },
   props: {
     patientId: Number,
-    selectedElements: Number,
+    selectedElements: Number
   },
   // Fill the chart with data and display it
   mounted() {
+    this.$root.$on("token", data => {
+      this.token = data;
+    });
     this.fillData();
   },
   // Refreshes the PulseOxy chart every second with the data from the server.
@@ -211,7 +222,7 @@ export default {
       var lastSpo2Data = this.spo2Data[this.spo2Data.length - 1];
       this.$root.$emit("lastSpo2Data", lastSpo2Data);
       return lastSpo2Data;
-    },
+    }
   },
   methods: {
     // Play a warning sound when the pulse or the Spo2 rate is critical.
@@ -232,29 +243,30 @@ export default {
         var config = {
           method: "get",
           url:
-            "https://134.155.48.211:3000/patient/findByPatientId/" +
+            "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByPatientId/" +
             vm.patientId,
-          headers: {},
-          data: body,
+          headers: { "x-access-token": this.token },
+          data: body
         };
 
         axios(config)
-          .then(function (responsePatient) {
+          .then(function(responsePatient) {
             if (responsePatient.data.statusCode === "10000") {
               // When the request is successful, the new request gets all the stored data of the patient.
               var bodySecond = "";
               var configSecond = {
                 method: "get",
                 url:
-                  "https://134.155.48.211:3000/patient/findPulsoxyByPatientIdAndTimestamp?patientId=" +
+                  "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findPulsoxyByPatientIdAndTimestamp?patientId=" +
                   vm.patientId +
                   "&timestamp=" +
                   responsePatient.data.data.createdAt,
-                headers: {},
-                data: bodySecond,
+
+                headers: { "x-access-token": this.token },
+                data: bodySecond
               };
 
-              axios(configSecond).then(function (responsePulseOxy) {
+              axios(configSecond).then(function(responsePulseOxy) {
                 if (responsePulseOxy.data.statusCode === "10000") {
                   // When the request is successful, the pulseOxy data for the two charts is filled
                   // depending on whether there are already 20 entries in the server database or not.
@@ -306,9 +318,9 @@ export default {
                         pointBorderColor: "#36d7e7",
                         backgroundColor: "transparent",
                         pointRadius: 0,
-                        data: vm.pulseData,
-                      },
-                    ],
+                        data: vm.pulseData
+                      }
+                    ]
                   };
                   vm.spo2ChartData = {
                     labels: vm.pulseLabels,
@@ -321,9 +333,9 @@ export default {
                         pointBorderColor: "#36c1e7",
                         backgroundColor: "transparent",
                         pointRadius: 0,
-                        data: vm.spo2Data,
-                      },
-                    ],
+                        data: vm.spo2Data
+                      }
+                    ]
                   };
                   vm.lastPulse = vm.lastPulseCompute;
                   vm.lastSpo2 = vm.lastSpo2Compute;
@@ -332,7 +344,7 @@ export default {
               });
             }
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log("AXIOS ERROR: " + error);
           })
           .finally(() => (this.loading = false));
@@ -344,14 +356,15 @@ export default {
         var configPulseoxy = {
           method: "get",
           url:
-            "https://134.155.48.211:3000/patient/findPulsoxyByPatientId/" +
+            "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findPulsoxyByPatientId/" +
             vm.patientId,
-          headers: {},
-          data: bodyPulseoxy,
+
+          headers: { "x-access-token": this.token },
+          data: bodyPulseoxy
         };
 
         axios(configPulseoxy)
-          .then(function (responsePulseOxy) {
+          .then(function(responsePulseOxy) {
             if (responsePulseOxy.data.statusCode === "10000") {
               // When the request is successful, the pulseOxy chart arrays are updated
               // with the latest data and if the array contains more than 20 entries,
@@ -396,9 +409,9 @@ export default {
                     pointBorderColor: "#36d7e7",
                     backgroundColor: "transparent",
                     pointRadius: 0,
-                    data: vm.pulseData,
-                  },
-                ],
+                    data: vm.pulseData
+                  }
+                ]
               };
               vm.spo2ChartData = {
                 labels: vm.pulseLabels,
@@ -411,16 +424,16 @@ export default {
                     pointBorderColor: "#36c1e7",
                     backgroundColor: "transparent",
                     pointRadius: 0,
-                    data: vm.spo2Data,
-                  },
-                ],
+                    data: vm.spo2Data
+                  }
+                ]
               };
               vm.lastPulse = vm.lastPulseCompute;
               vm.lastSpo2 = vm.lastSpo2Compute;
               vm.loaded = true;
             }
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log("AXIOS ERROR: " + error);
           })
           .finally(() => (vm.loading = false));
@@ -433,17 +446,17 @@ export default {
       ) {
         vm.playSound();
         vm.pulseSoundPlayed = true;
-      }
-      else if (vm.pulseSoundPlayed &&
+      } else if (
+        vm.pulseSoundPlayed &&
         vm.lastPulse != "" &&
-        (vm.lastPulse < 120 || vm.lastPulse > 50)) {
-          vm.pulseSoundPlayed = false;
+        (vm.lastPulse < 120 || vm.lastPulse > 50)
+      ) {
+        vm.pulseSoundPlayed = false;
       }
       if (!vm.spo2SoundPlayed && vm.lastSpo2 != "" && vm.lastSpo2 < 90) {
         vm.playSound();
         vm.spo2SoundPlayed = true;
-      }
-      else if (vm.spo2SoundPlayed && vm.lastSpo2 != "" && vm.lastSpo2 > 90) {
+      } else if (vm.spo2SoundPlayed && vm.lastSpo2 != "" && vm.lastSpo2 > 90) {
         vm.spo2SoundPlayed = false;
       }
     },
@@ -454,8 +467,8 @@ export default {
         (this.spo2Data = []),
         (this.pulseChartData = null),
         (this.spo2ChartData = null);
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -463,7 +476,7 @@ export default {
 .notOkPulseOxyColor {
   margin: 20px 0 20px;
   align-self: stretch;
-  background-color: #DC3545;
+  background-color: #dc3545;
   color: white;
 }
 .pulseColor {

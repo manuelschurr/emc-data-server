@@ -170,6 +170,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      token: "",
       message: null,
       notesABCDE: "",
       showModal: false,
@@ -217,6 +218,9 @@ export default {
     patientId: Number
   },
   mounted() {
+    this.$root.$on("token", data => {
+      this.token = data;
+    });
     this.fillData();
     this.retrieveAudio();
   },
@@ -233,9 +237,9 @@ export default {
       var config = {
         method: "get",
         url:
-          "https://134.155.48.211:3000/patient/findByPatientId/" +
+          "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByPatientId/" +
           this.patientId,
-        headers: {},
+        headers: { "x-access-token": this.token },
         data: data
       };
 
