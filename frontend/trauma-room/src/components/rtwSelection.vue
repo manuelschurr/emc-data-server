@@ -96,7 +96,8 @@ export default {
   props: {
     selectRTW: Function,
     activeAmbulances: Array,
-    inactiveAmbulances: Array
+    inactiveAmbulances: Array,
+    apiKeyOpenRoute: String
   },
   data: () => ({
     arrivalTimes: [],
@@ -104,7 +105,6 @@ export default {
     ambulancesWithNoETA: [],
     rtwLocations: [`[${8.487255}, ${49.492427}]`],
     stateMessage: "Berechne geschätzte Ankunftszeit",
-    apiKeyOpenRoute: "",
     openRouteError: false,
     apiButtonIsDisabled: true
   }),
@@ -126,8 +126,10 @@ export default {
         .then(function(response) {
           context.openRouteError = false;
           context.getGnssData();
-          //context.$forceUpdate;
           console.log(JSON.stringify(response.data));
+          context.$root.$emit("apiToken", context.apiKeyOpenRoute);
+          context.$root.$emit("tokenStatus", context.openRouteError);
+          context.$forceUpdate;
         })
         .catch(function(error) {
           console.log(error);
@@ -145,6 +147,7 @@ export default {
       axios(config)
         .then(function(response) {
           context.apiKeyOpenRoute = response.data.data[0].value;
+          context.$root.$emit("apiToken", context.apiKeyOpenRoute);
           context.getGnssData();
         })
         .catch(function(error) {
@@ -219,10 +222,19 @@ export default {
                   }
                 });
             } else {
+              var contains = false;
               currentRtw.eta = "Fehler bei Routen Schnittstelle";
               context.stateMessage = "Fehler bei Routen Schnittstelle";
-              context.ambulancesWithETAs.push(currentRtw);
+              for (var a of context.ambulancesWithETAs) {
+                if (currentRtw._id === a._id) {
+                  contains = true;
+                }
+              }
+              if (!contains) {
+                context.ambulancesWithETAs.push(currentRtw);
+              }
               context.openRouteError = true;
+              context.$root.$emit("tokenStatus", context.openRouteError);
             }
           }
         };

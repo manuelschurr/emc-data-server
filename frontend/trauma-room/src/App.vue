@@ -17,10 +17,27 @@
         :activeAmbulances="activeAmbulances"
         :inactiveAmbulances="inactiveAmbulances"
         :Rtwdocument="Rtwdocument"
+        :apiKeyOpenRoute="apiKeyOpenRoute"
       />
       <div v-if="rtwSelected">
         <Header :changeRTW="changeRTW" />
         <PatientData :patientId="selectedRTW.patientId" />
+        <div v-if="openRouteError">
+          <i class="fas fa-exclamation-triangle"></i>
+          Der API-Token ist abgelaufen. Bitte updaten.
+          <input size="60" v-model="apiKeyOpenRoute" />
+          <button
+            type="button"
+            id="btn-api-key"
+            class="btn btn-primary"
+            v-on:click="updateApiKey"
+            :disabled="apiButtonIsDisabled"
+          >
+            Update
+          </button>
+          <hr style="width: 100%; text-align: left; margin-left: 0;" />
+        </div>
+
         <div class="container-fluid" v-if="rtwSelected">
           <div class="row align-items-start">
             <div class="col-2">
@@ -71,7 +88,10 @@ export default {
       inactiveAmbulances: [],
       loading: false,
       selectedRTW: Object,
-      rtwLocations: [`[${8.487255}, ${49.492427}]`]
+      rtwLocations: [`[${8.487255}, ${49.492427}]`],
+      apiKeyOpenRoute: "",
+      openRouteError: false,
+      apiButtonIsDisabled: true
     };
   },
   components: {
@@ -83,6 +103,47 @@ export default {
     RtwSelection
   },
   methods: {
+    updateApiKey: function() {
+      var context = this;
+      var config = {
+        method: "put",
+        //TO CHANGE
+        url: "https://localhost:3000/apiKey/update/1",
+        headers: {},
+        data: {
+          apiKeyId: 1,
+          value: this.apiKeyOpenRoute
+        }
+      };
+
+      axios(config)
+        .then(function(response) {
+          context.openRouteError = false;
+          context.getGnssdata();
+          console.log(JSON.stringify(response.data));
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    getApiKey: function() {
+      var context = this;
+      var config = {
+        method: "get",
+        //TO CHANGE
+        url: "https://localhost:3000/apiKey/findAll",
+        headers: {}
+      };
+
+      axios(config)
+        .then(function(response) {
+          context.apiKeyOpenRoute = response.data.data[0].value;
+          context.getGnssdata();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
     changeRTW: function() {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = Object;
@@ -90,7 +151,6 @@ export default {
       this.Rtwdocument.long = null;
       this.Rtwdocument.lat = null;
       this.Rtwdocument.eta = null;
-      this.$forceUpdate();
     },
     selectRTW: function(rtw) {
       this.rtwSelected = !this.rtwSelected;
@@ -137,7 +197,7 @@ export default {
         request.setRequestHeader("Content-Type", "application/json");
         request.setRequestHeader(
           "Authorization",
-          "5b3ce3597851110001cf624808d1f959df534ac3adc0620256a68ec7" //API Key
+          this.apiKeyOpenRoute //API Key
         );
         let context = this;
         request.onreadystatechange = function() {
@@ -147,10 +207,11 @@ export default {
                 JSON.parse(request.responseText).durations[1][0]
               );
               context.Rtwdocument.eta = context.selectedRTW.eta;
+              console.log("Test request");
               context.$forceUpdate();
             } else {
               context.selectedRTW.eta = "Fehler bei Routen Schnittstelle";
-              context.$forceUpdate();
+              context.openRouteError = true;
             }
           }
         };
@@ -183,9 +244,27 @@ export default {
           clearInterval(this.interval);
         }
       }
+    },
+    apiKeyOpenRoute: {
+      handler() {
+        if (this.apiKeyOpenRoute.length === 56) {
+          this.apiButtonIsDisabled = false;
+        } else {
+          this.apiButtonIsDisabled = true;
+        }
+      }
     }
   },
   mounted: function() {
+    this.$root.$on("tokenStatus", data => {
+      this.openRouteError = data;
+    });
+
+    this.$root.$on("apiToken", data => {
+      this.apiKeyOpenRoute = data;
+    });
+
+    this.getApiKey();
     // Consume REST-API
     let rtwAPI = "https://134.155.48.211:3000/ambulance/findAll";
 
