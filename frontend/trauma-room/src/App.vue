@@ -86,10 +86,11 @@ export default {
     changeRTW: function() {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = Object;
-      this.activeAmbulances = [];
+      //this.activeAmbulances = [];
       this.Rtwdocument.long = null;
       this.Rtwdocument.lat = null;
       this.Rtwdocument.eta = null;
+      this.$forceUpdate();
     },
     selectRTW: function(rtw) {
       this.rtwSelected = !this.rtwSelected;
