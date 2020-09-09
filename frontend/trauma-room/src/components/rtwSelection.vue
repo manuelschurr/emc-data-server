@@ -11,6 +11,21 @@
         />
         Universitätsklinikum Mannheim
       </h1>
+      <div v-if="openRouteError">
+        <i class="fas fa-exclamation-triangle"></i>
+        Der API-Token ist abgelaufen. Bitte updaten.
+        <input size="60" v-model="apiKeyOpenRoute" />
+        <button
+          type="button"
+          id="btn-api-key"
+          class="btn btn-primary"
+          v-on:click="updateApiKey"
+          :disabled="apiButtonIsDisabled"
+        >
+          Update
+        </button>
+        <hr style="width: 100%; text-align: left; margin-left: 0;" />
+      </div>
       <ul v-if="activeAmbulances.length">
         <div v-if="ambulancesWithETAs.length">
           <li
@@ -81,7 +96,8 @@ export default {
   props: {
     selectRTW: Function,
     activeAmbulances: Array,
-    inactiveAmbulances: Array
+    inactiveAmbulances: Array,
+    apiKeyOpenRoute: String
   },
   data: () => ({
     arrivalTimes: [],
@@ -89,18 +105,54 @@ export default {
     ambulancesWithNoETA: [],
     rtwLocations: [`[${8.487255}, ${49.492427}]`],
     stateMessage: "Berechne geschätzte Ankunftszeit",
-    archive: false
+    openRouteError: false,
+    apiButtonIsDisabled: true
   }),
   methods: {
-    classArchiveButton: function() {
-      if (this.archive) {
-        return "btn btn-success";
-      } else {
-        return "btn btn-secondary";
-      }
+    updateApiKey: function() {
+      var context = this;
+      var config = {
+        method: "put",
+        //TO CHANGE
+        url: "https://134.155.48.211:3000/apiKey/update/1",
+        headers: {},
+        data: {
+          apiKeyId: 1,
+          value: this.apiKeyOpenRoute
+        }
+      };
+
+      axios(config)
+        .then(function(response) {
+          context.openRouteError = false;
+          context.getGnssData();
+          console.log(JSON.stringify(response.data));
+          context.$root.$emit("apiToken", context.apiKeyOpenRoute);
+          context.$root.$emit("tokenStatus", context.openRouteError);
+          context.$forceUpdate;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
-    toggleArchive: function() {
-      this.archive = !this.archive;
+    getApiKey: function() {
+      var context = this;
+      var config = {
+        method: "get",
+        //TO CHANGE
+        url: "https://134.155.48.211:3000/apiKey/findAll",
+        headers: {}
+      };
+
+      axios(config)
+        .then(function(response) {
+          context.apiKeyOpenRoute = response.data.data[0].value;
+          context.$root.$emit("apiToken", context.apiKeyOpenRoute);
+          context.getGnssData();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
     computeETA: function(currentRtw) {
       let request = new XMLHttpRequest();
@@ -115,10 +167,7 @@ export default {
           "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8"
         );
         request.setRequestHeader("Content-Type", "application/json");
-        request.setRequestHeader(
-          "Authorization",
-          "5b3ce3597851110001cf624808d1f959df534ac3adc0620256a68ec7" //API Key
-        );
+        request.setRequestHeader("Authorization", this.apiKeyOpenRoute);
         let context = this;
         request.onreadystatechange = function() {
           if (request.readyState === 4) {
@@ -126,6 +175,7 @@ export default {
               currentRtw.eta = context.secToTime(
                 JSON.parse(request.responseText).durations[1][0]
               );
+              context.stateMessage = "ETA wurde berechnet";
               // After computing the ETA, the patient miscellaneous informations (50 first characters of the miscellaneous)
               // and ABCDE Schema is fetched from the server.
               let config = {
@@ -158,14 +208,33 @@ export default {
                   console.log("AXIOS PATIENT DATA ERROR: " + error);
                 })
                 .then(() => {
+                  var contains = false;
                   currentRtw.patientId = patientData.patientId;
                   currentRtw.miscellaneous = patientData.miscellaneous;
                   currentRtw.abcde_schema = patientData.abcde_schema;
-                  context.ambulancesWithETAs.push(currentRtw);
+                  for (var a of context.ambulancesWithETAs) {
+                    if (currentRtw._id === a._id) {
+                      contains = true;
+                    }
+                  }
+                  if (!contains) {
+                    context.ambulancesWithETAs.push(currentRtw);
+                  }
                 });
             } else {
+              var contains = false;
               currentRtw.eta = "Fehler bei Routen Schnittstelle";
-              context.ambulancesWithETAs.push(currentRtw);
+              context.stateMessage = "Fehler bei Routen Schnittstelle";
+              for (var a of context.ambulancesWithETAs) {
+                if (currentRtw._id === a._id) {
+                  contains = true;
+                }
+              }
+              if (!contains) {
+                context.ambulancesWithETAs.push(currentRtw);
+              }
+              context.openRouteError = true;
+              context.$root.$emit("tokenStatus", context.openRouteError);
             }
           }
         };
@@ -235,7 +304,18 @@ export default {
     }
   },
   mounted: function() {
-    this.getGnssData();
+    this.getApiKey();
+  },
+  watch: {
+    apiKeyOpenRoute: {
+      handler() {
+        if (this.apiKeyOpenRoute.length === 56) {
+          this.apiButtonIsDisabled = false;
+        } else {
+          this.apiButtonIsDisabled = true;
+        }
+      }
+    }
   }
 };
 </script>
