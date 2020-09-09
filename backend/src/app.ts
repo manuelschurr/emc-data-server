@@ -16,8 +16,8 @@ process.on("uncaughtException", (e:any) => {
 var fs = require('fs')
 var https = require('https')
 const CERT_DIR = path.join(process.cwd() + "/certificates/")
-var privateKey  = fs.readFileSync(CERT_DIR + '/key.pem', 'utf8')
-var certificate = fs.readFileSync(CERT_DIR + '/fullchain.pem', 'utf8')
+var privateKey  = fs.readFileSync(CERT_DIR + 'key.pem', 'utf8')
+var certificate = fs.readFileSync(CERT_DIR + 'fullchain.pem', 'utf8')
 var credentials = {key: privateKey, cert: certificate};
 
 const app = express()
