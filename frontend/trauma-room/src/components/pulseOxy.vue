@@ -40,7 +40,6 @@
               <b>Puls</b>
               <br />
               <div v-if="loaded">
-                {{ this.pulseSoundPlayed = false }}
                 <span class="bigFont">{{ lastPulse }}</span>
               </div>
               <svg
@@ -83,7 +82,6 @@
               </b>
               <br />
               <div v-if="loaded">
-                {{ this.spo2SoundPlayed = false }}
                 <span class="bigFont">{{ lastSpo2 }}</span>
               </div>O<sub>2</sub>
               <br />SpO<sub>2</sub>%
@@ -124,7 +122,6 @@
         <b>Puls</b>
         <br />
         <div v-if="loaded">
-          {{ this.pulseSoundPlayed = false }}
           <span class="bigFont">{{ lastPulse }}</span>
         </div>
         <svg
@@ -149,7 +146,7 @@
         </b>
         <br />
         <div v-if="loaded">
-          <span class="bigFont">{{ lastSpo2 }}</span>
+          <span v-show="loaded" class="bigFont">{{ lastSpo2 }}</span>
         </div>O<sub>2</sub>
         <br />SpO<sub>2</sub>%
       </div>
@@ -160,7 +157,6 @@
         </b>
         <br />
         <div v-if="loaded">
-          {{ this.spo2SoundPlayed = false }}
           <span class="bigFont">{{ lastSpo2 }}</span>
         </div>O<sub>2</sub>
         <br />SpO<sub>2</sub>%
@@ -394,7 +390,7 @@ export default {
                 datasets: [
                   {
                     label: "Pulse",
-                    borderColor: "#36d7e7",
+                    borderColor: "#4db6ac",
                     pointBackgroundColor: "white",
                     borderWidth: 2,
                     pointBorderColor: "#36d7e7",
@@ -409,7 +405,7 @@ export default {
                 datasets: [
                   {
                     label: "Spo2",
-                    borderColor: "#36c1e7",
+                    borderColor: "#1d4189",
                     pointBackgroundColor: "white",
                     borderWidth: 2,
                     pointBorderColor: "#36c1e7",
@@ -438,9 +434,17 @@ export default {
         vm.playSound();
         vm.pulseSoundPlayed = true;
       }
+      else if (vm.pulseSoundPlayed &&
+        vm.lastPulse != "" &&
+        (vm.lastPulse < 120 || vm.lastPulse > 50)) {
+          vm.pulseSoundPlayed = false;
+      }
       if (!vm.spo2SoundPlayed && vm.lastSpo2 != "" && vm.lastSpo2 < 90) {
         vm.playSound();
         vm.spo2SoundPlayed = true;
+      }
+      else if (vm.spo2SoundPlayed && vm.lastSpo2 != "" && vm.lastSpo2 > 90) {
+        vm.spo2SoundPlayed = false;
       }
     },
     // When the PulseOxy component is deactivated, the data is cleared and the refreshing timer is stopped.
@@ -459,19 +463,19 @@ export default {
 .notOkPulseOxyColor {
   margin: 20px 0 20px;
   align-self: stretch;
-  background-color: red;
+  background-color: #DC3545;
   color: white;
 }
 .pulseColor {
   margin: 20px 0 20px;
   align-self: stretch;
-  background-color: #36d7e7;
+  background-color: #4db6ac;
   color: white;
 }
 .spo2Color {
   margin: 20px 0 20px;
   align-self: stretch;
-  background-color: #36c1e7;
+  background-color: #1d4189;
   color: white;
 }
 .small {
