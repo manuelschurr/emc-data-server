@@ -1,7 +1,7 @@
 import { Response } from "express"
 import { environment } from "../config"
 // eslint-disable-next-line prettier/prettier
-import { AccessTokenErrorResponse, AuthFailureResponse, BadRequestResponse, ForbiddenResponse, InternalErrorResponse, NotFoundResponse } from "./ApiResponse"
+import { AccessTokenErrorResponse, AuthFailureMsgResponse, BadRequestResponse, ForbiddenResponse, InternalErrorResponse, NotFoundMsgResponse } from "./ApiResponse"
 
 enum ErrorType {
     BAD_TOKEN = "BadTokenError",
@@ -26,7 +26,7 @@ export abstract class ApiError extends Error {
             case ErrorType.BAD_TOKEN:
             case ErrorType.TOKEN_EXPIRED:
             case ErrorType.UNAUTHORIZED:
-                return new AuthFailureResponse(err.message).send(res)
+                return new AuthFailureMsgResponse(err.message).send(res)
             case ErrorType.ACCESS_TOKEN:
                 return new AccessTokenErrorResponse(err.message).send(res)
             case ErrorType.INTERNAL:
@@ -34,7 +34,7 @@ export abstract class ApiError extends Error {
             case ErrorType.NOT_FOUND:
             case ErrorType.NO_ENTRY:
             case ErrorType.NO_DATA:
-                return new NotFoundResponse(err.message).send(res)
+                return new NotFoundMsgResponse(err.message).send(res)
             case ErrorType.BAD_REQUEST:
                 return new BadRequestResponse(err.message).send(res)
             case ErrorType.FORBIDDEN:

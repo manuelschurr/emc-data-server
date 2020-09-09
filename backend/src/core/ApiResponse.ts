@@ -39,13 +39,13 @@ abstract class ApiResponse {
     }
 }
 
-export class AuthFailureResponse extends ApiResponse {
+export class AuthFailureMsgResponse extends ApiResponse {
     constructor(message: string = "Authentication Failure") {
         super(StatusCode.FAILURE, ResponseStatus.UNAUTHORIZED, message)
     }
 }
 
-export class NotFoundResponse extends ApiResponse {
+export class NotFoundMsgResponse extends ApiResponse {
     private url: string
 
     constructor(message: string = "Not Found") {
@@ -54,7 +54,7 @@ export class NotFoundResponse extends ApiResponse {
 
     send(res: Response): Response {
         this.url = res.req.originalUrl
-        return super.prepare<NotFoundResponse>(res, this)
+        return super.prepare<NotFoundMsgResponse>(res, this)
     }
 }
 
@@ -95,6 +95,26 @@ export class SuccessResponse<T> extends ApiResponse {
 
     send(res: Response): Response {
         return super.prepare<SuccessResponse<T>>(res, this)
+    }
+}
+
+export class NotFoundResponse<T> extends ApiResponse {
+    constructor(message: string, private data: T) {
+        super(StatusCode.FAILURE, ResponseStatus.NOT_FOUND, message)
+    }
+
+    send(res: Response): Response {
+        return super.prepare<NotFoundResponse<T>>(res, this)
+    }
+}
+
+export class AuthFailureResponse<T> extends ApiResponse {
+    constructor(message: string, private data: T) {
+        super(StatusCode.FAILURE, ResponseStatus.UNAUTHORIZED, message)
+    }
+
+    send(res: Response): Response {
+        return super.prepare<AuthFailureResponse<T>>(res, this)
     }
 }
 

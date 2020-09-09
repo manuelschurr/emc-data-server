@@ -2,8 +2,9 @@ import express from "express"
 import fs from "fs"
 import multer from "multer"
 import path from "path"
+import verifyToken from "../../auth/VerifyToken"
 import { BadRequestError } from "../../core/ApiError"
-import { NotFoundResponse, SuccessResponse } from "../../core/ApiResponse"
+import { NotFoundMsgResponse, SuccessResponse } from "../../core/ApiResponse"
 import asyncHandler from "../../helpers/asyncHandler"
 import validator, { ValidationSource } from "../../helpers/validator"
 import schema from "./schema"
@@ -21,14 +22,14 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 router.post(
-    "/", upload.single("img"), asyncHandler(async (req, res, next) => {
+    "/", upload.single("img"), verifyToken, asyncHandler(async (req, res, next) => {
         const file = req.file
         if (!file) throw new BadRequestError("No file provided")
         return new SuccessResponse("Successful", file).send(res)
     }),
 )
 
-router.get("/all", asyncHandler(async (req, res, next) => {
+router.get("/all", verifyToken, asyncHandler(async (req, res, next) => {
     // Ignores .gitignore file (which is required to track the (initially) empty directory)
     const all_img = fs.readdirSync("./img/").sort().slice(1)
     return new SuccessResponse("Success", all_img).send(res)
@@ -38,7 +39,7 @@ router.get("/all", asyncHandler(async (req, res, next) => {
 const IMG_DIR = path.join(process.cwd() + "/img/")
 
 router.get(
-    "/newest",
+    "/newest", verifyToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         try {
@@ -46,19 +47,19 @@ router.get(
             const newest = files[files.length - 1]
             // TODO: Return image via SuccessResponse. How?!
             if (!newest || newest == ".gitignore") {
-                return new NotFoundResponse("No files exist").send(res)
+                return new NotFoundMsgResponse("No files exist").send(res)
             }
             const imgPath = path.join(IMG_DIR + newest)
             res.contentType("jpeg")
             res.sendFile(imgPath)
         } catch (e) {
-            return new NotFoundResponse("No files exist").send(res)
+            return new NotFoundMsgResponse("No files exist").send(res)
         }
     }),
 )
 
 
-router.get("/single/:imgId", validator(schema.getSingle, ValidationSource.PARAM), asyncHandler(async (req, res, next) => {
+router.get("/single/:imgId", validator(schema.getSingle, ValidationSource.PARAM), verifyToken, asyncHandler(async (req, res, next) => {
     const { imgId } = req.params
     const imgPath = path.join(IMG_DIR + "/" + imgId)
     if (!fs.existsSync(imgPath)) throw new BadRequestError("Image does not exist")
