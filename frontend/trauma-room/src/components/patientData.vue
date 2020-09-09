@@ -9,6 +9,63 @@
       <h5 class="col patientDataText" style="text-align: start;">
         Patientendaten
       </h5>
+      <div style="margin-right: 20px; margin-bottom: 10px;">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          id="btn-a"
+          :class="classABCDE(patient.status.a.isSelected)"
+          v-if="loaded"
+          disabled
+          pill
+        >
+          A
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          id="btn-b"
+          :class="classABCDE(patient.status.b.isSelected)"
+          v-if="loaded"
+          disabled
+          pill
+        >
+          B
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          id="btn-c"
+          :class="classABCDE(patient.status.c.isSelected)"
+          v-if="loaded"
+          disabled
+          pill
+        >
+          C
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          id="btn-d"
+          :class="classABCDE(patient.status.d.isSelected)"
+          v-if="loaded"
+          disabled
+          pill
+        >
+          D
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          id="btn-e"
+          :class="classABCDE(patient.status.e.isSelected)"
+          v-if="loaded"
+          disabled
+          pill
+        >
+          E
+        </button>
+      </div>
     </div>
     <div class="row align-items-start">
       <div class="col-10">
@@ -95,59 +152,12 @@
       </div>
       <div class="col-2">
         <!-- Audio nur oeffnen wenn audio ankommt ueber GET -->
-        <div id="audioFile" class="audio" controls></div>
-        <div class="btn-group" role="group">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            id="btn-a"
-            @click="openABCDE(patient.status.a.notes, $event)"
-            :class="classABCDE(patient.status.a.isSelected)"
-            v-if="loaded"
-          >
-            A
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            id="btn-b"
-            @click="openABCDE(patient.status.b.notes, $event)"
-            :class="classABCDE(patient.status.b.isSelected)"
-            v-if="loaded"
-          >
-            B
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            id="btn-c"
-            @click="openABCDE(patient.status.c.notes, $event)"
-            :class="classABCDE(patient.status.c.isSelected)"
-            v-if="loaded"
-          >
-            C
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            id="btn-d"
-            @click="openABCDE(patient.status.d.notes, $event)"
-            :class="classABCDE(patient.status.d.isSelected)"
-            v-if="loaded"
-          >
-            D
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            id="btn-e"
-            @click="openABCDE(patient.status.e.notes, $event)"
-            :class="classABCDE(patient.status.e.isSelected)"
-            v-if="loaded"
-          >
-            E
-          </button>
-        </div>
+        <div
+          id="audioFile"
+          class="audio"
+          style="overflow-y: scroll; height: 12vh;"
+          controls
+        ></div>
       </div>
     </div>
   </div>
@@ -262,17 +272,9 @@ export default {
      * Methode zum Holen der Audio aus Server Backend
      */
     retrieveAudio() {
-      // muss natuerlich noch die eigentliche Serveradresse + fiel+ID 134.155.48.211
-      // GET to receive all audio files in an array
       axios({
         method: "get",
-        // url:
-        //     "https://localhost:3000/audio/single/2020-08-05_15-38-13.mp3",
-        url: "https://localhost:3000/audio/all",
-
-        headers: {
-          "Content-Type": "blob"
-        }
+        url: "https://localhost:3000/audio/all"
       }).then(function(response) {
         console.log("Response Data Data: " + response.data.data);
         // for loop iterating over all items of the data object
@@ -280,77 +282,37 @@ export default {
           axios({
             method: "get",
             url: "https://localhost:3000/audio/single/" + audioFileName,
-
-            headers: {
-              "Content-Type": "blob"
-            }
+            responseType: "blob"
           }).then(function(response) {
-            console.log(response.data);
+            var audiofiles = response.data;
+            const url = window.URL.createObjectURL(audiofiles);
+            var audioDiv = document.getElementById("audioFile");
+            var audioPlayer = document.createElement("AUDIO");
+            // set attributes of audio element
+            audioPlayer.setAttribute("controls", "controls");
+            audioPlayer.setAttribute("preload", "auto");
+            audioPlayer.setAttribute(
+              "style",
+              "display: inline-block; width: 13vw; height: 5vh;"
+            );
+            // append the audio player to audio container
+            audioDiv.appendChild(audioPlayer);
+            // set inner HTML of audio player to source of blop URL
+            audioPlayer.innerHTML =
+              "<p>1</p>" + '<source src="' + url + '" type="audio/mpeg" />';
           });
         }
       });
-      //     //console.log("Audio File: " + audioFile);
-
-      //     var audioDiv = document.getElementById("audioFile");
-      //     var audioPlayer = document.createElement("AUDIO");
-      //     // set attributes of audio element
-      //     audioPlayer.setAttribute("controls", "controls");
-      //     audioPlayer.setAttribute("preload", "auto");
-      //     audioPlayer.setAttribute(
-      //       "style",
-      //       "display: inline-block; width: 15vw; "
-      //     );
-      //     // append the audio player to audio container
-      //     audioDiv.appendChild(audioPlayer);
-      //     // set inner HTML of audio player to source of blop URL
-      // //     audioPlayer.innerHTML =
-      // //       '<source src="' + audioFile + '" type="audio/webm" />';
-      // //   }
-      //   /** OLD VERSION */
-      //   // const blob = new Blob([response.data], {
-      //   //     type: "audio/mpeg",
-      //   // });
-
-      //   // const url = window.URL.createObjectURL(blob);
-      //   // // access audio container and create audio player element in it
-      //   // var audioDiv = document.getElementById("audioFile");
-      //   // var audioPlayer = document.createElement("AUDIO");
-      //   // // console.log("AudioPlayer " + audioPlayer);
-      //   // // set attributes of audio element
-      //   // audioPlayer.setAttribute("controls", "controls");
-      //   // audioPlayer.setAttribute("preload", "auto");
-      //   // audioPlayer.setAttribute(
-      //   //     "style",
-      //   //     "display: inline-block; width: 15vw; "
-      //   // );
-      //   // // append the audio player to audio container
-      //   // audioDiv.appendChild(audioPlayer);
-      //   // // set inner HTML of audio player to source of blop URL
-      //   // audioPlayer.innerHTML =
-      //   //     '<source src="' + url + '" type="audio/mpeg" />';
-      // })
-      // .catch(function(error) {
-      //   console.log("Axios GET " + error);
-      // });
     },
     openABCDE(output, event) {
       console.log(output, event);
-      // if (!this.showABCDE || event.currentTarget.id !== this.pastEvent) {
-      //   this.notesABCDE = output;
-      //   this.showABCDE = true;
-      //   this.pastEvent = event.currentTarget.id;
-      // } else if (event.currentTarget.id == this.pastEvent) {
-      //   this.notesABCDE = "";
-      //   this.showABCDE = false;
-      //   this.pastEvent = event.currentTarget.id;
-      // }
     },
     classABCDE(status) {
       let classABCDE = "";
       if (!status) {
-        classABCDE = "btn-danger";
+        classABCDE = "rounded-circle btn-danger";
       } else {
-        classABCDE = "btn-success";
+        classABCDE = "rounded-circle btn-success";
       }
       return classABCDE;
     },
