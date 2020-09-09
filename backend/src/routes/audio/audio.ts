@@ -60,4 +60,3 @@ router.get("/single/:audioId", validator(schema.getSingle, ValidationSource.PARA
 
 
 export default router
-export default router
