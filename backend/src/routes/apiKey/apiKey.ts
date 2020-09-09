@@ -1,6 +1,6 @@
 import express from "express"
 import _ from "lodash"
-import { NotFoundResponse, SuccessResponse } from "../../core/ApiResponse"
+import { NotFoundMsgResponse, SuccessResponse } from "../../core/ApiResponse"
 import ApiKey from "../../database/model/ApiKey"
 import ApiKeyRepo from "../../database/repository/ApiKeyRepo"
 import asyncHandler from "../../helpers/asyncHandler"
@@ -15,7 +15,7 @@ router.get(
     asyncHandler(async (req, res, next) => {
         const apiKeys = await ApiKeyRepo.findAll()
         if (!apiKeys) {
-            throw new NotFoundResponse("ApiKey data could not be found.")
+            throw new NotFoundMsgResponse("ApiKey data could not be found.")
         }
 
         return new SuccessResponse("Successful", apiKeys).send(res)
@@ -45,7 +45,7 @@ router.put(
         const { apiKeyId } = req.params
         const apiKey = await ApiKeyRepo.findByApiKeyId(parseInt(apiKeyId))
         if (apiKey == null) {
-            throw new NotFoundResponse("ApiKey does not exist")
+            throw new NotFoundMsgResponse("ApiKey does not exist")
         }
 
         if (req.body.hasOwnProperty("value")) apiKey.value = req.body.value
