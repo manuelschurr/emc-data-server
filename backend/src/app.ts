@@ -11,7 +11,7 @@ process.on("uncaughtException", (e:any) => {
     Logger.error(e)
 })
 
-// get certificate for TLS usage, created with OpenSSL
+// get certificate for TLS usage, created with Let's Encrypt
 var fs = require('fs')
 var https = require('https')
 var privateKey  = fs.readFileSync('./certificates/key.pem', 'utf8')

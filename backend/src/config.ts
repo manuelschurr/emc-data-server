@@ -22,3 +22,5 @@ export const tokenInfo = {
 }
 
 export const logDirectory = process.env.LOG_DIR
+
+export const authSecret = process.env.SECRET

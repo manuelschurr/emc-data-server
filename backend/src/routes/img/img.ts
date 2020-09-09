@@ -2,8 +2,9 @@ import express from "express"
 import fs from "fs"
 import multer from "multer"
 import path from "path"
+import verifyToken from "../../auth/VerifyToken"
 import { BadRequestError } from "../../core/ApiError"
-import { NotFoundResponse, SuccessResponse } from "../../core/ApiResponse"
+import { NotFoundMsgResponse, SuccessResponse } from "../../core/ApiResponse"
 import asyncHandler from "../../helpers/asyncHandler"
 import validator, { ValidationSource } from "../../helpers/validator"
 import schema from "./schema"
@@ -24,10 +25,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 // POST endpoint to upload image files
-router.post("/", upload.single("img"), asyncHandler(async (req, res, next) => {
-    const file = req.file
-    if (!file) throw new BadRequestError("No file provided")
-    return new SuccessResponse("Successful", file).send(res)
+router.post(
+    "/", upload.single("img"), verifyToken, asyncHandler(async (req, res, next) => {
+        const file = req.file
+        if (!file) throw new BadRequestError("No file provided")
+        return new SuccessResponse("Successful", file).send(res)
     }),
 )
 
@@ -44,7 +46,7 @@ const IMG_DIR = path.join(process.cwd() + "/img/")
 
 // GET endpoint to receive the newest available image from the local file system
 router.get(
-    "/newest",
+    "/newest", verifyToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         try {
@@ -53,20 +55,21 @@ router.get(
             const newest = files[files.length - 1]
             // Ignores .gitignore file (required to keep empty directory synched in git repo)
             if (!newest || newest == ".gitignore") {
-                return new NotFoundResponse("No files exist").send(res)
+                return new NotFoundMsgResponse("No files exist").send(res)
             }
             const imgPath = path.join(IMG_DIR + newest)
             res.contentType("jpeg")
             res.sendFile(imgPath)
         } catch (e) {
-            return new NotFoundResponse("No files exist").send(res)
+            return new NotFoundMsgResponse("No files exist").send(res)
         }
     }),
 )
 
+
 // GET endpoint to receive a single image file by file name
 // File name can be obtained via /img/all endpoint
-router.get("/single/:imgId", validator(schema.getSingle, ValidationSource.PARAM), asyncHandler(async (req, res, next) => {
+router.get("/single/:imgId", validator(schema.getSingle, ValidationSource.PARAM), verifyToken, asyncHandler(async (req, res, next) => {
     const { imgId } = req.params
     const imgPath = path.join(IMG_DIR + "/" + imgId)
     if (!fs.existsSync(imgPath)) throw new BadRequestError("Image does not exist")
