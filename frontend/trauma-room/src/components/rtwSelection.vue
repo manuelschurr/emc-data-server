@@ -114,7 +114,7 @@ export default {
       var config = {
         method: "put",
         //TO CHANGE
-        url: "https://localhost:3000/apiKey/update/1",
+        url: "https://134.155.48.211:3000/apiKey/update/1",
         headers: {},
         data: {
           apiKeyId: 1,
@@ -140,7 +140,7 @@ export default {
       var config = {
         method: "get",
         //TO CHANGE
-        url: "https://localhost:3000/apiKey/findAll",
+        url: "https://134.155.48.211:3000/apiKey/findAll",
         headers: {}
       };
 
