@@ -289,6 +289,9 @@ export default {
         console.error("AXIOS ERROR: " + errors);
       })
       .finally(() => (this.loading = false));
+  },
+  created() {
+    document.title = "Schockraum";
   }
 };
 </script>
