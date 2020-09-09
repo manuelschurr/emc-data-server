@@ -7,8 +7,8 @@
       <div v-else>
         <div class="col-12">
           <form class="form-inline" style="align-items: center;">
-            <div class="col-9">
-              <puls-oxy-line class="small" v-if="loaded" :chart-data="pulseChartData" />
+            <div class="col-9" width="100%">
+              <puls-oxy-line class="pulseLineMargin" v-if="loaded" :chart-data="pulseChartData"/>
             </div>
             <div
               v-if="lastPulse != '' && (lastPulse > 120 || lastPulse < 50)"
@@ -62,7 +62,7 @@
         <div class="col-12">
           <form class="form-inline" style="align-items: center;">
             <div class="col-9">
-              <puls-oxy-line class="small" v-if="loaded" :chart-data="spo2ChartData" />
+              <puls-oxy-line class="pulseLineMargin" v-if="loaded" :chart-data="spo2ChartData" />
             </div>
             <div v-if="lastSpo2 != '' && lastSpo2 < 90" class="col-3 notOkPulseOxyColor">
               <br />
@@ -478,7 +478,7 @@ export default {
   background-color: #1d4189;
   color: white;
 }
-.small {
+.pulseLineMargin {
   max-height: 220px;
   margin: 20px 0 20px;
 }
