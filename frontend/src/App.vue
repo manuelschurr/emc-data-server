@@ -92,7 +92,8 @@ export default {
       apiKeyOpenRoute:
         "5b3ce3597851110001cf62483aa1ff4db2864ef98a6872071775fb93",
       openRouteError: false,
-      apiButtonIsDisabled: true
+      apiButtonIsDisabled: true,
+      token: ""
     };
   },
   components: {
@@ -109,8 +110,8 @@ export default {
       var config = {
         method: "put",
         //TO CHANGE
-        url: "https://134.155.48.211:3000/apiKey/update/1",
-        headers: {},
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/update/1",
+        headers: { "x-access-token": this.token }
         data: {
           apiKeyId: 1,
           value: this.apiKeyOpenRoute
@@ -132,8 +133,8 @@ export default {
       var config = {
         method: "get",
         //TO CHANGE
-        url: "https://134.155.48.211:3000/apiKey/findAll",
-        headers: {}
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/findAll",
+        headers: { "x-access-token": this.token }
       };
 
       axios(config)
@@ -164,8 +165,9 @@ export default {
       let config = {
         method: "get",
         url:
-          "https://134.155.48.211:3000/ambulance/findGnssByAmbulanceId/" +
-          this.selectedRTW.ambulanceId
+          "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+          this.selectedRTW.ambulanceId,
+          headers: { "x-access-token": this.token }
       };
 
       axios(config)
@@ -231,6 +233,57 @@ export default {
         }
         return minutes + " Minuten " + seconds + " Sekunden";
       }
+    },
+    retrieveToken() {
+      var context = this;
+      var axios = require("axios");
+      var data = {
+        username: "root",
+        password: "root"
+      };
+
+      var config = {
+        method: "post",
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
+        headers: {},
+        data: data
+      };
+
+      axios(config)
+        .then(function(response) {
+          console.log(JSON.stringify(response.data.data.token));
+          context.token = response.data.data.token;
+          context.$root.$emit("token", response.data.data.token);
+          context.retrieveRTWs();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    retrieveRTWs() {
+      var config = {
+        method: "get",
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll",
+        headers: { "x-access-token": this.token }
+      };
+      axios(config)
+        .then(response => {
+          for (var ambulance of response.data.data) {
+            if (ambulance.patientId != 0) {
+              this.activeAmbulances.push(ambulance);
+            } else {
+              this.inactiveAmbulances.push(ambulance);
+            }
+          }
+          for (var r of this.activeAmbulances) {
+            r.eta = 0;
+          }
+        })
+        .catch(errors => {
+          // react on errors.
+          console.error("AXIOS ERROR: " + errors);
+        })
+        .finally(() => (this.loading = false));
     }
   },
   watch: {
@@ -256,7 +309,14 @@ export default {
       }
     }
   },
+
   mounted: function() {
+    this.retrieveToken();
+    this.getApiKey();
+  },
+  created() {
+    document.title = "Schockraum";
+
     this.$root.$on("tokenStatus", data => {
       this.openRouteError = data;
     });
@@ -264,34 +324,7 @@ export default {
     this.$root.$on("apiToken", data => {
       this.apiKeyOpenRoute = data;
     });
-
-    this.getApiKey();
     // Consume REST-API
-    let rtwAPI = "https://134.155.48.211:3000/ambulance/findAll";
-
-    this.loading = true;
-    axios
-      .get(rtwAPI)
-      .then(response => {
-        for (var ambulance of response.data.data) {
-          if (ambulance.patientId != 0) {
-            this.activeAmbulances.push(ambulance);
-          } else {
-            this.inactiveAmbulances.push(ambulance);
-          }
-        }
-        for (var r of this.activeAmbulances) {
-          r.eta = 0;
-        }
-      })
-      .catch(errors => {
-        // react on errors.
-        console.error("AXIOS ERROR: " + errors);
-      })
-      .finally(() => (this.loading = false));
-  },
-  created() {
-    document.title = "Schockraum";
   }
 };
 </script>
