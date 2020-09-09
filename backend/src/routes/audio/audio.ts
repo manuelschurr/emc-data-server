@@ -14,12 +14,12 @@ const router = express.Router()
 // Defines the multer storage parameters
 // Saves files in backend/audio with the originalname from the request
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
+    destination(req, file, cb) {
         cb(null, "./audio/")
     },
-    filename: function (req, file, cb) {
+    filename(req, file, cb) {
         cb(null, file.originalname)
-    }
+    },
 })
 // Multer object
 const upload = multer({ storage: storage })
@@ -59,4 +59,5 @@ router.get("/single/:audioId", validator(schema.getSingle, ValidationSource.PARA
 
 
 
+export default router
 export default router

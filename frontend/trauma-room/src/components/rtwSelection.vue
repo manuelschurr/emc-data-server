@@ -304,7 +304,8 @@ export default {
     }
   },
   mounted: function() {
-    this.getApiKey();
+    //this.getApiKey();
+    this.getGnssData();
   },
   watch: {
     apiKeyOpenRoute: {

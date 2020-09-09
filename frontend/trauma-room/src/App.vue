@@ -79,17 +79,18 @@ export default {
         eta: null
       },
       activeAmbulances: [
-        // {
-        //   ambulanceId: 3,
-        //   patientId: 1,
-        //   identifier: "Malteser Hilfsdienst - Mockobjekt"
-        // }
+        {
+          ambulanceId: 3,
+          patientId: 1,
+          identifier: "Malteser Hilfsdienst - Mockobjekt"
+        }
       ],
       inactiveAmbulances: [],
       loading: false,
       selectedRTW: Object,
       rtwLocations: [`[${8.487255}, ${49.492427}]`],
-      apiKeyOpenRoute: "",
+      apiKeyOpenRoute:
+        "5b3ce3597851110001cf62483aa1ff4db2864ef98a6872071775fb93",
       openRouteError: false,
       apiButtonIsDisabled: true
     };
