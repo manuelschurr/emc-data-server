@@ -1,16 +1,30 @@
 <template>
-  <div class="gallery" id="mainDiv" v-if="this.loading">
-    <div class="gallery">
+  <div v-if="selectedElements <= 2">
+    <div class="gallery" id="mainDiv" v-if="this.loading">
       <div class="gallery-panel">
         <img v-bind:src="chosenImage" width="100%" />
       </div>
-    </div>
-    <div class="row">
-      <div class="itemSpacing" v-for="screenshot in captures" :key="screenshot">
-        <img v-on:click="clickMethod($event)" v-bind:src="screenshot" height="87" />
+      <div class="row">
+        <div
+          class="itemSpacing"
+          v-for="screenshot in captures"
+          :key="screenshot"
+        >
+          <img
+            v-on:click="clickMethod($event)"
+            v-bind:src="screenshot"
+            height="87"
+          />
+        </div>
       </div>
     </div>
-    <!-- <div class="canvas" id="galleryCanvas"></div> -->
+  </div>
+  <div v-else>
+    <div class="gallery" id="mainDiv" v-if="this.loading">
+      <div class="gallery-panel">
+        <img v-bind:src="chosenImage" width="70%" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -21,12 +35,19 @@ export default {
   data() {
     return {
       captures: [],
+      imageStrings: [],
       chosenImage: null,
       loading: false,
     };
   },
+  props: {
+    selectedElements: Number,
+  },
   mounted() {
     this.fillData();
+  },
+  created() {
+    this.timer = setInterval(this.fillData, 5000);
   },
   methods: {
     clickMethod: function (event) {
@@ -35,7 +56,7 @@ export default {
     async fillData() {
       var vm = this;
       this.loading = true;
-      // The first server request is to find the patient by the given patient ID
+
       var body = "";
       var config = {
         method: "get",
@@ -47,14 +68,19 @@ export default {
 
       axios(config).then(function (response) {
         if (response.data.statusCode === "10000") {
-          console.log("Images " + response.data.data);
-          var imageStrings = response.data.data;
-          for (var image of imageStrings) {
+          var newImageStrings = response.data.data;
+          var newToAdd = [];
+          for (var image of newImageStrings) {
+            if (!vm.imageStrings.includes(image)) {
+              vm.imageStrings.push(image);
+              newToAdd.push(image);
+            }
+          }
+          for (var imageStr of newToAdd) {
             var bodyTwo = "";
-            console.log("Images " + JSON.stringify(image));
             var configGetImages = {
               method: "get",
-              url: "https://localhost:3000/img/single/" + image,
+              url: "https://localhost:3000/img/single/" + imageStr,
               // "https://134.155.48.211:3000/img/single/" + image,
               responseType: "blob",
               headers: {},
@@ -64,7 +90,7 @@ export default {
               if (response.data.statusCode === "10000") {
                 var pic = URL.createObjectURL(responseImages.data);
                 vm.captures.push(pic);
-                vm.chosenImage = vm.captures[0];
+                vm.chosenImage = vm.captures[vm.captures.length - 1];
               }
             });
           }
@@ -78,5 +104,8 @@ export default {
 <style scoped>
 .itemSpacing {
   margin: 5px 2px 0px 2px;
+}
+.row {
+  margin: 0px 0px;
 }
 </style>
