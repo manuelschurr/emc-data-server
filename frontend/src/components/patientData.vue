@@ -209,7 +209,7 @@ export default {
           vm.patient.rtwId = response.data.data.ambulanceId;
           vm.patient.name = response.data.data.name;
           vm.patient.age = response.data.data.age;
-          vm.patient.gender = response.data.data.gender;
+          vm.patient.gender = response.data.data.gender.toLowerCase();
           vm.patient.preExistingIllness.text =
             response.data.data.preExistingIllness;
           vm.patient.miscellaneaous.text = response.data.data.miscellaneous;

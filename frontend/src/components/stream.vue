@@ -48,7 +48,7 @@ export default {
       imageStrings: [],
       chosenImage: null,
       loading: false,
-      token: localStorage.token
+      token: ""
     };
   },
   props: {
