@@ -14,8 +14,6 @@
       <RtwSelection
         v-if="!rtwSelected && !loading && token"
         :selectRTW="selectRTW"
-        :activeAmbulances="activeAmbulances"
-        :inactiveAmbulances="inactiveAmbulances"
         :Rtwdocument="Rtwdocument"
         :apiKeyOpenRoute="apiKeyOpenRoute"
       />
@@ -260,31 +258,6 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
-    },
-    retrieveRTWs() {
-      var config = {
-        method: "get",
-        url: "https://localhost:3000/ambulance/findAll",
-        headers: { "x-access-token": this.token }
-      };
-      axios(config)
-        .then(response => {
-          for (var ambulance of response.data.data) {
-            if (ambulance.patientId != 0) {
-              this.activeAmbulances.push(ambulance);
-            } else {
-              this.inactiveAmbulances.push(ambulance);
-            }
-          }
-          for (var r of this.activeAmbulances) {
-            r.eta = 0;
-          }
-        })
-        .catch(errors => {
-          // react on errors.
-          console.error("AXIOS ERROR: " + errors);
-        })
-        .finally(() => (this.loading = false));
     }
   },
   watch: {

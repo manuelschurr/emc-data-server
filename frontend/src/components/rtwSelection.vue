@@ -75,51 +75,7 @@
           </li>
         </div>
         <div v-else class="d-flex justify-content-center">
-          <li
-            v-for="ambulance in activeAmbulances"
-            v-bind:key="ambulance.identifier"
-          >
-            <div v-if="ambulance.patientId">
-              <p>
-                <button @click="selectRTW(ambulance)">
-                  <img src="../assets/umm_team_logo.png" width="100" />
-                  <br />
-                  <br />
-                  RTW - {{ ambulance.identifier }}
-                  <br />
-                  ETA: {{ ambulance.eta }}
-                  <br />
-                  Informationen: {{ ambulance.miscellaneous }}
-                  <br />
-                  <ul>
-                    <li
-                      v-for="(value, name) in ambulance.abcde_schema"
-                      v-bind:key="name"
-                    >
-                      <div class="text-center">
-                        <button
-                          v-if="value === false"
-                          disabled
-                          pill
-                          class="rounded-circle notOkABCDE"
-                        >
-                          {{ name }}
-                        </button>
-                        <button
-                          v-else-if="value === true"
-                          disabled
-                          pill
-                          class="rounded-circle okABCDE"
-                        >
-                          {{ name }}
-                        </button>
-                      </div>
-                    </li>
-                  </ul>
-                </button>
-              </p>
-            </div>
-          </li>
+          SHOW SPINNER
         </div>
       </ul>
       <h3 v-else>... Aktuell fahren keine RTW's das UMM an ...</h3>
@@ -134,7 +90,7 @@ export default {
   name: "RtwSelection",
   props: {
     selectRTW: Function,
-    activeAmbulances: Array,
+
     inactiveAmbulances: Array,
     apiKeyOpenRoute: String
   },
@@ -146,7 +102,8 @@ export default {
     stateMessage: "Berechne geschätzte Ankunftszeit",
     openRouteError: false,
     apiButtonIsDisabled: true,
-    token: ""
+    token: "",
+    activeAmbulances: []
   }),
   methods: {
     updateApiKey: function() {
@@ -294,9 +251,37 @@ export default {
         return minutes + " Minuten " + seconds + " Sekunden";
       }
     },
-    getGnssData: function() {
+    retrieveRTWs() {
+      var config = {
+        method: "get",
+        url: "https://localhost:3000/ambulance/findAll",
+        headers: { "x-access-token": this.token }
+      };
+      axios(config)
+        .then(response => {
+          for (var ambulance of response.data.data) {
+            if (ambulance.patientId != 0) {
+              this.activeAmbulances.push(ambulance);
+            } else {
+              this.inactiveAmbulances.push(ambulance);
+            }
+          }
+          for (var r of this.activeAmbulances) {
+            r.eta = 0;
+          }
+          this.getGnssData();
+        })
+        .catch(errors => {
+          // react on errors.
+          console.error("AXIOS ERROR: " + errors);
+        })
+        .finally(() => (this.loading = false));
+    },
+    getGnssData() {
       for (var rtw of this.activeAmbulances) {
+        console.log(rtw.ambulanceId + " CONDITION " + rtw.patientId);
         if (rtw.ambulanceId && rtw.patientId != 0) {
+          console.log("goes into if at 299");
           let config = {
             method: "get",
             url:
@@ -304,6 +289,7 @@ export default {
               rtw.ambulanceId,
             headers: { "x-access-token": this.token }
           };
+          console.log("the config of gnss" + JSON.stringify(config));
 
           axios(config)
             .then(response => {
@@ -362,7 +348,7 @@ export default {
     axios(config)
       .then(function(response) {
         context.token = response.data.data.token;
-        context.getGnssData();
+        context.retrieveRTWs();
       })
       .catch(function(error) {
         console.log(error);
@@ -377,13 +363,6 @@ export default {
           this.apiButtonIsDisabled = true;
         }
       }
-      // token: {
-      //   handler() {
-      //     if (this.token) {
-      //       this.getGnssData();
-      //     }
-      //   }
-      // }
     }
   }
 };
