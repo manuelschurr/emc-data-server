@@ -13,8 +13,8 @@ import Logger from "../core/Logger"
 // 2020-08-14T12:04:00.000Z (UTC format, milliseconds are optional)
 // export const TIMESTAMP_REG_EX = new RegExp("^(0[1-9]|[1-2][0-9]|3[0-1])-(0[1-9]|1[0-2])-[0-9]{4} (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"); //DD-MM-YYYY HH:MM:SS
 export const TIMESTAMP_REG_EX = new RegExp("^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]?(.[0-9][0-9][0-9])?(Z|[+|-][0-5][0-9]:[0-5][0-9])$");
-export const IMG_NAME_REG_EX = new RegExp("^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])_(2[0-3]|[01][0-9])-[0-5][0-9]-[0-5][0-9].(png|jpg)$") //YYYY-MM-DD_HH-MM-SS.(png|jpg)
-export const AUDIO_NAME_REG_EX = new RegExp("^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])_(2[0-3]|[01][0-9])-[0-5][0-9]-[0-5][0-9].webm$") //YYYY-MM-DD_HH-MM-SS.webm
+export const IMG_NAME_REG_EX = new RegExp("^([0-9]{1,9})-([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])_(2[0-3]|[01][0-9])-[0-5][0-9]-[0-5][0-9].(png|jpg)$") //YYYY-MM-DD_HH-MM-SS.(png|jpg)
+export const AUDIO_NAME_REG_EX = new RegExp("^([0-9]{1,9})-([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])_(2[0-3]|[01][0-9])-[0-5][0-9]-[0-5][0-9].webm$") //YYYY-MM-DD_HH-MM-SS.webm
 
 
 export enum ValidationSource {
