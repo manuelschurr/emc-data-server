@@ -154,7 +154,8 @@ export default {
         }
       },
       showABCDE: false,
-      pastEvent: null
+      pastEvent: null,
+      oldListOfNames: []
     };
   },
   props: {
@@ -243,34 +244,40 @@ export default {
         url: "https://localhost:3000/audio/all",
         headers: { "x-access-token": this.token }
       }).then(function(response) {
-        console.log("Response Data Data: " + response.data.data);
+        // var aDiv = document.getElementById("audioFile");
+        // aDiv.querySelectorAll("*").forEach(n => n.remove());
         // for loop iterating over all items of the data object
+        console.log(response.data.data);
         for (var audioFileName of response.data.data) {
-          axios({
-            method: "get",
-            url: "https://localhost:3000/audio/single/" + audioFileName,
-            headers: { "x-access-token": context.token },
-            responseType: "blob"
-          }).then(function(response) {
-            var url;
-            var audiofiles = response.data;
-            url = window.URL.createObjectURL(audiofiles);
-            var audioDiv = document.getElementById("audioFile");
-            var audioPlayer = document.createElement("AUDIO");
-            // set attributes of audio element
-            audioPlayer.setAttribute("controls", "controls");
-            audioPlayer.setAttribute("preload", "auto");
-            audioPlayer.setAttribute(
-              "style",
-              "display: inline-block; width: 10vw; height: 5vh;"
-            );
-            // append the audio player to audio container
-            audioDiv.appendChild(audioPlayer);
-            // set inner HTML of audio player to source of blop URL
-            audioPlayer.innerHTML =
-              "<p>1</p>" + '<source src="' + url + '" type="audio/mpeg" />';
-          });
+          if (!context.oldListOfNames.includes(audioFileName)) {
+            axios({
+              method: "get",
+              url: "https://localhost:3000/audio/single/" + audioFileName,
+              headers: { "x-access-token": context.token },
+              responseType: "blob"
+            }).then(function(response) {
+              var url;
+              var audiofiles = response.data;
+              url = window.URL.createObjectURL(audiofiles);
+              var audioDiv = document.getElementById("audioFile");
+              var audioPlayer = document.createElement("AUDIO");
+              // set attributes of audio element
+              audioPlayer.setAttribute("controls", "controls");
+              audioPlayer.setAttribute("preload", "auto");
+              audioPlayer.setAttribute(
+                "style",
+                "display: inline-block; width: 10vw; height: 5vh;"
+              );
+              // append the audio player to audio container
+              console.log(audioPlayer);
+              audioDiv.appendChild(audioPlayer);
+              // set inner HTML of audio player to source of blop URL
+              audioPlayer.innerHTML =
+                '<source src="' + url + '" type="audio/mpeg" />';
+            });
+          }
         }
+        context.oldListOfNames = response.data.data;
       });
     },
     // When the rtw is switched, the refreshing timer is stopped.
