@@ -1,6 +1,10 @@
 module.exports = {
   devServer: {
     port: 8080,
-    https: true,
+    https: {
+      key: fs.readFileSync("./certificates/key.pem"),
+      cert: fs.readFileSync("./certificates/cert.pem"),
+    },
+    allowedHosts: ["wifo1-29.bwl.uni-mannheim.de"],
   },
 };
