@@ -273,15 +273,6 @@ export default {
         }
       });
     },
-    classABCDE(status) {
-      let classABCDE = "";
-      if (!status) {
-        classABCDE = "rounded-circle btn-danger";
-      } else {
-        classABCDE = "rounded-circle btn-success";
-      }
-      return classABCDE;
-    },
     // When the rtw is switched, the refreshing timer is stopped.
     beforeDestroy() {
       clearInterval(this.timer);
