@@ -12,7 +12,7 @@
     </div>
     <div v-else>
       <RtwSelection
-        v-if="!rtwSelected && !loading"
+        v-if="!rtwSelected && !loading && token"
         :selectRTW="selectRTW"
         :activeAmbulances="activeAmbulances"
         :inactiveAmbulances="inactiveAmbulances"
@@ -93,7 +93,7 @@ export default {
         "5b3ce3597851110001cf62483aa1ff4db2864ef98a6872071775fb93",
       openRouteError: false,
       apiButtonIsDisabled: true,
-      token: ""
+      token: localStorage.token
     };
   },
   components: {
@@ -256,6 +256,7 @@ export default {
           console.log(JSON.stringify(response.data.data.token));
           context.token = response.data.data.token;
           context.$root.$emit("token", response.data.data.token);
+          localStorage.token = context.token;
           context.retrieveRTWs();
         })
         .catch(function(error) {
