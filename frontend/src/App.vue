@@ -12,10 +12,8 @@
     </div>
     <div v-else>
       <RtwSelection
-        v-if="!rtwSelected && !loading && token"
+        v-if="!rtwSelected && !loading"
         :selectRTW="selectRTW"
-        :activeAmbulances="activeAmbulances"
-        :inactiveAmbulances="inactiveAmbulances"
         :Rtwdocument="Rtwdocument"
         :apiKeyOpenRoute="apiKeyOpenRoute"
       />
@@ -93,7 +91,7 @@ export default {
         "5b3ce3597851110001cf62483aa1ff4db2864ef98a6872071775fb93",
       openRouteError: false,
       apiButtonIsDisabled: true,
-      token: localStorage.token,
+      token: ""
     };
   },
   components: {
@@ -212,7 +210,6 @@ export default {
                 JSON.parse(request.responseText).durations[1][0]
               );
               context.Rtwdocument.eta = context.selectedRTW.eta;
-              console.log("Test request");
               context.$forceUpdate();
             } else {
               context.selectedRTW.eta = "Fehler bei Routen Schnittstelle";
@@ -252,42 +249,16 @@ export default {
       };
 
       axios(config)
-        .then(function (response) {
-          console.log(JSON.stringify(response.data.data.token));
+        .then(function(response) {
           context.token = response.data.data.token;
           context.$root.$emit("token", response.data.data.token);
           localStorage.token = context.token;
-          context.retrieveRTWs();
+          //context.retrieveRTWs();
         })
         .catch(function (error) {
           console.log(error);
         });
-    },
-    retrieveRTWs() {
-      var config = {
-        method: "get",
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll",
-        headers: { "x-access-token": this.token },
-      };
-      axios(config)
-        .then((response) => {
-          for (var ambulance of response.data.data) {
-            if (ambulance.patientId != 0) {
-              this.activeAmbulances.push(ambulance);
-            } else {
-              this.inactiveAmbulances.push(ambulance);
-            }
-          }
-          for (var r of this.activeAmbulances) {
-            r.eta = 0;
-          }
-        })
-        .catch((errors) => {
-          // react on errors.
-          console.error("AXIOS ERROR: " + errors);
-        })
-        .finally(() => (this.loading = false));
-    },
+    }
   },
   watch: {
     rtwSelected: {
@@ -312,10 +283,9 @@ export default {
       },
     },
   },
-
-  mounted: function () {
+  mounted: function() {
     this.retrieveToken();
-    this.getApiKey();
+    //this.getApiKey();
   },
   created() {
     document.title = "Schockraum";
@@ -340,5 +310,7 @@ export default {
   text-align: center;
   color: #2c3e50;
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 </style>

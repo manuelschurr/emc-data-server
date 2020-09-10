@@ -48,19 +48,42 @@ export default {
       imageStrings: [],
       chosenImage: null,
       loading: false,
-      token: localStorage.token
+      token: ""
     };
   },
   props: {
     selectedElements: Number
   },
   mounted() {
-    this.fillData();
+    var context = this;
+    var axios = require("axios");
+    var data = {
+      username: "root",
+      password: "root"
+    };
+
+    var config = {
+      method: "post",
+      url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
+      headers: {},
+      data: data
+    };
+
+    axios(config)
+      .then(function(response) {
+        context.token = response.data.data.token;
+        context.fillData();
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   },
   created() {
     this.timer = setInterval(this.fillData, 5000);
   },
   methods: {
+    retrieveToken() {},
+
     clickMethod: function(event) {
       this.chosenImage = event.currentTarget.src;
     },
@@ -71,7 +94,7 @@ export default {
       var body = "";
       var config = {
         method: "get",
-        //"https://localhost:3000/img/all",
+        //"https://wifo1-29.bwl.uni-mannheim.de:3000/img/all",
         url: "https://wifo1-29.bwl.uni-mannheim.de:3000/img/all",
         headers: { "x-access-token": this.token },
         data: body
@@ -91,7 +114,7 @@ export default {
             var bodyTwo = "";
             var configGetImages = {
               method: "get",
-              //"https://localhost:3000/img/single/" + imageStr,
+              //"https://wifo1-29.bwl.uni-mannheim.de:3000/img/single/" + imageStr,
               url:
                 "https://wifo1-29.bwl.uni-mannheim.de:3000/img/single/" +
                 imageStr,
