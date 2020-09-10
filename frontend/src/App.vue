@@ -79,11 +79,11 @@ export default {
         eta: null
       },
       activeAmbulances: [
-        {
-          ambulanceId: 3,
-          patientId: 1,
-          identifier: "Malteser Hilfsdienst - Mockobjekt"
-        }
+        // {
+        //   ambulanceId: 3,
+        //   patientId: 1,
+        //   identifier: "Malteser Hilfsdienst - Mockobjekt"
+        // }
       ],
       inactiveAmbulances: [],
       loading: false,
@@ -162,28 +162,30 @@ export default {
       this.Rtwdocument.lat = rtw.lat;
     },
     getGnssdata: function() {
-      let config = {
-        method: "get",
-        url:
-          "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
-          this.selectedRTW.ambulanceId,
-        headers: { "x-access-token": this.token }
-      };
+      if (this.selectedRTW.ambulanceId) {
+        let config = {
+          method: "get",
+          url:
+            "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+            this.selectedRTW.ambulanceId,
+          headers: { "x-access-token": this.token }
+        };
 
-      axios(config)
-        .then(response => {
-          this.rtwLocations.splice(
-            1,
-            1,
-            `[${response.data.data.longitude}, ${response.data.data.latitude}]`
-          );
-          this.Rtwdocument.long = response.data.data.longitude;
-          this.Rtwdocument.lat = response.data.data.latitude;
-          this.computeETA();
-        })
-        .catch(error => {
-          console.log(error);
-        });
+        axios(config)
+          .then(response => {
+            this.rtwLocations.splice(
+              1,
+              1,
+              `[${response.data.data.longitude}, ${response.data.data.latitude}]`
+            );
+            this.Rtwdocument.long = response.data.data.longitude;
+            this.Rtwdocument.lat = response.data.data.latitude;
+            this.computeETA();
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     },
     computeETA: function() {
       let request = new XMLHttpRequest();
