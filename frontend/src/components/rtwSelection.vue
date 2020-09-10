@@ -75,7 +75,12 @@
           </li>
         </div>
         <div v-else class="d-flex justify-content-center">
-          SHOW SPINNER
+          <div
+            class="spinner-border"
+            style="position: fixed; top: 50%;"
+            role="status"
+          ></div>
+          <div style="position: fixed; top: 55%;">{{ stateMessage }}</div>
         </div>
       </ul>
       <h3 v-else>... Aktuell fahren keine RTW's das UMM an ...</h3>
