@@ -90,8 +90,6 @@ export default {
   name: "RtwSelection",
   props: {
     selectRTW: Function,
-
-    inactiveAmbulances: Array,
     apiKeyOpenRoute: String
   },
   data: () => ({
@@ -103,7 +101,8 @@ export default {
     openRouteError: false,
     apiButtonIsDisabled: true,
     token: "",
-    activeAmbulances: []
+    activeAmbulances: [],
+    inactiveAmbulances: []
   }),
   methods: {
     updateApiKey: function() {
