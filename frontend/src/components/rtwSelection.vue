@@ -107,7 +107,7 @@ export default {
     stateMessage: "Berechne geschätzte Ankunftszeit",
     openRouteError: false,
     apiButtonIsDisabled: true,
-    token: ""
+    token: localStorage.token
   }),
   methods: {
     updateApiKey: function() {
@@ -184,8 +184,9 @@ export default {
                 url:
                   "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByAmbulanceId/" +
                   currentRtw.ambulanceId,
-                headers: { "x-access-token": this.token }
+                headers: { "x-access-token": context.token }
               };
+              console.log("COMPUTEETA" + config);
               var patientData = {};
               axios(config)
                 .then(response => {
@@ -214,6 +215,7 @@ export default {
                   currentRtw.patientId = patientData.patientId;
                   currentRtw.miscellaneous = patientData.miscellaneous;
                   currentRtw.abcde_schema = patientData.abcde_schema;
+                  console.log("CURRENTRTW in COMPUTE ETA: " + currentRtw);
                   for (var a of context.ambulancesWithETAs) {
                     if (currentRtw._id === a._id) {
                       contains = true;
@@ -257,6 +259,7 @@ export default {
       }
     },
     getGnssData: function() {
+      console.log("GETGNSSDATA" + this.token);
       for (var rtw of this.activeAmbulances) {
         if (rtw.ambulanceId && rtw.patientId != 0) {
           let config = {
@@ -266,6 +269,8 @@ export default {
               rtw.ambulanceId,
             headers: { "x-access-token": this.token }
           };
+
+          console.log("GNSSDATA CONFIG: " + JSON.stringify(config));
 
           axios(config)
             .then(response => {
@@ -283,6 +288,7 @@ export default {
                 }
                 currentRtw.long = response.data.data.longitude;
                 currentRtw.lat = response.data.data.latitude;
+                console.log("2 success GNSS");
                 this.computeETA(currentRtw);
               }
             })
@@ -306,11 +312,9 @@ export default {
       }
     }
   },
-  mounted: function() {
-    //this.getApiKey();
-    this.$root.$on("token", data => {
-      this.token = data;
-    });
+  mounted: function() {},
+  created() {
+    console.log("STORAGE: " + localStorage.token);
     this.getGnssData();
   },
   watch: {

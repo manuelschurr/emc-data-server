@@ -12,7 +12,7 @@
     </div>
     <div v-else>
       <RtwSelection
-        v-if="!rtwSelected && !loading"
+        v-if="!rtwSelected && !loading && token"
         :selectRTW="selectRTW"
         :activeAmbulances="activeAmbulances"
         :inactiveAmbulances="inactiveAmbulances"
@@ -79,11 +79,11 @@ export default {
         eta: null
       },
       activeAmbulances: [
-        {
-          ambulanceId: 3,
-          patientId: 1,
-          identifier: "Malteser Hilfsdienst - Mockobjekt"
-        }
+        // {
+        //   ambulanceId: 3,
+        //   patientId: 1,
+        //   identifier: "Malteser Hilfsdienst - Mockobjekt"
+        // }
       ],
       inactiveAmbulances: [],
       loading: false,
@@ -93,7 +93,7 @@ export default {
         "5b3ce3597851110001cf62483aa1ff4db2864ef98a6872071775fb93",
       openRouteError: false,
       apiButtonIsDisabled: true,
-      token: ""
+      token: localStorage.token
     };
   },
   components: {
@@ -111,7 +111,7 @@ export default {
         method: "put",
         //TO CHANGE
         url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/update/1",
-        headers: { "x-access-token": this.token }
+        headers: { "x-access-token": this.token },
         data: {
           apiKeyId: 1,
           value: this.apiKeyOpenRoute
@@ -162,28 +162,30 @@ export default {
       this.Rtwdocument.lat = rtw.lat;
     },
     getGnssdata: function() {
-      let config = {
-        method: "get",
-        url:
-          "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
-          this.selectedRTW.ambulanceId,
+      if (this.selectedRTW.ambulanceId) {
+        let config = {
+          method: "get",
+          url:
+            "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+            this.selectedRTW.ambulanceId,
           headers: { "x-access-token": this.token }
-      };
+        };
 
-      axios(config)
-        .then(response => {
-          this.rtwLocations.splice(
-            1,
-            1,
-            `[${response.data.data.longitude}, ${response.data.data.latitude}]`
-          );
-          this.Rtwdocument.long = response.data.data.longitude;
-          this.Rtwdocument.lat = response.data.data.latitude;
-          this.computeETA();
-        })
-        .catch(error => {
-          console.log(error);
-        });
+        axios(config)
+          .then(response => {
+            this.rtwLocations.splice(
+              1,
+              1,
+              `[${response.data.data.longitude}, ${response.data.data.latitude}]`
+            );
+            this.Rtwdocument.long = response.data.data.longitude;
+            this.Rtwdocument.lat = response.data.data.latitude;
+            this.computeETA();
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     },
     computeETA: function() {
       let request = new XMLHttpRequest();
@@ -254,6 +256,7 @@ export default {
           console.log(JSON.stringify(response.data.data.token));
           context.token = response.data.data.token;
           context.$root.$emit("token", response.data.data.token);
+          localStorage.token = context.token;
           context.retrieveRTWs();
         })
         .catch(function(error) {

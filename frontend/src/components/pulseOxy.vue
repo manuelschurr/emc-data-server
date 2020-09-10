@@ -193,7 +193,7 @@ export default {
       spo2Data: [],
       lastSpo2: "",
       spo2Labels: [],
-      token: ""
+      token: localStorage.token
     };
   },
   props: {
@@ -202,9 +202,6 @@ export default {
   },
   // Fill the chart with data and display it
   mounted() {
-    this.$root.$on("token", data => {
-      this.token = data;
-    });
     this.fillData();
   },
   // Refreshes the PulseOxy chart every second with the data from the server.

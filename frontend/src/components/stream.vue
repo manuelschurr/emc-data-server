@@ -48,17 +48,13 @@ export default {
       imageStrings: [],
       chosenImage: null,
       loading: false,
-      token: ""
+      token: localStorage.token
     };
   },
   props: {
     selectedElements: Number
   },
   mounted() {
-    this.$root.$on("token", data => {
-      this.token = data;
-    });
-
     this.fillData();
   },
   created() {

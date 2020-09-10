@@ -170,7 +170,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      token: "",
+      token: localStorage.token,
       message: null,
       notesABCDE: "",
       showModal: false,
@@ -218,9 +218,6 @@ export default {
     patientId: Number
   },
   mounted() {
-    this.$root.$on("token", data => {
-      this.token = data;
-    });
     this.fillData();
     this.retrieveAudio();
   },
