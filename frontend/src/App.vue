@@ -93,7 +93,7 @@ export default {
         "5b3ce3597851110001cf62483aa1ff4db2864ef98a6872071775fb93",
       openRouteError: false,
       apiButtonIsDisabled: true,
-      token: localStorage.token
+      token: ""
     };
   },
   components: {
@@ -110,7 +110,7 @@ export default {
       var config = {
         method: "put",
         //TO CHANGE
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/update/1",
+        url: "https://localhost:3000/apiKey/update/1",
         headers: { "x-access-token": this.token },
         data: {
           apiKeyId: 1,
@@ -133,7 +133,7 @@ export default {
       var config = {
         method: "get",
         //TO CHANGE
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/findAll",
+        url: "https://localhost:3000/apiKey/findAll",
         headers: { "x-access-token": this.token }
       };
 
@@ -166,7 +166,7 @@ export default {
         let config = {
           method: "get",
           url:
-            "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+            "https://localhost:3000/ambulance/findGnssByAmbulanceId/" +
             this.selectedRTW.ambulanceId,
           headers: { "x-access-token": this.token }
         };
@@ -246,7 +246,7 @@ export default {
 
       var config = {
         method: "post",
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
+        url: "https://localhost:3000/user/login",
         headers: {},
         data: data
       };
@@ -266,7 +266,7 @@ export default {
     retrieveRTWs() {
       var config = {
         method: "get",
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll",
+        url: "https://localhost:3000/ambulance/findAll",
         headers: { "x-access-token": this.token }
       };
       axios(config)
@@ -312,8 +312,8 @@ export default {
       }
     }
   },
-
   mounted: function() {
+    localStorage.clear();
     this.retrieveToken();
     this.getApiKey();
   },
@@ -340,5 +340,7 @@ export default {
   text-align: center;
   color: #2c3e50;
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 </style>

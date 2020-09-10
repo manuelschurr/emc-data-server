@@ -107,7 +107,7 @@ export default {
     stateMessage: "Berechne geschätzte Ankunftszeit",
     openRouteError: false,
     apiButtonIsDisabled: true,
-    token: localStorage.token
+    token: ""
   }),
   methods: {
     updateApiKey: function() {
@@ -115,7 +115,7 @@ export default {
       var config = {
         method: "put",
         //TO CHANGE
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/update/1",
+        url: "https://localhost:3000/apiKey/update/1",
         headers: { "x-access-token": this.token },
         data: {
           apiKeyId: 1,
@@ -141,7 +141,7 @@ export default {
       var config = {
         method: "get",
         //TO CHANGE
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/findAll",
+        url: "https://localhost:3000/apiKey/findAll",
         headers: { "x-access-token": this.token }
       };
 
@@ -182,7 +182,7 @@ export default {
               let config = {
                 method: "get",
                 url:
-                  "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByAmbulanceId/" +
+                  "https://localhost:3000/patient/findByAmbulanceId/" +
                   currentRtw.ambulanceId,
                 headers: { "x-access-token": context.token }
               };
@@ -259,13 +259,12 @@ export default {
       }
     },
     getGnssData: function() {
-      console.log("GETGNSSDATA" + this.token);
       for (var rtw of this.activeAmbulances) {
         if (rtw.ambulanceId && rtw.patientId != 0) {
           let config = {
             method: "get",
             url:
-              "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+              "https://localhost:3000/ambulance/findGnssByAmbulanceId/" +
               rtw.ambulanceId,
             headers: { "x-access-token": this.token }
           };
@@ -312,10 +311,34 @@ export default {
       }
     }
   },
-  mounted: function() {},
+  mounted: function() {
+    var context = this;
+    var axios = require("axios");
+    var data = {
+      username: "root",
+      password: "root"
+    };
+
+    var config = {
+      method: "post",
+      url: "https://localhost:3000/user/login",
+      headers: {},
+      data: data
+    };
+
+    axios(config)
+      .then(function(response) {
+        console.log(JSON.stringify(response.data.data.token));
+        context.token = response.data.data.token;
+        context.getGnssData();
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+    //this.token = localStorage.token;
+  },
   created() {
-    console.log("STORAGE: " + localStorage.token);
-    this.getGnssData();
+    //this.getGnssData();
   },
   watch: {
     apiKeyOpenRoute: {
@@ -324,6 +347,13 @@ export default {
           this.apiButtonIsDisabled = false;
         } else {
           this.apiButtonIsDisabled = true;
+        }
+      },
+      token: {
+        handler() {
+          if (this.token) {
+            this.getGnssData();
+          }
         }
       }
     }

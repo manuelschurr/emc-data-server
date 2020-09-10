@@ -193,7 +193,7 @@ export default {
       spo2Data: [],
       lastSpo2: "",
       spo2Labels: [],
-      token: localStorage.token
+      token: ""
     };
   },
   props: {
@@ -202,7 +202,29 @@ export default {
   },
   // Fill the chart with data and display it
   mounted() {
-    this.fillData();
+    var context = this;
+    var axios = require("axios");
+    var data = {
+      username: "root",
+      password: "root"
+    };
+
+    var config = {
+      method: "post",
+      url: "https://localhost:3000/user/login",
+      headers: {},
+      data: data
+    };
+
+    axios(config)
+      .then(function(response) {
+        console.log(JSON.stringify(response.data.data.token));
+        context.token = response.data.data.token;
+        context.fillData();
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   },
   // Refreshes the PulseOxy chart every second with the data from the server.
   created() {
@@ -239,9 +261,7 @@ export default {
         var body = "";
         var config = {
           method: "get",
-          url:
-            "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByPatientId/" +
-            vm.patientId,
+          url: "https://localhost:3000/patient/findByPatientId/" + vm.patientId,
           headers: { "x-access-token": this.token },
           data: body
         };
@@ -254,12 +274,12 @@ export default {
               var configSecond = {
                 method: "get",
                 url:
-                  "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findPulsoxyByPatientIdAndTimestamp?patientId=" +
+                  "https://localhost:3000/patient/findPulsoxyByPatientIdAndTimestamp?patientId=" +
                   vm.patientId +
                   "&timestamp=" +
                   responsePatient.data.data.createdAt,
 
-                headers: { "x-access-token": this.token },
+                headers: { "x-access-token": vm.token },
                 data: bodySecond
               };
 
@@ -353,10 +373,10 @@ export default {
         var configPulseoxy = {
           method: "get",
           url:
-            "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findPulsoxyByPatientId/" +
+            "https://localhost:3000/patient/findPulsoxyByPatientId/" +
             vm.patientId,
 
-          headers: { "x-access-token": this.token },
+          headers: { "x-access-token": vm.token },
           data: bodyPulseoxy
         };
 

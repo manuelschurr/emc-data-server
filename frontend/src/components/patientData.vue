@@ -9,63 +9,6 @@
       <h5 class="col patientDataText" style="text-align: start;">
         Patientendaten
       </h5>
-      <div style="margin-right: 20px; margin-bottom: 10px;">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          id="btn-a"
-          :class="classABCDE(patient.status.a.isSelected)"
-          v-if="loaded"
-          disabled
-          pill
-        >
-          A
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          id="btn-b"
-          :class="classABCDE(patient.status.b.isSelected)"
-          v-if="loaded"
-          disabled
-          pill
-        >
-          B
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          id="btn-c"
-          :class="classABCDE(patient.status.c.isSelected)"
-          v-if="loaded"
-          disabled
-          pill
-        >
-          C
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          id="btn-d"
-          :class="classABCDE(patient.status.d.isSelected)"
-          v-if="loaded"
-          disabled
-          pill
-        >
-          D
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          id="btn-e"
-          :class="classABCDE(patient.status.e.isSelected)"
-          v-if="loaded"
-          disabled
-          pill
-        >
-          E
-        </button>
-      </div>
     </div>
     <div class="row align-items-start">
       <div class="col-10">
@@ -155,7 +98,7 @@
         <div
           id="audioFile"
           class="audio"
-          style="overflow-y: scroll; height: 12vh;"
+          style="overflow-y: auto; height: 12vh;"
           controls
         ></div>
       </div>
@@ -170,7 +113,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      token: localStorage.token,
+      token: "",
       message: null,
       notesABCDE: "",
       showModal: false,
@@ -218,12 +161,35 @@ export default {
     patientId: Number
   },
   mounted() {
-    this.fillData();
-    this.retrieveAudio();
+    var context = this;
+    var axios = require("axios");
+    var data = {
+      username: "root",
+      password: "root"
+    };
+
+    var config = {
+      method: "post",
+      url: "https://localhost:3000/user/login",
+      headers: {},
+      data: data
+    };
+
+    axios(config)
+      .then(function(response) {
+        console.log(JSON.stringify(response.data.data.token));
+        context.token = response.data.data.token;
+        context.fillData();
+        context.retrieveAudio();
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   },
   // Refreshes the patient data every 10 seconds with the data from the server.
   created() {
     this.timer = setInterval(this.fillData, 10000);
+    this.timer = setInterval(this.retrieveAudio, 10000);
   },
   methods: {
     // Requests the data from the server to get the patient data
@@ -233,9 +199,7 @@ export default {
 
       var config = {
         method: "get",
-        url:
-          "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByPatientId/" +
-          this.patientId,
+        url: "https://localhost:3000/patient/findByPatientId/" + this.patientId,
         headers: { "x-access-token": this.token },
         data: data
       };
@@ -273,9 +237,11 @@ export default {
      * Methode zum Holen der Audio aus Server Backend
      */
     retrieveAudio() {
+      var context = this;
       axios({
         method: "get",
-        url: "https://localhost:3000/audio/all"
+        url: "https://localhost:3000/audio/all",
+        headers: { "x-access-token": this.token }
       }).then(function(response) {
         console.log("Response Data Data: " + response.data.data);
         // for loop iterating over all items of the data object
@@ -283,10 +249,12 @@ export default {
           axios({
             method: "get",
             url: "https://localhost:3000/audio/single/" + audioFileName,
+            headers: { "x-access-token": context.token },
             responseType: "blob"
           }).then(function(response) {
+            var url;
             var audiofiles = response.data;
-            const url = window.URL.createObjectURL(audiofiles);
+            url = window.URL.createObjectURL(audiofiles);
             var audioDiv = document.getElementById("audioFile");
             var audioPlayer = document.createElement("AUDIO");
             // set attributes of audio element
@@ -294,7 +262,7 @@ export default {
             audioPlayer.setAttribute("preload", "auto");
             audioPlayer.setAttribute(
               "style",
-              "display: inline-block; width: 13vw; height: 5vh;"
+              "display: inline-block; width: 10vw; height: 5vh;"
             );
             // append the audio player to audio container
             audioDiv.appendChild(audioPlayer);
@@ -304,9 +272,6 @@ export default {
           });
         }
       });
-    },
-    openABCDE(output, event) {
-      console.log(output, event);
     },
     classABCDE(status) {
       let classABCDE = "";

@@ -1,5 +1,62 @@
 <template>
   <div>
+    <div style="margin-right: 20px; margin-bottom: 10px;">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="btn-a"
+        :class="classABCDE(patient.status.a.isSelected)"
+        v-if="loaded"
+        disabled
+        pill
+      >
+        A
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="btn-b"
+        :class="classABCDE(patient.status.b.isSelected)"
+        v-if="loaded"
+        disabled
+        pill
+      >
+        B
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="btn-c"
+        :class="classABCDE(patient.status.c.isSelected)"
+        v-if="loaded"
+        disabled
+        pill
+      >
+        C
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="btn-d"
+        :class="classABCDE(patient.status.d.isSelected)"
+        v-if="loaded"
+        disabled
+        pill
+      >
+        D
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="btn-e"
+        :class="classABCDE(patient.status.e.isSelected)"
+        v-if="loaded"
+        disabled
+        pill
+      >
+        E
+      </button>
+    </div>
     Notizen ABCDE-Schema:
     <div v-if="patient.status.a.notes">
       <b>A: </b>
