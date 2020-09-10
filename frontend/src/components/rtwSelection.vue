@@ -328,10 +328,6 @@ export default {
       .catch(function(error) {
         console.log(error);
       });
-    //this.token = localStorage.token;
-  },
-  created() {
-    //this.getGnssData();
   },
   watch: {
     apiKeyOpenRoute: {
@@ -341,14 +337,14 @@ export default {
         } else {
           this.apiButtonIsDisabled = true;
         }
-      },
-      token: {
-        handler() {
-          if (this.token) {
-            this.getGnssData();
-          }
-        }
       }
+      // token: {
+      //   handler() {
+      //     if (this.token) {
+      //       this.getGnssData();
+      //     }
+      //   }
+      // }
     }
   }
 };
