@@ -14,8 +14,6 @@
       <RtwSelection
         v-if="!rtwSelected && !loading"
         :selectRTW="selectRTW"
-        :activeAmbulances="activeAmbulances"
-        :inactiveAmbulances="inactiveAmbulances"
         :Rtwdocument="Rtwdocument"
         :apiKeyOpenRoute="apiKeyOpenRoute"
       />
@@ -79,11 +77,11 @@ export default {
         eta: null
       },
       activeAmbulances: [
-        {
-          ambulanceId: 3,
-          patientId: 1,
-          identifier: "Malteser Hilfsdienst - Mockobjekt"
-        }
+        // {
+        //   ambulanceId: 3,
+        //   patientId: 1,
+        //   identifier: "Malteser Hilfsdienst - Mockobjekt"
+        // }
       ],
       inactiveAmbulances: [],
       loading: false,
@@ -162,28 +160,30 @@ export default {
       this.Rtwdocument.lat = rtw.lat;
     },
     getGnssdata: function() {
-      let config = {
-        method: "get",
-        url:
-          "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
-          this.selectedRTW.ambulanceId,
-        headers: { "x-access-token": this.token }
-      };
+      if (this.selectedRTW.ambulanceId) {
+        let config = {
+          method: "get",
+          url:
+            "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+            this.selectedRTW.ambulanceId,
+          headers: { "x-access-token": this.token }
+        };
 
-      axios(config)
-        .then(response => {
-          this.rtwLocations.splice(
-            1,
-            1,
-            `[${response.data.data.longitude}, ${response.data.data.latitude}]`
-          );
-          this.Rtwdocument.long = response.data.data.longitude;
-          this.Rtwdocument.lat = response.data.data.latitude;
-          this.computeETA();
-        })
-        .catch(error => {
-          console.log(error);
-        });
+        axios(config)
+          .then(response => {
+            this.rtwLocations.splice(
+              1,
+              1,
+              `[${response.data.data.longitude}, ${response.data.data.latitude}]`
+            );
+            this.Rtwdocument.long = response.data.data.longitude;
+            this.Rtwdocument.lat = response.data.data.latitude;
+            this.computeETA();
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     },
     computeETA: function() {
       let request = new XMLHttpRequest();
@@ -210,7 +210,6 @@ export default {
                 JSON.parse(request.responseText).durations[1][0]
               );
               context.Rtwdocument.eta = context.selectedRTW.eta;
-              console.log("Test request");
               context.$forceUpdate();
             } else {
               context.selectedRTW.eta = "Fehler bei Routen Schnittstelle";
@@ -251,39 +250,14 @@ export default {
 
       axios(config)
         .then(function(response) {
-          console.log(JSON.stringify(response.data.data.token));
           context.token = response.data.data.token;
           context.$root.$emit("token", response.data.data.token);
-          context.retrieveRTWs();
+          localStorage.token = context.token;
+          //context.retrieveRTWs();
         })
         .catch(function(error) {
           console.log(error);
         });
-    },
-    retrieveRTWs() {
-      var config = {
-        method: "get",
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll",
-        headers: { "x-access-token": this.token }
-      };
-      axios(config)
-        .then(response => {
-          for (var ambulance of response.data.data) {
-            if (ambulance.patientId != 0) {
-              this.activeAmbulances.push(ambulance);
-            } else {
-              this.inactiveAmbulances.push(ambulance);
-            }
-          }
-          for (var r of this.activeAmbulances) {
-            r.eta = 0;
-          }
-        })
-        .catch(errors => {
-          // react on errors.
-          console.error("AXIOS ERROR: " + errors);
-        })
-        .finally(() => (this.loading = false));
     }
   },
   watch: {
@@ -309,10 +283,9 @@ export default {
       }
     }
   },
-
   mounted: function() {
     this.retrieveToken();
-    this.getApiKey();
+    //this.getApiKey();
   },
   created() {
     document.title = "Schockraum";
@@ -337,5 +310,7 @@ export default {
   text-align: center;
   color: #2c3e50;
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 </style>

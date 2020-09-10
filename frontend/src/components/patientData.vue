@@ -9,63 +9,6 @@
       <h5 class="col patientDataText" style="text-align: start;">
         Patientendaten
       </h5>
-      <div style="margin-right: 20px; margin-bottom: 10px;">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          id="btn-a"
-          :class="classABCDE(patient.status.a.isSelected)"
-          v-if="loaded"
-          disabled
-          pill
-        >
-          A
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          id="btn-b"
-          :class="classABCDE(patient.status.b.isSelected)"
-          v-if="loaded"
-          disabled
-          pill
-        >
-          B
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          id="btn-c"
-          :class="classABCDE(patient.status.c.isSelected)"
-          v-if="loaded"
-          disabled
-          pill
-        >
-          C
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          id="btn-d"
-          :class="classABCDE(patient.status.d.isSelected)"
-          v-if="loaded"
-          disabled
-          pill
-        >
-          D
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          id="btn-e"
-          :class="classABCDE(patient.status.e.isSelected)"
-          v-if="loaded"
-          disabled
-          pill
-        >
-          E
-        </button>
-      </div>
     </div>
     <div class="row align-items-start">
       <div class="col-10">
@@ -155,7 +98,7 @@
         <div
           id="audioFile"
           class="audio"
-          style="overflow-y: scroll; height: 12vh;"
+          style="overflow-y: auto; height: 12vh;"
           controls
         ></div>
       </div>
@@ -211,22 +154,42 @@ export default {
         }
       },
       showABCDE: false,
-      pastEvent: null
+      pastEvent: null,
+      oldListOfNames: []
     };
   },
   props: {
     patientId: Number
   },
   mounted() {
-    this.$root.$on("token", data => {
-      this.token = data;
-    });
-    this.fillData();
-    this.retrieveAudio();
+    var context = this;
+    var axios = require("axios");
+    var data = {
+      username: "root",
+      password: "root"
+    };
+
+    var config = {
+      method: "post",
+      url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
+      headers: {},
+      data: data
+    };
+
+    axios(config)
+      .then(function(response) {
+        context.token = response.data.data.token;
+        context.fillData();
+        context.retrieveAudio();
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   },
   // Refreshes the patient data every 10 seconds with the data from the server.
   created() {
     this.timer = setInterval(this.fillData, 10000);
+    this.timer = setInterval(this.retrieveAudio, 10000);
   },
   methods: {
     // Requests the data from the server to get the patient data
@@ -248,7 +211,7 @@ export default {
           vm.patient.rtwId = response.data.data.ambulanceId;
           vm.patient.name = response.data.data.name;
           vm.patient.age = response.data.data.age;
-          vm.patient.gender = response.data.data.gender;
+          vm.patient.gender = response.data.data.gender.toLowerCase();
           vm.patient.preExistingIllness.text =
             response.data.data.preExistingIllness;
           vm.patient.miscellaneaous.text = response.data.data.miscellaneous;
@@ -276,49 +239,47 @@ export default {
      * Methode zum Holen der Audio aus Server Backend
      */
     retrieveAudio() {
+      var context = this;
       axios({
         method: "get",
-        url: "https://localhost:3000/audio/all"
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/audio/all",
+        headers: { "x-access-token": this.token }
       }).then(function(response) {
-        console.log("Response Data Data: " + response.data.data);
+        // var aDiv = document.getElementById("audioFile");
+        // aDiv.querySelectorAll("*").forEach(n => n.remove());
         // for loop iterating over all items of the data object
         for (var audioFileName of response.data.data) {
-          axios({
-            method: "get",
-            url: "https://localhost:3000/audio/single/" + audioFileName,
-            responseType: "blob"
-          }).then(function(response) {
-            var audiofiles = response.data;
-            const url = window.URL.createObjectURL(audiofiles);
-            var audioDiv = document.getElementById("audioFile");
-            var audioPlayer = document.createElement("AUDIO");
-            // set attributes of audio element
-            audioPlayer.setAttribute("controls", "controls");
-            audioPlayer.setAttribute("preload", "auto");
-            audioPlayer.setAttribute(
-              "style",
-              "display: inline-block; width: 13vw; height: 5vh;"
-            );
-            // append the audio player to audio container
-            audioDiv.appendChild(audioPlayer);
-            // set inner HTML of audio player to source of blop URL
-            audioPlayer.innerHTML =
-              "<p>1</p>" + '<source src="' + url + '" type="audio/mpeg" />';
-          });
+          if (!context.oldListOfNames.includes(audioFileName)) {
+            axios({
+              method: "get",
+              url:
+                "https://wifo1-29.bwl.uni-mannheim.de:3000/audio/single/" +
+                audioFileName,
+              headers: { "x-access-token": context.token },
+              responseType: "blob"
+            }).then(function(response) {
+              var url;
+              var audiofiles = response.data;
+              url = window.URL.createObjectURL(audiofiles);
+              var audioDiv = document.getElementById("audioFile");
+              var audioPlayer = document.createElement("AUDIO");
+              // set attributes of audio element
+              audioPlayer.setAttribute("controls", "controls");
+              audioPlayer.setAttribute("preload", "auto");
+              audioPlayer.setAttribute(
+                "style",
+                "display: inline-block; width: 10vw; height: 5vh;"
+              );
+              // append the audio player to audio container
+              audioDiv.appendChild(audioPlayer);
+              // set inner HTML of audio player to source of blop URL
+              audioPlayer.innerHTML =
+                '<source src="' + url + '" type="audio/mpeg" />';
+            });
+          }
         }
+        context.oldListOfNames = response.data.data;
       });
-    },
-    openABCDE(output, event) {
-      console.log(output, event);
-    },
-    classABCDE(status) {
-      let classABCDE = "";
-      if (!status) {
-        classABCDE = "rounded-circle btn-danger";
-      } else {
-        classABCDE = "rounded-circle btn-success";
-      }
-      return classABCDE;
     },
     // When the rtw is switched, the refreshing timer is stopped.
     beforeDestroy() {

@@ -9,10 +9,6 @@ export default class PatientRepo {
       return PatientModel.findOne({ ambulanceId: id }).lean<Patient>().exec();
    }
 
-   public static findMaxAmbulanceId(): Promise<Patient> {
-      return PatientModel.findOne({}, {patientId: 1, _id: 0} ).sort({patientId: -1}).lean<Patient>().exec();
-   }
-
    public static async create(patient: Patient): Promise<{ patient: Patient }> {
       const now = new Date();
       patient.createdAt = patient.updatedAt = now;

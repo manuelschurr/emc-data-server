@@ -5,6 +5,7 @@ import { NotFoundMsgResponse, SuccessResponse } from "../../core/ApiResponse";
 import Ambulance from "../../database/model/Ambulance";
 import Gnss from "../../database/model/Gnss";
 import AmbulanceRepo from "../../database/repository/AmbulanceRepo";
+import CountersRepo from "../../database/repository/CountersRepo";
 import GnssRepo from "../../database/repository/GnssRepo";
 import asyncHandler from "../../helpers/asyncHandler";
 import validator, { ValidationSource } from "../../helpers/validator";
@@ -44,13 +45,9 @@ router.get(
     "/findNextAmbulanceId", verifyToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const ambulance = await AmbulanceRepo.findMaxAmbulanceId();
-        var ambulanceId = 1;
-        if (ambulance) {
-            ambulanceId = ambulance.ambulanceId + 1;
-        }
+        const nextAmbulanceId = await CountersRepo.findAndModify("ambulanceId");
         
-        return new SuccessResponse("Successful", ambulanceId).send(res);
+        return new SuccessResponse("Successful", nextAmbulanceId).send(res);
     }),
 );
 

@@ -4,6 +4,7 @@ import verifyToken from "../../auth/VerifyToken";
 import { NotFoundMsgResponse, SuccessResponse } from "../../core/ApiResponse";
 import Patient from "../../database/model/Patient";
 import Pulsoxy from "../../database/model/Pulsoxy";
+import CountersRepo from "../../database/repository/CountersRepo";
 import PatientRepo from "../../database/repository/PatientRepo";
 import PulsoxyRepo from "../../database/repository/PulsoxyRepo";
 import asyncHandler from "../../helpers/asyncHandler";
@@ -46,13 +47,9 @@ router.get(
     "/findNextPatientId", verifyToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const patient = await PatientRepo.findMaxAmbulanceId();
-        var patientId = 1;
-        if (patient) {
-            patientId = patient.patientId + 1;
-        }
+        const nextPatientValue = await CountersRepo.findAndModify("patientId");
 
-        return new SuccessResponse("Successful", patientId).send(res);
+        return new SuccessResponse("Successful", nextPatientValue).send(res);
     }),
 );
 

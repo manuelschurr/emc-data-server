@@ -202,10 +202,28 @@ export default {
   },
   // Fill the chart with data and display it
   mounted() {
-    this.$root.$on("token", data => {
-      this.token = data;
-    });
-    this.fillData();
+    var context = this;
+    var axios = require("axios");
+    var data = {
+      username: "root",
+      password: "root"
+    };
+
+    var config = {
+      method: "post",
+      url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
+      headers: {},
+      data: data
+    };
+
+    axios(config)
+      .then(function(response) {
+        context.token = response.data.data.token;
+        context.fillData();
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   },
   // Refreshes the PulseOxy chart every second with the data from the server.
   created() {
@@ -262,7 +280,7 @@ export default {
                   "&timestamp=" +
                   responsePatient.data.data.createdAt,
 
-                headers: { "x-access-token": this.token },
+                headers: { "x-access-token": vm.token },
                 data: bodySecond
               };
 
@@ -359,7 +377,7 @@ export default {
             "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findPulsoxyByPatientId/" +
             vm.patientId,
 
-          headers: { "x-access-token": this.token },
+          headers: { "x-access-token": vm.token },
           data: bodyPulseoxy
         };
 

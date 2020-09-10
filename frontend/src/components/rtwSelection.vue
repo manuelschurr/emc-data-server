@@ -95,8 +95,6 @@ export default {
   name: "RtwSelection",
   props: {
     selectRTW: Function,
-    activeAmbulances: Array,
-    inactiveAmbulances: Array,
     apiKeyOpenRoute: String
   },
   data: () => ({
@@ -107,7 +105,9 @@ export default {
     stateMessage: "Berechne geschätzte Ankunftszeit",
     openRouteError: false,
     apiButtonIsDisabled: true,
-    token: ""
+    token: "",
+    activeAmbulances: [],
+    inactiveAmbulances: []
   }),
   methods: {
     updateApiKey: function() {
@@ -124,10 +124,10 @@ export default {
       };
 
       axios(config)
-        .then(function(response) {
+        .then(function() {
           context.openRouteError = false;
+          context.ambulancesWithETAs = [];
           context.getGnssData();
-          console.log(JSON.stringify(response.data));
           context.$root.$emit("apiToken", context.apiKeyOpenRoute);
           context.$root.$emit("tokenStatus", context.openRouteError);
           context.$forceUpdate;
@@ -184,7 +184,7 @@ export default {
                 url:
                   "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByAmbulanceId/" +
                   currentRtw.ambulanceId,
-                headers: { "x-access-token": this.token }
+                headers: { "x-access-token": context.token }
               };
               var patientData = {};
               axios(config)
@@ -256,7 +256,33 @@ export default {
         return minutes + " Minuten " + seconds + " Sekunden";
       }
     },
-    getGnssData: function() {
+    retrieveRTWs() {
+      var config = {
+        method: "get",
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll",
+        headers: { "x-access-token": this.token }
+      };
+      axios(config)
+        .then(response => {
+          for (var ambulance of response.data.data) {
+            if (ambulance.patientId != 0) {
+              this.activeAmbulances.push(ambulance);
+            } else {
+              this.inactiveAmbulances.push(ambulance);
+            }
+          }
+          for (var r of this.activeAmbulances) {
+            r.eta = 0;
+          }
+          this.getGnssData();
+        })
+        .catch(errors => {
+          // react on errors.
+          console.error("AXIOS ERROR: " + errors);
+        })
+        .finally(() => (this.loading = false));
+    },
+    getGnssData() {
       for (var rtw of this.activeAmbulances) {
         if (rtw.ambulanceId && rtw.patientId != 0) {
           let config = {
@@ -307,11 +333,28 @@ export default {
     }
   },
   mounted: function() {
-    //this.getApiKey();
-    this.$root.$on("token", data => {
-      this.token = data;
-    });
-    this.getGnssData();
+    var context = this;
+    var axios = require("axios");
+    var data = {
+      username: "root",
+      password: "root"
+    };
+
+    var config = {
+      method: "post",
+      url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
+      headers: {},
+      data: data
+    };
+
+    axios(config)
+      .then(function(response) {
+        context.token = response.data.data.token;
+        context.retrieveRTWs();
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   },
   watch: {
     apiKeyOpenRoute: {

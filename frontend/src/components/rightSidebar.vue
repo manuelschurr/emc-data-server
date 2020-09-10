@@ -1,5 +1,57 @@
 <template>
   <div>
+    <div style="margin-right: 20px; margin-bottom: 10px;" class="mx-auto">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="btn-a"
+        :class="classABCDE(patient.status.a.isSelected)"
+        disabled
+        pill
+      >
+        A
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="btn-b"
+        :class="classABCDE(patient.status.b.isSelected)"
+        disabled
+        pill
+      >
+        B
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="btn-c"
+        :class="classABCDE(patient.status.c.isSelected)"
+        disabled
+        pill
+      >
+        C
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="btn-d"
+        :class="classABCDE(patient.status.d.isSelected)"
+        disabled
+        pill
+      >
+        D
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="btn-e"
+        :class="classABCDE(patient.status.e.isSelected)"
+        disabled
+        pill
+      >
+        E
+      </button>
+    </div>
     Notizen ABCDE-Schema:
     <div v-if="patient.status.a.notes">
       <b>A: </b>
@@ -47,25 +99,7 @@ export default {
     return {
       screenshots: [],
       output: "",
-      patient: {
-        status: {
-          a: {
-            notes: ""
-          },
-          b: {
-            notes: ""
-          },
-          c: {
-            notes: ""
-          },
-          d: {
-            notes: ""
-          },
-          e: {
-            notes: ""
-          }
-        }
-      }
+      patient: {}
     };
   },
   mounted() {
@@ -76,6 +110,19 @@ export default {
     this.$root.$on("patientDataSidebar", data => {
       this.patient = data;
     });
+  },
+  methods: {
+    classABCDE(status) {
+      let classABCDE = "";
+      if (!status) {
+        classABCDE = "rounded-circle btn-danger";
+      } else if (status) {
+        classABCDE = "rounded-circle btn-success";
+      } else {
+        classABCDE = "rounded-circle btn-secondary";
+      }
+      return classABCDE;
+    }
   }
 };
 </script>
