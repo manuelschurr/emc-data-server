@@ -76,7 +76,7 @@ export default {
       Rtwdocument: {
         long: null,
         lat: null,
-        eta: null
+        eta: null,
       },
       activeAmbulances: [
         // {
@@ -93,7 +93,7 @@ export default {
         "5b3ce3597851110001cf62483aa1ff4db2864ef98a6872071775fb93",
       openRouteError: false,
       apiButtonIsDisabled: true,
-      token: localStorage.token
+      token: localStorage.token,
     };
   },
   components: {
@@ -102,10 +102,10 @@ export default {
     RightSidebar,
     LeftSidebar,
     MainComponent,
-    RtwSelection
+    RtwSelection,
   },
   methods: {
-    updateApiKey: function() {
+    updateApiKey: function () {
       var context = this;
       var config = {
         method: "put",
@@ -114,39 +114,39 @@ export default {
         headers: { "x-access-token": this.token },
         data: {
           apiKeyId: 1,
-          value: this.apiKeyOpenRoute
-        }
+          value: this.apiKeyOpenRoute,
+        },
       };
 
       axios(config)
-        .then(function(response) {
+        .then(function (response) {
           context.openRouteError = false;
           context.getGnssdata();
           console.log(JSON.stringify(response.data));
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
         });
     },
-    getApiKey: function() {
+    getApiKey: function () {
       var context = this;
       var config = {
         method: "get",
         //TO CHANGE
         url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/findAll",
-        headers: { "x-access-token": this.token }
+        headers: { "x-access-token": this.token },
       };
 
       axios(config)
-        .then(function(response) {
+        .then(function (response) {
           context.apiKeyOpenRoute = response.data.data[0].value;
           context.getGnssdata();
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
         });
     },
-    changeRTW: function() {
+    changeRTW: function () {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = Object;
       //this.activeAmbulances = [];
@@ -154,25 +154,25 @@ export default {
       this.Rtwdocument.lat = null;
       this.Rtwdocument.eta = null;
     },
-    selectRTW: function(rtw) {
+    selectRTW: function (rtw) {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = rtw;
       this.Rtwdocument.eta = rtw.eta;
       this.Rtwdocument.long = rtw.long;
       this.Rtwdocument.lat = rtw.lat;
     },
-    getGnssdata: function() {
+    getGnssdata: function () {
       if (this.selectedRTW.ambulanceId) {
         let config = {
           method: "get",
           url:
             "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
             this.selectedRTW.ambulanceId,
-          headers: { "x-access-token": this.token }
+          headers: { "x-access-token": this.token },
         };
 
         axios(config)
-          .then(response => {
+          .then((response) => {
             this.rtwLocations.splice(
               1,
               1,
@@ -182,12 +182,12 @@ export default {
             this.Rtwdocument.lat = response.data.data.latitude;
             this.computeETA();
           })
-          .catch(error => {
+          .catch((error) => {
             console.log(error);
           });
       }
     },
-    computeETA: function() {
+    computeETA: function () {
       let request = new XMLHttpRequest();
       if (this.rtwLocations.length > 1) {
         request.open(
@@ -205,7 +205,7 @@ export default {
           this.apiKeyOpenRoute //API Key
         );
         let context = this;
-        request.onreadystatechange = function() {
+        request.onreadystatechange = function () {
           if (request.readyState === 4) {
             if (request.status === 200) {
               context.selectedRTW.eta = context.secToTime(
@@ -224,7 +224,7 @@ export default {
         request.send(body);
       }
     },
-    secToTime: function(etaInSec) {
+    secToTime: function (etaInSec) {
       if (!isNaN(etaInSec)) {
         const rtwTimeReductionFactor = 0.734;
         etaInSec = etaInSec * rtwTimeReductionFactor;
@@ -241,25 +241,25 @@ export default {
       var axios = require("axios");
       var data = {
         username: "root",
-        password: "root"
+        password: "root",
       };
 
       var config = {
         method: "post",
         url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
         headers: {},
-        data: data
+        data: data,
       };
 
       axios(config)
-        .then(function(response) {
+        .then(function (response) {
           console.log(JSON.stringify(response.data.data.token));
           context.token = response.data.data.token;
           context.$root.$emit("token", response.data.data.token);
           localStorage.token = context.token;
           context.retrieveRTWs();
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
         });
     },
@@ -267,10 +267,10 @@ export default {
       var config = {
         method: "get",
         url: "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll",
-        headers: { "x-access-token": this.token }
+        headers: { "x-access-token": this.token },
       };
       axios(config)
-        .then(response => {
+        .then((response) => {
           for (var ambulance of response.data.data) {
             if (ambulance.patientId != 0) {
               this.activeAmbulances.push(ambulance);
@@ -282,12 +282,12 @@ export default {
             r.eta = 0;
           }
         })
-        .catch(errors => {
+        .catch((errors) => {
           // react on errors.
           console.error("AXIOS ERROR: " + errors);
         })
         .finally(() => (this.loading = false));
-    }
+    },
   },
   watch: {
     rtwSelected: {
@@ -300,7 +300,7 @@ export default {
         } else {
           clearInterval(this.interval);
         }
-      }
+      },
     },
     apiKeyOpenRoute: {
       handler() {
@@ -309,26 +309,26 @@ export default {
         } else {
           this.apiButtonIsDisabled = true;
         }
-      }
-    }
+      },
+    },
   },
 
-  mounted: function() {
+  mounted: function () {
     this.retrieveToken();
     this.getApiKey();
   },
   created() {
     document.title = "Schockraum";
 
-    this.$root.$on("tokenStatus", data => {
+    this.$root.$on("tokenStatus", (data) => {
       this.openRouteError = data;
     });
 
-    this.$root.$on("apiToken", data => {
+    this.$root.$on("apiToken", (data) => {
       this.apiKeyOpenRoute = data;
     });
     // Consume REST-API
-  }
+  },
 };
 </script>
 
