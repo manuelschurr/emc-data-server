@@ -178,7 +178,6 @@ export default {
 
     axios(config)
       .then(function(response) {
-        console.log(JSON.stringify(response.data.data.token));
         context.token = response.data.data.token;
         context.fillData();
         context.retrieveAudio();
@@ -247,7 +246,6 @@ export default {
         // var aDiv = document.getElementById("audioFile");
         // aDiv.querySelectorAll("*").forEach(n => n.remove());
         // for loop iterating over all items of the data object
-        console.log(response.data.data);
         for (var audioFileName of response.data.data) {
           if (!context.oldListOfNames.includes(audioFileName)) {
             axios({
@@ -269,7 +267,6 @@ export default {
                 "display: inline-block; width: 10vw; height: 5vh;"
               );
               // append the audio player to audio container
-              console.log(audioPlayer);
               audioDiv.appendChild(audioPlayer);
               // set inner HTML of audio player to source of blop URL
               audioPlayer.innerHTML =

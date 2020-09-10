@@ -124,10 +124,9 @@ export default {
       };
 
       axios(config)
-        .then(function(response) {
+        .then(function() {
           context.openRouteError = false;
           context.getGnssData();
-          console.log(JSON.stringify(response.data));
           context.$root.$emit("apiToken", context.apiKeyOpenRoute);
           context.$root.$emit("tokenStatus", context.openRouteError);
           context.$forceUpdate;
@@ -186,7 +185,6 @@ export default {
                   currentRtw.ambulanceId,
                 headers: { "x-access-token": context.token }
               };
-              console.log("COMPUTEETA" + config);
               var patientData = {};
               axios(config)
                 .then(response => {
@@ -215,7 +213,6 @@ export default {
                   currentRtw.patientId = patientData.patientId;
                   currentRtw.miscellaneous = patientData.miscellaneous;
                   currentRtw.abcde_schema = patientData.abcde_schema;
-                  console.log("CURRENTRTW in COMPUTE ETA: " + currentRtw);
                   for (var a of context.ambulancesWithETAs) {
                     if (currentRtw._id === a._id) {
                       contains = true;
@@ -269,8 +266,6 @@ export default {
             headers: { "x-access-token": this.token }
           };
 
-          console.log("GNSSDATA CONFIG: " + JSON.stringify(config));
-
           axios(config)
             .then(response => {
               if (response.data.statusCode === "10000") {
@@ -287,7 +282,6 @@ export default {
                 }
                 currentRtw.long = response.data.data.longitude;
                 currentRtw.lat = response.data.data.latitude;
-                console.log("2 success GNSS");
                 this.computeETA(currentRtw);
               }
             })
@@ -328,7 +322,6 @@ export default {
 
     axios(config)
       .then(function(response) {
-        console.log(JSON.stringify(response.data.data.token));
         context.token = response.data.data.token;
         context.getGnssData();
       })

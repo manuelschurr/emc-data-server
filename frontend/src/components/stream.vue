@@ -71,9 +71,8 @@ export default {
 
     axios(config)
       .then(function(response) {
-        console.log(JSON.stringify(response.data.data.token));
         context.token = response.data.data.token;
-        this.fillData();
+        context.fillData();
       })
       .catch(function(error) {
         console.log(error);

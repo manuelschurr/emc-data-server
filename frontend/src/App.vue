@@ -212,7 +212,6 @@ export default {
                 JSON.parse(request.responseText).durations[1][0]
               );
               context.Rtwdocument.eta = context.selectedRTW.eta;
-              console.log("Test request");
               context.$forceUpdate();
             } else {
               context.selectedRTW.eta = "Fehler bei Routen Schnittstelle";
@@ -253,7 +252,6 @@ export default {
 
       axios(config)
         .then(function(response) {
-          console.log(JSON.stringify(response.data.data.token));
           context.token = response.data.data.token;
           context.$root.$emit("token", response.data.data.token);
           localStorage.token = context.token;

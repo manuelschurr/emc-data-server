@@ -118,6 +118,8 @@ export default {
         classABCDE = "rounded-circle btn-danger";
       } else if (status) {
         classABCDE = "rounded-circle btn-success";
+      } else {
+        classABCDE = "rounded-circle btn-secondary";
       }
       return classABCDE;
     }
