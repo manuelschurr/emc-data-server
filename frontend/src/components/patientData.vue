@@ -180,7 +180,6 @@ export default {
       .then(function(response) {
         context.token = response.data.data.token;
         context.fillData();
-        context.retrieveAudio();
       })
       .catch(function(error) {
         console.log(error);
@@ -226,6 +225,7 @@ export default {
           vm.patient.status.e.isSelected = response.data.data.EIsSelected;
           vm.patient.status.e.notes = response.data.data.EText;
           vm.$root.$emit("patientDataSidebar", vm.patient);
+          vm.retrieveAudio();
           vm.showModal = false;
         })
         .catch(function(error) {
@@ -248,7 +248,13 @@ export default {
         // var aDiv = document.getElementById("audioFile");
         // aDiv.querySelectorAll("*").forEach(n => n.remove());
         // for loop iterating over all items of the data object
-        for (var audioFileName of response.data.data) {
+        var relevatPatientFiles = [];
+        for (var filen of response.data.data) {
+          if (filen.split("-")[0] === context.patient.patientId) {
+            relevatPatientFiles.push(filen);
+          }
+        }
+        for (var audioFileName of relevatPatientFiles) {
           if (!context.oldListOfNames.includes(audioFileName)) {
             axios({
               method: "get",
@@ -278,7 +284,7 @@ export default {
             });
           }
         }
-        context.oldListOfNames = response.data.data;
+        context.oldListOfNames = relevatPatientFiles;
       });
     },
     // When the rtw is switched, the refreshing timer is stopped.
