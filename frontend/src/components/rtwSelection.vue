@@ -284,9 +284,7 @@ export default {
     },
     getGnssData() {
       for (var rtw of this.activeAmbulances) {
-        console.log(rtw.ambulanceId + " CONDITION " + rtw.patientId);
         if (rtw.ambulanceId && rtw.patientId != 0) {
-          console.log("goes into if at 299");
           let config = {
             method: "get",
             url:
@@ -294,7 +292,6 @@ export default {
               rtw.ambulanceId,
             headers: { "x-access-token": this.token }
           };
-          console.log("the config of gnss" + JSON.stringify(config));
 
           axios(config)
             .then(response => {
