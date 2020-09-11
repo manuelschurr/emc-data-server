@@ -175,12 +175,13 @@ export default {
     this.timer = setInterval(this.fillData, 10000);
     this.timer2 = setInterval(this.retrieveAudio, 10000);
   },
+  // When the PatientData component is deactivated, the refreshing timers are stopped.
   beforeDestroy() {
       clearInterval(this.timer);
       clearInterval(this.timer2);
   },
   methods: {
-    // Requests the data from the server to get the patient data
+    // Requests the data from the server to get the patient data.
     fillData() {
       var vm = this;
       var data = "";

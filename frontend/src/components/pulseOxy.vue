@@ -225,7 +225,7 @@ export default {
         console.log(error);
       });
   },
-  // Refreshes the PulseOxy chart every second with the data from the server.
+  // 1 second timer which triggers a refresh of the PulseOxy chart with the new data.
   created() {
     this.timer = setInterval(this.fillData, 1000);
   },
@@ -251,7 +251,7 @@ export default {
     }
   },
   methods: {
-    // Play a warning sound when the pulse or the Spo2 rate is critical.
+    // Plays a warning sound (when the pulse or the Spo2 rate is critical).
     playSound() {
       var sound = new Audio(require("../assets/warning_sound.mp3"));
       return sound.play();
@@ -264,7 +264,7 @@ export default {
       this.loading = true;
 
       if (vm.pulseData.length < 20) {
-        // The first server request is to find the patient by the given patient ID
+        // The first server request is to find the patient by the given patient ID.
         var body = "";
         var config = {
           method: "get",
@@ -332,7 +332,7 @@ export default {
                       );
                     }
                   }
-                  // Settings of the two charts with their respective data gathered before.
+                  // Settings of the two charts with their respective beforehand gathered data.
                   vm.pulseChartData = {
                     labels: vm.pulseLabels,
                     datasets: [
@@ -395,7 +395,6 @@ export default {
               // When the request is successful, the pulseOxy chart arrays are updated
               // with the latest data and if the array contains more than 20 entries,
               // the oldest entry is removed to ensure displaying the most relevant data.
-
               if (
                 responsePulseOxy.data.data.timestamp.slice(11, 19) !=
                 vm.pulseLabels[vm.pulseLabels.length - 1]
@@ -423,7 +422,7 @@ export default {
                 vm.spo2Data.shift();
                 vm.spo2Labels.shift();
               }
-              // Settings of the two charts with their respective data gathered before.
+              // Settings of the two charts with their respective beforehand gathered data.
               vm.pulseChartData = {
                 labels: vm.pulseLabels,
                 datasets: [
@@ -465,6 +464,7 @@ export default {
           .finally(() => (vm.loading = false));
         await vm.$nextTick();
       }
+      // Plays a warning sound when the pulse or SpO2 saturation is critical.
       if (
         !vm.pulseSoundPlayed &&
         vm.lastPulse != "" &&
