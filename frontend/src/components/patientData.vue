@@ -254,6 +254,8 @@ export default {
             relevatPatientFiles.push(filen);
           }
         }
+        console.log("RELEVANTPATIENTFILES:" + relevatPatientFiles);
+        console.log("RELEVANTPATIENTFILES:" + response.data.data);
         for (var audioFileName of relevatPatientFiles) {
           if (!context.oldListOfNames.includes(audioFileName)) {
             axios({
