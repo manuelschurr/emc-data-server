@@ -171,7 +171,7 @@ export default {
 
     var config = {
       method: "post",
-      url: "https://localhost:3000/user/login",
+      url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
       headers: {},
       data: data
     };
@@ -198,7 +198,9 @@ export default {
 
       var config = {
         method: "get",
-        url: "https://localhost:3000/patient/findByPatientId/" + this.patientId,
+        url:
+          "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByPatientId/" +
+          this.patientId,
         headers: { "x-access-token": this.token },
         data: data
       };
@@ -240,7 +242,7 @@ export default {
       var context = this;
       axios({
         method: "get",
-        url: "https://localhost:3000/audio/all",
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/audio/all",
         headers: { "x-access-token": this.token }
       }).then(function(response) {
         // var aDiv = document.getElementById("audioFile");
@@ -252,7 +254,9 @@ export default {
             if (!context.oldListOfNames.includes(audioFileName)) {
               axios({
                 method: "get",
-                url: "https://localhost:3000/audio/single/" + audioFileName,
+                url:
+                  "https://wifo1-29.bwl.uni-mannheim.de:3000/audio/single/" +
+                  audioFileName,
                 headers: { "x-access-token": context.token },
                 responseType: "blob"
               }).then(function(response) {

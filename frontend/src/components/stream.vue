@@ -65,7 +65,7 @@ export default {
 
     var config = {
       method: "post",
-      url: "https://localhost:3000/user/login",
+      url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
       headers: {},
       data: data
     };
@@ -95,8 +95,8 @@ export default {
       var body = "";
       var config = {
         method: "get",
-        //"https://localhost:3000/img/all",
-        url: "https://localhost:3000/img/all",
+        //"https://wifo1-29.bwl.uni-mannheim.de:3000/img/all",
+        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/img/all",
         headers: { "x-access-token": this.token },
         data: body
       };
@@ -117,8 +117,10 @@ export default {
             var bodyTwo = "";
             var configGetImages = {
               method: "get",
-              //"https://localhost:3000/img/single/" + imageStr,
-              url: "https://localhost:3000/img/single/" + imageStr,
+              //"https://wifo1-29.bwl.uni-mannheim.de:3000/img/single/" + imageStr,
+              url:
+                "https://wifo1-29.bwl.uni-mannheim.de:3000/img/single/" +
+                imageStr,
               responseType: "blob",
               headers: { "x-access-token": this.token },
               data: bodyTwo
