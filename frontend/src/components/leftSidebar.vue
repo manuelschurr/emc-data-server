@@ -8,7 +8,7 @@
         :disabled="showComponentMultiSelection"
         :class="toggleButton(showComponentMultiSelection)"
       >
-        Gesamtübersicht
+        <b>Gesamtübersicht</b>
       </button>
       <button
         @click="setSelection($event)"
@@ -17,17 +17,24 @@
         :disabled="showComponentPulseoxy"
         :class="toggleButton(showComponentPulseoxy)"
       >
-        Puls Oxy
+        <b>Puls Oxy</b>
         <br />
-        <div v-if="lastPulse != null && (lastPulse < 50 || lastPulse > 120)" class="notOkPulseOxy">
+        <div
+          v-if="lastPulse != null && (lastPulse < 50 || lastPulse > 120)"
+          class="notOkPulseOxy"
+        >
           Puls: {{ lastPulse }}
         </div>
-        <div v-else-if="lastPulse == null" class="okPulseOxy">Keine Puls Daten verfügbar</div>
+        <div v-else-if="lastPulse == null" class="okPulseOxy">
+          Keine Puls Daten verfügbar
+        </div>
         <div v-else class="okPulseOxy">Puls: {{ lastPulse }}</div>
         <div v-if="lastSpo2 != null && lastSpo2 < 90" class="notOkPulseOxy">
           SpO2: {{ lastSpo2 }}
         </div>
-        <div v-else-if="lastSpo2 == null" class="okPulseOxy">Keine SpO2 Daten verfügbar</div>
+        <div v-else-if="lastSpo2 == null" class="okPulseOxy">
+          Keine SpO2 Daten verfügbar
+        </div>
         <div v-else class="okPulseOxy">SpO2: {{ lastSpo2 }}</div>
       </button>
       <button
@@ -37,7 +44,7 @@
         :disabled="showComponentStream"
         :class="toggleButton(showComponentStream)"
       >
-        Bilder RTW
+        <b> Bilder RTW </b>
       </button>
       <button
         @click="setSelection($event)"
@@ -46,9 +53,10 @@
         :disabled="showComponentMap"
         :class="toggleButton(showComponentMap)"
       >
-        Position
+        <b>Position</b>
         <br />
-        ETA: {{ arrivalTime ? arrivalTime : "Fehler bei Routen Schnittstelle" }}
+        Geschätzte Ankfuntszeit:
+        {{ arrivalTime ? arrivalTime : "Fehler bei Routen Schnittstelle" }}
       </button>
       <PulseOxy v-if="false" />
       <Stream v-if="false" />

@@ -40,7 +40,7 @@
                   <br />
                   RTW - {{ ambulance.identifier }}
                   <br />
-                  ETA: {{ ambulance.eta }}
+                  Geschätzte Ankunftszeit: {{ ambulance.eta }}
                   <br />
                   Informationen: {{ ambulance.miscellaneous }}
                   <br />
