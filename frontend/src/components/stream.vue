@@ -122,7 +122,7 @@ export default {
                 "https://wifo1-29.bwl.uni-mannheim.de:3000/img/single/" +
                 imageStr,
               responseType: "blob",
-              headers: { "x-access-token": this.token },
+              headers: { "x-access-token": vm.token },
               data: bodyTwo
             };
             axios(configGetImages).then(function(responseImages) {
