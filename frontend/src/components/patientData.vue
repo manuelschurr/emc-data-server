@@ -6,18 +6,14 @@
       {{ message }}
     </div>
     <div class="row align-items-start">
-      <h5 class="col patientDataText" style="text-align: start;">
-        Patientendaten
-      </h5>
+      <h5 class="col patientDataText" style="text-align: start;">Patientendaten</h5>
     </div>
     <div class="row align-items-start">
       <div class="col-10">
         <form class="form-inline" style="align-items: start;">
           <div class="col-5">
             <div class="form-group row columnSpacing">
-              <label for="patientName" class="col-4 col-form-label labelTitle"
-                >Name:</label
-              >
+              <label for="patientName" class="col-4 col-form-label labelTitle">Name:</label>
               <div class="col-8">
                 <input
                   type="text"
@@ -30,11 +26,7 @@
               </div>
             </div>
             <div class="form-group row columnSpacing">
-              <label
-                for="patientGeschlecht"
-                class="col-4 col-form-label labelTitle"
-                >Geschlecht:</label
-              >
+              <label for="patientGeschlecht" class="col-4 col-form-label labelTitle">Geschlecht:</label>
               <div class="col-8">
                 <input
                   type="text"
@@ -47,9 +39,7 @@
               </div>
             </div>
             <div class="form-group row columnSpacing">
-              <label for="patientAlter" class="col-4 col-form-label labelTitle"
-                >Alter:</label
-              >
+              <label for="patientAlter" class="col-4 col-form-label labelTitle">Alter:</label>
               <div class="col-8">
                 <input
                   type="text"
@@ -65,8 +55,7 @@
               <label
                 for="patientVorerkrankungen"
                 class="col-4 col-form-label labelTitle"
-                >Vorerkrankungen:</label
-              >
+              >Vorerkrankungen:</label>
               <div class="col-8">
                 <input
                   type="text"
@@ -95,12 +84,7 @@
       </div>
       <div class="col-2">
         <!-- Audio nur oeffnen wenn audio ankommt ueber GET -->
-        <div
-          id="audioFile"
-          class="audio"
-          style="overflow-y: auto; height: 12vh;"
-          controls
-        ></div>
+        <div id="audioFile" class="audio" style="overflow-y: auto; height: 12vh;" controls></div>
       </div>
     </div>
   </div>
@@ -125,63 +109,63 @@ export default {
         age: "",
         gender: "",
         preExistingIllness: {
-          text: ""
+          text: "",
         },
         miscellaneaous: {
-          text: ""
+          text: "",
         },
         status: {
           a: {
             isSelected: Boolean,
-            notes: ""
+            notes: "",
           },
           b: {
             isSelected: Boolean,
-            notes: ""
+            notes: "",
           },
           c: {
             isSelected: Boolean,
-            notes: ""
+            notes: "",
           },
           d: {
             isSelected: Boolean,
-            notes: ""
+            notes: "",
           },
           e: {
             isSelected: Boolean,
-            notes: ""
-          }
-        }
+            notes: "",
+          },
+        },
       },
       showABCDE: false,
       pastEvent: null,
-      oldListOfNames: []
+      oldListOfNames: [],
     };
   },
   props: {
-    patientId: Number
+    patientId: Number,
   },
   mounted() {
     var context = this;
     var axios = require("axios");
     var data = {
       username: "root",
-      password: "root"
+      password: "root",
     };
 
     var config = {
       method: "post",
       url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
       headers: {},
-      data: data
+      data: data,
     };
 
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         context.token = response.data.data.token;
         context.fillData();
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
       });
   },
@@ -202,11 +186,11 @@ export default {
           "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByPatientId/" +
           this.patientId,
         headers: { "x-access-token": this.token },
-        data: data
+        data: data,
       };
 
       axios(config)
-        .then(function(response) {
+        .then(function (response) {
           vm.patient.rtwId = response.data.data.ambulanceId;
           vm.patient.name = response.data.data.name;
           vm.patient.age = response.data.data.age;
@@ -228,7 +212,7 @@ export default {
           vm.retrieveAudio();
           vm.showModal = false;
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
           vm.showModal = true;
           vm.message = "Keine Patienten Daten verfügbar ";
@@ -243,8 +227,8 @@ export default {
       axios({
         method: "get",
         url: "https://wifo1-29.bwl.uni-mannheim.de:3000/audio/all",
-        headers: { "x-access-token": this.token }
-      }).then(function(response) {
+        headers: { "x-access-token": this.token },
+      }).then(function (response) {
         // var aDiv = document.getElementById("audioFile");
         // aDiv.querySelectorAll("*").forEach(n => n.remove());
         // for loop iterating over all items of the data object
@@ -258,8 +242,8 @@ export default {
                   "https://wifo1-29.bwl.uni-mannheim.de:3000/audio/single/" +
                   audioFileName,
                 headers: { "x-access-token": context.token },
-                responseType: "blob"
-              }).then(function(response) {
+                responseType: "blob",
+              }).then(function (response) {
                 var url;
                 var audiofiles = response.data;
                 url = window.URL.createObjectURL(audiofiles);
@@ -286,9 +270,10 @@ export default {
     },
     // When the rtw is switched, the refreshing timer is stopped.
     beforeDestroy() {
-      clearInterval(this.timer);
-    }
-  }
+      var vm = this;
+      clearInterval(vm.timer);
+    },
+  },
 };
 </script>
 

@@ -480,11 +480,12 @@ export default {
     },
     // When the PulseOxy component is deactivated, the data is cleared and the refreshing timer is stopped.
     beforeDestroy() {
-      clearInterval(this.timer),
-        (this.pulseData = []),
-        (this.spo2Data = []),
-        (this.pulseChartData = null),
-        (this.spo2ChartData = null);
+      var vm = this;
+      clearInterval(vm.timer),
+        (vm.pulseData = []),
+        (vm.spo2Data = []),
+        (vm.pulseChartData = null),
+        (vm.spo2ChartData = null);
     }
   }
 };
