@@ -10,7 +10,10 @@
         ></component>
       </div>
     </div>
-    <div v-else-if="componentArray.length === 2">
+    <div
+      v-else-if="componentArray.length === 2"
+      style="position: absolute; left: 0; margin-left: 10px; margin: auto;"
+    >
       <div v-for="child in componentArray" :key="child.name">
         <component
           :is="child"
@@ -29,21 +32,31 @@
         :Rtwdocument="Rtwdocument"
         :patientId="patientId"
         :selectedElements="componentArray.length"
+        class="col"
       >
       </maps>
-      <stream
-        :Rtwdocument="Rtwdocument"
-        :patientId="patientId"
-        :selectedElements="componentArray.length"
-      >
-      </stream>
-      <pulse-oxy
-        :Rtwdocument="Rtwdocument"
-        :patientId="patientId"
-        :selectedElements="componentArray.length"
-        style="margin-left: 30px;"
-      >
-      </pulse-oxy>
+    </div>
+    <div
+      class="row"
+      style="position: absolute; left: 0; top: 30vh; width: 80%;"
+      v-if="componentArray.length > 2"
+    >
+      <div class="col">
+        <stream
+          :Rtwdocument="Rtwdocument"
+          :patientId="patientId"
+          :selectedElements="componentArray.length"
+        >
+        </stream>
+      </div>
+      <div class="col">
+        <pulse-oxy
+          :Rtwdocument="Rtwdocument"
+          :patientId="patientId"
+          :selectedElements="componentArray.length"
+        >
+        </pulse-oxy>
+      </div>
     </div>
   </div>
 </template>

@@ -41,7 +41,7 @@
             <div class="col-2">
               <LeftSidebar :arrivalTime="selectedRTW.eta" />
             </div>
-            <div class="col-8">
+            <div class="col-8" style="height: 600px; width: 400px;">
               <MainComponent
                 :Rtwdocument="Rtwdocument"
                 :patientId="selectedRTW.patientId"
