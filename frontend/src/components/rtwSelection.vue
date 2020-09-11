@@ -66,6 +66,14 @@
                         >
                           {{ name }}
                         </button>
+                        <button
+                          v-else-if="value === null"
+                          disabled
+                          pill
+                          class="rounded-circle nullABCDE"
+                        >
+                          {{ name }}
+                        </button>
                       </div>
                     </li>
                   </ul>
@@ -391,6 +399,10 @@ li {
 }
 .notOkABCDE {
   background-color: red;
+  color: white;
+}
+.nullABCDE {
+  background-color: #6c757d;
   color: white;
 }
 </style>
