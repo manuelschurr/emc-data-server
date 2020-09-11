@@ -79,8 +79,8 @@ export default {
   },
   computed: {
     styleObject: function() {
-      if (this.selectedElements === 1) {
-        return { height: "65vh", width: "62vw" };
+      if (this.selectedElements === 2) {
+        return { height: "50vh", width: "62vw" };
       } else {
         return { height: "25vh", width: "62vw" };
       }
