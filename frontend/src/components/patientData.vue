@@ -125,63 +125,63 @@ export default {
         age: "",
         gender: "",
         preExistingIllness: {
-          text: ""
+          text: "",
         },
         miscellaneaous: {
-          text: ""
+          text: "",
         },
         status: {
           a: {
             isSelected: Boolean,
-            notes: ""
+            notes: "",
           },
           b: {
             isSelected: Boolean,
-            notes: ""
+            notes: "",
           },
           c: {
             isSelected: Boolean,
-            notes: ""
+            notes: "",
           },
           d: {
             isSelected: Boolean,
-            notes: ""
+            notes: "",
           },
           e: {
             isSelected: Boolean,
-            notes: ""
-          }
-        }
+            notes: "",
+          },
+        },
       },
       showABCDE: false,
       pastEvent: null,
-      oldListOfNames: []
+      oldListOfNames: [],
     };
   },
   props: {
-    patientId: Number
+    patientId: Number,
   },
   mounted() {
     var context = this;
     var axios = require("axios");
     var data = {
       username: "root",
-      password: "root"
+      password: "root",
     };
 
     var config = {
       method: "post",
       url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
       headers: {},
-      data: data
+      data: data,
     };
 
     axios(config)
-      .then(function(response) {
+      .then(function (response) {
         context.token = response.data.data.token;
         context.fillData();
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
       });
   },
@@ -202,11 +202,11 @@ export default {
           "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByPatientId/" +
           this.patientId,
         headers: { "x-access-token": this.token },
-        data: data
+        data: data,
       };
 
       axios(config)
-        .then(function(response) {
+        .then(function (response) {
           vm.patient.rtwId = response.data.data.ambulanceId;
           vm.patient.name = response.data.data.name;
           vm.patient.age = response.data.data.age;
@@ -228,7 +228,7 @@ export default {
           vm.retrieveAudio();
           vm.showModal = false;
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
           vm.showModal = true;
           vm.message = "Keine Patienten Daten verfügbar ";
@@ -243,47 +243,41 @@ export default {
       axios({
         method: "get",
         url: "https://wifo1-29.bwl.uni-mannheim.de:3000/audio/all",
-        headers: { "x-access-token": this.token }
-      }).then(function(response) {
+        headers: { "x-access-token": this.token },
+      }).then(function (response) {
         // var aDiv = document.getElementById("audioFile");
         // aDiv.querySelectorAll("*").forEach(n => n.remove());
         // for loop iterating over all items of the data object
-        var relevatPatientFiles = [];
-        for (var filen of response.data.data) {
-          if (filen.split("-")[0] === context.patient.patientId) {
-            relevatPatientFiles.push(filen);
-          }
-        }
-        console.log("RELEVANTPATIENTFILES:" + relevatPatientFiles);
-        console.log("RELEVANTPATIENTFILES:" + response.data.data);
-        for (var audioFileName of relevatPatientFiles) {
-          if (!context.oldListOfNames.includes(audioFileName)) {
-            axios({
-              method: "get",
-              url:
-                "https://wifo1-29.bwl.uni-mannheim.de:3000/audio/single/" +
-                audioFileName,
-              headers: { "x-access-token": context.token },
-              responseType: "blob"
-            }).then(function(response) {
-              var url;
-              var audiofiles = response.data;
-              url = window.URL.createObjectURL(audiofiles);
-              var audioDiv = document.getElementById("audioFile");
-              var audioPlayer = document.createElement("AUDIO");
-              // set attributes of audio element
-              audioPlayer.setAttribute("controls", "controls");
-              audioPlayer.setAttribute("preload", "auto");
-              audioPlayer.setAttribute(
-                "style",
-                "display: inline-block; width: 10vw; height: 5vh;"
-              );
-              // append the audio player to audio container
-              audioDiv.appendChild(audioPlayer);
-              // set inner HTML of audio player to source of blop URL
-              audioPlayer.innerHTML =
-                '<source src="' + url + '" type="audio/mpeg" />';
-            });
+        for (var audioFileName of response.data.data) {
+          if (audioFileName.split("-")[0] == context.patientId) {
+            if (!context.oldListOfNames.includes(audioFileName)) {
+              axios({
+                method: "get",
+                url:
+                  "https://wifo1-29.bwl.uni-mannheim.de:3000/audio/single/" +
+                  audioFileName,
+                headers: { "x-access-token": context.token },
+                responseType: "blob",
+              }).then(function (response) {
+                var url;
+                var audiofiles = response.data;
+                url = window.URL.createObjectURL(audiofiles);
+                var audioDiv = document.getElementById("audioFile");
+                var audioPlayer = document.createElement("AUDIO");
+                // set attributes of audio element
+                audioPlayer.setAttribute("controls", "controls");
+                audioPlayer.setAttribute("preload", "auto");
+                audioPlayer.setAttribute(
+                  "style",
+                  "display: inline-block; width: 10vw; height: 5vh;"
+                );
+                // append the audio player to audio container
+                audioDiv.appendChild(audioPlayer);
+                // set inner HTML of audio player to source of blop URL
+                audioPlayer.innerHTML =
+                  '<source src="' + url + '" type="audio/mpeg" />';
+              });
+            }
           }
         }
         context.oldListOfNames = relevatPatientFiles;
@@ -292,8 +286,8 @@ export default {
     // When the rtw is switched, the refreshing timer is stopped.
     beforeDestroy() {
       clearInterval(this.timer);
-    }
-  }
+    },
+  },
 };
 </script>
 
