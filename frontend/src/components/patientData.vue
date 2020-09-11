@@ -195,12 +195,12 @@ export default {
     fillData() {
       var vm = this;
       var data = "";
-
+      
       var config = {
         method: "get",
         url:
           "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByPatientId/" +
-          this.patientId,
+          vm.patientId,
         headers: { "x-access-token": this.token },
         data: data
       };
