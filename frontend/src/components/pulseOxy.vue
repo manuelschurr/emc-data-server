@@ -225,7 +225,7 @@ export default {
         console.log(error);
       });
   },
-  // Refreshes the PulseOxy chart every second with the data from the server.
+  // 1 second timer which triggers a refresh of the PulseOxy chart with the new data.
   created() {
     this.timer = setInterval(this.fillData, 1000);
   },
@@ -243,7 +243,7 @@ export default {
     }
   },
   methods: {
-    // Play a warning sound when the pulse or the Spo2 rate is critical.
+    // Play a warning sound (when the pulse or the Spo2 rate is critical).
     playSound() {
       var sound = new Audio(require("../assets/warning_sound.mp3"));
       return sound.play();
@@ -324,7 +324,7 @@ export default {
                       );
                     }
                   }
-                  // Settings of the two charts with their respective data gathered before.
+                  // Settings of the two charts with their respective beforehand gathered data.
                   vm.pulseChartData = {
                     labels: vm.pulseLabels,
                     datasets: [
@@ -457,6 +457,7 @@ export default {
           .finally(() => (vm.loading = false));
         await vm.$nextTick();
       }
+      // Plays a warning sound when the pulse or SpO2 saturation is critical.
       if (
         !vm.pulseSoundPlayed &&
         vm.lastPulse != "" &&
