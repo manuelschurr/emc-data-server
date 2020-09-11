@@ -87,8 +87,7 @@ export default {
       loading: false,
       selectedRTW: Object,
       rtwLocations: [`[${8.487255}, ${49.492427}]`],
-      apiKeyOpenRoute:
-        "5b3ce3597851110001cf62483aa1ff4db2864ef98a6872071775fb93",
+      apiKeyOpenRoute: "",
       openRouteError: false,
       apiButtonIsDisabled: true,
       token: ""
@@ -285,7 +284,7 @@ export default {
   },
   mounted: function() {
     this.retrieveToken();
-    //this.getApiKey();
+    this.getApiKey();
   },
   created() {
     document.title = "Schockraum";

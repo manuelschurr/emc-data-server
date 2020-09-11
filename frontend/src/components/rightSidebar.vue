@@ -99,7 +99,30 @@ export default {
     return {
       screenshots: [],
       output: "",
-      patient: {}
+      patient: {
+        status: {
+          a: {
+            isSelected: null,
+            notes: ""
+          },
+          b: {
+            isSelected: null,
+            notes: ""
+          },
+          c: {
+            isSelected: null,
+            notes: ""
+          },
+          d: {
+            isSelected: null,
+            notes: ""
+          },
+          e: {
+            isSelected: null,
+            notes: ""
+          }
+        }
+      }
     };
   },
   mounted() {
@@ -114,12 +137,12 @@ export default {
   methods: {
     classABCDE(status) {
       let classABCDE = "";
-      if (!status) {
-        classABCDE = "rounded-circle btn-danger";
+      if (status == null) {
+        classABCDE = "rounded-circle btn-secondary";
       } else if (status) {
         classABCDE = "rounded-circle btn-success";
       } else {
-        classABCDE = "rounded-circle btn-secondary";
+        classABCDE = "rounded-circle btn-danger";
       }
       return classABCDE;
     }

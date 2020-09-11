@@ -40,7 +40,7 @@
                   <br />
                   RTW - {{ ambulance.identifier }}
                   <br />
-                  ETA: {{ ambulance.eta }}
+                  Geschätzte Ankunftszeit: {{ ambulance.eta }}
                   <br />
                   Informationen: {{ ambulance.miscellaneous }}
                   <br />
@@ -63,6 +63,14 @@
                           disabled
                           pill
                           class="rounded-circle okABCDE"
+                        >
+                          {{ name }}
+                        </button>
+                        <button
+                          v-else-if="value === null"
+                          disabled
+                          pill
+                          class="rounded-circle nullABCDE"
                         >
                           {{ name }}
                         </button>
@@ -391,6 +399,10 @@ li {
 }
 .notOkABCDE {
   background-color: red;
+  color: white;
+}
+.nullABCDE {
+  background-color: #6c757d;
   color: white;
 }
 </style>
