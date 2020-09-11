@@ -10,6 +10,15 @@
       >
         <b>Gesamtübersicht</b>
       </button>
+      <hr
+        style="
+          width: 100%;
+          text-align: left;
+          margin-left: 0;
+          margin-top: 2;
+          margin-bottom: 2;
+        "
+      />
       <button
         @click="setSelection($event)"
         id="btn-puls"
@@ -37,6 +46,7 @@
         </div>
         <div v-else class="okPulseOxy">SpO2: {{ lastSpo2 }}</div>
       </button>
+      <hr style="width: 100%; text-align: left; margin-left: 0;" />
       <button
         @click="setSelection($event)"
         id="btn-stream"
@@ -46,6 +56,7 @@
       >
         <b> Bilder RTW </b>
       </button>
+      <hr style="width: 100%; text-align: left; margin-left: 0; height: 1px;" />
       <button
         @click="setSelection($event)"
         id="btn-position"

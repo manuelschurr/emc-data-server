@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="position: auto;">
     <div class="row align-items-start" v-if="selectedElements == 1">
       <div v-if="pulseData.length == 0 && spo2Data.length == 0">
         Keine Puls und SpO2 Daten verfügbar, die Komponente kann aktuell nicht
