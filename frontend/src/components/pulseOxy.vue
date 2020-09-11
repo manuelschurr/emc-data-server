@@ -229,6 +229,14 @@ export default {
   created() {
     this.timer = setInterval(this.fillData, 1000);
   },
+  // When the PulseOxy component is deactivated, the data is cleared and the refreshing timer is stopped.
+  beforeDestroy() {
+      clearInterval(this.timer),
+        (this.pulseData = []),
+        (this.spo2Data = []),
+        (this.pulseChartData = null),
+        (this.spo2ChartData = null);
+    },
   // Compute the last number of the pulse and the Spo2 rate by getting the last element of the data arrays.
   computed: {
     lastPulseCompute() {
@@ -467,26 +475,17 @@ export default {
       } else if (
         vm.pulseSoundPlayed &&
         vm.lastPulse != "" &&
-        (vm.lastPulse < 120 || vm.lastPulse > 50)
+        (vm.lastPulse < 120 && vm.lastPulse > 50)
       ) {
         vm.pulseSoundPlayed = false;
       }
-      if (!vm.spo2SoundPlayed && vm.lastSpo2 != "" && vm.lastSpo2 < 90) {
+      if (!vm.spo2SoundPlayed && vm.lastSpo2 != "" && (vm.lastSpo2 < 90 && vm.lastSpo2 >= 0)) {
         vm.playSound();
         vm.spo2SoundPlayed = true;
-      } else if (vm.spo2SoundPlayed && vm.lastSpo2 != "" && vm.lastSpo2 > 90) {
+      } else if (vm.spo2SoundPlayed && vm.lastSpo2 != "" && (vm.lastSpo2 > 90 && vm.lastSpo2 <= 100)) {
         vm.spo2SoundPlayed = false;
       }
     },
-    // When the PulseOxy component is deactivated, the data is cleared and the refreshing timer is stopped.
-    beforeDestroy() {
-      var vm = this;
-      clearInterval(vm.timer),
-        (vm.pulseData = []),
-        (vm.spo2Data = []),
-        (vm.pulseChartData = null),
-        (vm.spo2ChartData = null);
-    }
   }
 };
 </script>

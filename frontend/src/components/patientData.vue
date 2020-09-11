@@ -103,6 +103,7 @@ export default {
       showModal: false,
       loaded: false,
       timer: "",
+      timer2: "",
       patient: {
         rtwId: "",
         name: "",
@@ -172,7 +173,11 @@ export default {
   // Refreshes the patient data every 10 seconds with the data from the server.
   created() {
     this.timer = setInterval(this.fillData, 10000);
-    this.timer = setInterval(this.retrieveAudio, 10000);
+    this.timer2 = setInterval(this.retrieveAudio, 10000);
+  },
+  beforeDestroy() {
+      clearInterval(this.timer);
+      clearInterval(this.timer2);
   },
   methods: {
     // Requests the data from the server to get the patient data
@@ -269,10 +274,6 @@ export default {
       });
     },
     // When the rtw is switched, the refreshing timer is stopped.
-    beforeDestroy() {
-      var vm = this;
-      clearInterval(vm.timer);
-    },
   },
 };
 </script>

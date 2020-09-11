@@ -10,7 +10,10 @@
         </div>
       </div>
     </div>
-    <div v-else>Aktuell wurden noch keine Bilder gemacht</div>
+    <div v-else>
+      <br />Aktuell wurden noch keine Bilder gemacht
+      <br />
+    </div>
   </div>
   <div v-else>
     <div class="gallery" id="mainDiv" v-if="this.loading && this.captures.length != 0">
@@ -18,7 +21,10 @@
         <img v-bind:src="chosenImage" width="70%" />
       </div>
     </div>
-    <div v-else>Aktuell wurden noch keine Bilder gemacht</div>
+    <div v-else>
+      <br />Aktuell wurden noch keine Bilder gemacht
+      <br />
+    </div>
   </div>
 </template>
 
@@ -33,6 +39,7 @@ export default {
       chosenImage: null,
       loading: false,
       token: "",
+      timer: "",
     };
   },
   props: {
@@ -66,6 +73,9 @@ export default {
   created() {
     this.timer = setInterval(this.fillData, 5000);
   },
+  beforeDestroy() {
+      clearInterval(this.timer);
+    },
   methods: {
     retrieveToken() {},
 
@@ -119,10 +129,6 @@ export default {
           }
         }
       });
-    },
-    beforeDestroy() {
-      var vm = this;
-      clearInterval(vm.timer);
     },
   },
 };
