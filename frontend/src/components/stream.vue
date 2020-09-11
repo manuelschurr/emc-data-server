@@ -48,34 +48,34 @@ export default {
       imageStrings: [],
       chosenImage: null,
       loading: false,
-      token: "",
+      token: ""
     };
   },
   props: {
     patientId: Number,
-    selectedElements: Number,
+    selectedElements: Number
   },
   mounted() {
     var context = this;
     var axios = require("axios");
     var data = {
       username: "root",
-      password: "root",
+      password: "root"
     };
 
     var config = {
       method: "post",
-      url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
+      url: "https://localhost:3000/user/login",
       headers: {},
-      data: data,
+      data: data
     };
 
     axios(config)
-      .then(function (response) {
+      .then(function(response) {
         context.token = response.data.data.token;
         context.fillData();
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log(error);
       });
   },
@@ -85,7 +85,7 @@ export default {
   methods: {
     retrieveToken() {},
 
-    clickMethod: function (event) {
+    clickMethod: function(event) {
       this.chosenImage = event.currentTarget.src;
     },
     async fillData() {
@@ -95,13 +95,13 @@ export default {
       var body = "";
       var config = {
         method: "get",
-        //"https://wifo1-29.bwl.uni-mannheim.de:3000/img/all",
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/img/all",
+        //"https://localhost:3000/img/all",
+        url: "https://localhost:3000/img/all",
         headers: { "x-access-token": this.token },
-        data: body,
+        data: body
       };
 
-      axios(config).then(function (response) {
+      axios(config).then(function(response) {
         if (response.data.statusCode === "10000") {
           var newImageStrings = response.data.data;
           var newToAdd = [];
@@ -117,15 +117,13 @@ export default {
             var bodyTwo = "";
             var configGetImages = {
               method: "get",
-              //"https://wifo1-29.bwl.uni-mannheim.de:3000/img/single/" + imageStr,
-              url:
-                "https://wifo1-29.bwl.uni-mannheim.de:3000/img/single/" +
-                imageStr,
+              //"https://localhost:3000/img/single/" + imageStr,
+              url: "https://localhost:3000/img/single/" + imageStr,
               responseType: "blob",
               headers: { "x-access-token": this.token },
-              data: bodyTwo,
+              data: bodyTwo
             };
-            axios(configGetImages).then(function (responseImages) {
+            axios(configGetImages).then(function(responseImages) {
               if (response.data.statusCode === "10000") {
                 var pic = URL.createObjectURL(responseImages.data);
                 vm.captures.push(pic);
@@ -135,8 +133,8 @@ export default {
           }
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

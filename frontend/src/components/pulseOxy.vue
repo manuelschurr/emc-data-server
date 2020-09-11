@@ -211,7 +211,7 @@ export default {
 
     var config = {
       method: "post",
-      url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
+      url: "https://localhost:3000/user/login",
       headers: {},
       data: data
     };
@@ -260,9 +260,7 @@ export default {
         var body = "";
         var config = {
           method: "get",
-          url:
-            "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByPatientId/" +
-            vm.patientId,
+          url: "https://localhost:3000/patient/findByPatientId/" + vm.patientId,
           headers: { "x-access-token": this.token },
           data: body
         };
@@ -275,7 +273,7 @@ export default {
               var configSecond = {
                 method: "get",
                 url:
-                  "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findPulsoxyByPatientIdAndTimestamp?patientId=" +
+                  "https://localhost:3000/patient/findPulsoxyByPatientIdAndTimestamp?patientId=" +
                   vm.patientId +
                   "&timestamp=" +
                   responsePatient.data.data.createdAt,
@@ -374,7 +372,7 @@ export default {
         var configPulseoxy = {
           method: "get",
           url:
-            "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findPulsoxyByPatientId/" +
+            "https://localhost:3000/patient/findPulsoxyByPatientId/" +
             vm.patientId,
 
           headers: { "x-access-token": vm.token },

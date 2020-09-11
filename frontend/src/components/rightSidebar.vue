@@ -99,7 +99,30 @@ export default {
     return {
       screenshots: [],
       output: "",
-      patient: {}
+      patient: {
+        status: {
+          a: {
+            isSelected: Boolean,
+            notes: ""
+          },
+          b: {
+            isSelected: Boolean,
+            notes: ""
+          },
+          c: {
+            isSelected: Boolean,
+            notes: ""
+          },
+          d: {
+            isSelected: Boolean,
+            notes: ""
+          },
+          e: {
+            isSelected: Boolean,
+            notes: ""
+          }
+        }
+      }
     };
   },
   mounted() {

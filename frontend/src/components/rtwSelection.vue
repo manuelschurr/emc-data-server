@@ -115,7 +115,7 @@ export default {
       var config = {
         method: "put",
         //TO CHANGE
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/update/1",
+        url: "https://localhost:3000/apiKey/update/1",
         headers: { "x-access-token": this.token },
         data: {
           apiKeyId: 1,
@@ -141,7 +141,7 @@ export default {
       var config = {
         method: "get",
         //TO CHANGE
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/apiKey/findAll",
+        url: "https://localhost:3000/apiKey/findAll",
         headers: { "x-access-token": this.token }
       };
 
@@ -182,7 +182,7 @@ export default {
               let config = {
                 method: "get",
                 url:
-                  "https://wifo1-29.bwl.uni-mannheim.de:3000/patient/findByAmbulanceId/" +
+                  "https://localhost:3000/patient/findByAmbulanceId/" +
                   currentRtw.ambulanceId,
                 headers: { "x-access-token": context.token }
               };
@@ -259,7 +259,7 @@ export default {
     retrieveRTWs() {
       var config = {
         method: "get",
-        url: "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findAll",
+        url: "https://localhost:3000/ambulance/findAll",
         headers: { "x-access-token": this.token }
       };
       axios(config)
@@ -288,7 +288,7 @@ export default {
           let config = {
             method: "get",
             url:
-              "https://wifo1-29.bwl.uni-mannheim.de:3000/ambulance/findGnssByAmbulanceId/" +
+              "https://localhost:3000/ambulance/findGnssByAmbulanceId/" +
               rtw.ambulanceId,
             headers: { "x-access-token": this.token }
           };
@@ -342,7 +342,7 @@ export default {
 
     var config = {
       method: "post",
-      url: "https://wifo1-29.bwl.uni-mannheim.de:3000/user/login",
+      url: "https://localhost:3000/user/login",
       headers: {},
       data: data
     };
