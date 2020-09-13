@@ -115,7 +115,8 @@ export default {
     apiButtonIsDisabled: true,
     token: "",
     activeAmbulances: [],
-    inactiveAmbulances: []
+    inactiveAmbulances: [],
+    timer: "",
   }),
   methods: {
     updateApiKey: function() {
@@ -363,6 +364,17 @@ export default {
       .catch(function(error) {
         console.log(error);
       });
+  },
+  // 10 second timer which checks if new ambulances drive to the hospital.
+  created() {
+    this.timer = setInterval(this.retrieveRTWs, 10000);
+  },
+  // When the PulseOxy component is deactivated, the refreshing timer is stopped.
+  beforeDestroy() {
+      clearInterval(this.timer);
+  },
+  deactivated() {
+      clearInterval(this.timer);
   },
   watch: {
     apiKeyOpenRoute: {
