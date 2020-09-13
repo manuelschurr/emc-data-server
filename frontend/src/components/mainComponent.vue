@@ -81,9 +81,11 @@ export default {
     patientId: Number
   },
   mounted() {
+    // Set the initial components that are active and store the information in global variables
     this.componentArray = [Maps, Stream, PulseOxy];
     this.$root.$emit("selectedComponent", "multi-selection");
-
+    // listen to the number of selected compoennts to enable styling options in dependence of the selected components. it also activats the PulsOxy component to ensure that it is always active,
+    // even when the component is not selected. This is needed to transmit the recent PulsOxy Data to the LeftSideBar.
     this.$root.$on("selectedComponent", data => {
       this.componentArray = data;
       if (

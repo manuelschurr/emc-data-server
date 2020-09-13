@@ -102,6 +102,7 @@ export default {
     RtwSelection
   },
   methods: {
+    // Update the API Key for the OpenRouteService API. After a new Key is available, initiate the calculation of the ETA again.
     updateApiKey: function() {
       var context = this;
       var config = {
@@ -125,6 +126,7 @@ export default {
           console.log(error);
         });
     },
+    // Get the API Key for OpenRouteService that is stored in the DB.
     getApiKey: function() {
       var context = this;
       var config = {
@@ -143,6 +145,7 @@ export default {
           console.log(error);
         });
     },
+    // To change the RTW. This switches from the detailed view of one rtw to the rtw selection
     changeRTW: function() {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = Object;
@@ -151,6 +154,7 @@ export default {
       this.Rtwdocument.lat = null;
       this.Rtwdocument.eta = null;
     },
+    // Select a current rtw and populate the data for the detailed view (mainComponent.)
     selectRTW: function(rtw) {
       this.rtwSelected = !this.rtwSelected;
       this.selectedRTW = rtw;
@@ -158,6 +162,7 @@ export default {
       this.Rtwdocument.long = rtw.long;
       this.Rtwdocument.lat = rtw.lat;
     },
+    // Retrieve the current GNSS data for the selected RTW
     getGnssdata: function() {
       if (this.selectedRTW.ambulanceId) {
         let config = {
@@ -184,6 +189,7 @@ export default {
           });
       }
     },
+    //Compute the ETA for the selected RTW
     computeETA: function() {
       let request = new XMLHttpRequest();
       if (this.rtwLocations.length > 1) {
@@ -220,6 +226,7 @@ export default {
         request.send(body);
       }
     },
+    // Formats the time in seconds to minutes : seconds
     secToTime: function(etaInSec) {
       if (!isNaN(etaInSec)) {
         const rtwTimeReductionFactor = 0.734;
@@ -232,6 +239,7 @@ export default {
         return minutes + " Minuten " + seconds + " Sekunden";
       }
     },
+    //Retrieve a valid token for the REST-API
     retrieveToken() {
       var context = this;
       var axios = require("axios");
@@ -262,7 +270,7 @@ export default {
   watch: {
     rtwSelected: {
       handler() {
-        // Request GNSS Data from Server every 10 Seconds
+        // Request GNSS Data from Server every 10 Seconds if a RTW is selected
         if (this.rtwSelected) {
           this.interval = setInterval(() => {
             this.getGnssdata();
@@ -272,6 +280,7 @@ export default {
         }
       }
     },
+    // Enables the button for the update of the OpenRouteService API-Key if the correct number of characters is given.
     apiKeyOpenRoute: {
       handler() {
         if (this.apiKeyOpenRoute.length === 56) {
@@ -283,9 +292,11 @@ export default {
     }
   },
   mounted: function() {
+    // Calls these methdos when the APP is mounted
     this.retrieveToken();
     this.getApiKey();
   },
+  //Set global variables as soon as the APP is created
   created() {
     document.title = "Schockraum";
 
