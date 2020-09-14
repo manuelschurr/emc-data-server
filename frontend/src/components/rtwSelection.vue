@@ -280,9 +280,9 @@ export default {
               this.inactiveAmbulances.push(ambulance);
             }
           }
-          for (var r of this.activeAmbulances) {
-            r.eta = 0;
-          }
+          // for (var r of this.activeAmbulances) {
+          //   r.eta = 0;
+          // }
           this.getGnssData();
         })
         .catch(errors => {
