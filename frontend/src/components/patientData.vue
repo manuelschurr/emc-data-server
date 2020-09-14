@@ -81,7 +81,7 @@
           </div>
           <div class="col-7" style="align-items: start;">
             <div class="form-group row labelTitle">
-              <label>Verdachtsdiagnose/Einlieferungsdetails:</label>
+              <label>Sonstiges:</label>
               <textarea
                 class="form-control-plaintext"
                 rows="4"
