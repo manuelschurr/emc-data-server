@@ -62,6 +62,7 @@ export default {
   },
   watch: {
     Rtwdocument: {
+      // If the position of the RTW changes, update the position on the map based on the new lat / long values.
       handler() {
         this.adjustPosition(this.Rtwdocument.lat, this.Rtwdocument.long);
         if (typeof this.Rtwdocument.eta === "string") {
@@ -78,6 +79,7 @@ export default {
     }
   },
   computed: {
+    // Update the size of the map based on the selection (multi or single selection)
     styleObject: function() {
       if (this.selectedElements === 2) {
         return { height: "70vh", width: "62vw" };

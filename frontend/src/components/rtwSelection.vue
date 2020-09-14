@@ -119,6 +119,7 @@ export default {
     timer: "",
   }),
   methods: {
+    // Update the API Key for the OpenRouteService API. After a new Key is available, initiate the calculation of the ETA again.
     updateApiKey: function() {
       var context = this;
       var config = {
@@ -145,6 +146,7 @@ export default {
           console.log(error);
         });
     },
+    // Get the API Key for OpenRouteService that is stored in the DB.
     getApiKey: function() {
       var context = this;
       var config = {
@@ -164,6 +166,7 @@ export default {
           console.log(error);
         });
     },
+    // Compute the ETA for all active RTWs by using the OpenRouteService API
     computeETA: function(currentRtw) {
       let request = new XMLHttpRequest();
       if (this.rtwLocations.length > 1) {
@@ -233,6 +236,7 @@ export default {
                   }
                 });
             } else {
+              //Handle errors that occur by using the OpenRouteService API
               var contains = false;
               currentRtw.eta = "Fehler bei Routen Schnittstelle";
               context.stateMessage = "Fehler bei Routen Schnittstelle";
@@ -244,6 +248,7 @@ export default {
               if (!contains) {
                 context.ambulancesWithETAs.push(currentRtw);
               }
+              //Activate the error flag to trigger the input field for a new API key as a invalid API key is most of the time the source of errors for this request.
               context.openRouteError = true;
               context.$root.$emit("tokenStatus", context.openRouteError);
             }
@@ -253,6 +258,7 @@ export default {
         request.send(body);
       }
     },
+    // Formats the time in seconds to minutes : seconds
     secToTime: function(etaInSec) {
       if (!isNaN(etaInSec)) {
         const rtwTimeReductionFactor = 0.734;
@@ -265,6 +271,7 @@ export default {
         return minutes + " Minuten " + seconds + " Sekunden";
       }
     },
+    // Requests all RTWs from the REST-API
     retrieveRTWs() {
       var config = {
         method: "get",
@@ -273,6 +280,7 @@ export default {
       };
       axios(config)
         .then(response => {
+          // Sort the RTWs
           for (var ambulance of response.data.data) {
             if (ambulance.patientId != 0) {
               this.activeAmbulances.push(ambulance);
@@ -291,6 +299,7 @@ export default {
         })
         .finally(() => (this.loading = false));
     },
+    // Retrieve the GNSS Data for each active RTW
     getGnssData() {
       for (var rtw of this.activeAmbulances) {
         if (rtw.ambulanceId && rtw.patientId != 0) {
@@ -305,6 +314,7 @@ export default {
           axios(config)
             .then(response => {
               if (response.data.statusCode === "10000") {
+                // Create the GNSS format that is required by the OpenRouteService API to calcualte ETAs. This calculates ETA for the RTW to the UMM
                 this.rtwLocations.splice(
                   1,
                   1,
@@ -342,6 +352,7 @@ export default {
     }
   },
   mounted: function() {
+    // Retrieve a valid token for the REST-API
     var context = this;
     var axios = require("axios");
     var data = {
@@ -359,6 +370,7 @@ export default {
     axios(config)
       .then(function(response) {
         context.token = response.data.data.token;
+        //after the token is available in this component, call remaining routes.
         context.retrieveRTWs();
       })
       .catch(function(error) {
@@ -378,6 +390,7 @@ export default {
   },
   watch: {
     apiKeyOpenRoute: {
+      // Enables the button for the update of the OpenRouteService API-Key if the correct number of characters is given.
       handler() {
         if (this.apiKeyOpenRoute.length === 56) {
           this.apiButtonIsDisabled = false;
