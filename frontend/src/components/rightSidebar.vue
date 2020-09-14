@@ -130,11 +130,14 @@ export default {
     //this.$root.$on("selectScreenshots", data => {
     //this.screenshots = data;
     //});
+
+    //Retrieve the patient data from a sibling component
     this.$root.$on("patientDataSidebar", data => {
       this.patient = data;
     });
   },
   methods: {
+    //Dynamically sets the color of the ABCDE-Buttons based on the selected value.
     classABCDE(status) {
       let classABCDE = "";
       if (status == null) {

@@ -5,7 +5,6 @@
         </a>
         <form class="form-inline">
             <button class="btn btn-outline-dark rtwButton btn-lg" type="button" @click="changeRTW">
-                <!-- <img src="../assets/ambulance.png" width="80" /> -->
                 <div class="buttonFont">RTW wechseln</div>
             </button>
             

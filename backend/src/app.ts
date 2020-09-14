@@ -12,7 +12,7 @@ process.on("uncaughtException", (e:any) => {
     Logger.error(e)
 })
 
-// get certificate for TLS usage, created with Let's Encrypt
+// integrate certificate and key for TLS, created with Let's Encrypt
 var fs = require('fs')
 var https = require('https')
 const CERT_DIR = path.join(process.cwd() + "/certificates/")

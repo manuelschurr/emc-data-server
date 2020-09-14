@@ -10,7 +10,10 @@
         </div>
       </div>
     </div>
-    <div v-else>Aktuell wurden noch keine Bilder gemacht</div>
+    <div v-else>
+      <br />Aktuell wurden noch keine Bilder gemacht
+      <br />
+    </div>
   </div>
   <div v-else>
     <div class="gallery" id="mainDiv" v-if="this.loading && this.captures.length != 0">
@@ -18,7 +21,10 @@
         <img v-bind:src="chosenImage" width="70%" />
       </div>
     </div>
-    <div v-else>Aktuell wurden noch keine Bilder gemacht</div>
+    <div v-else>
+      <br />Aktuell wurden noch keine Bilder gemacht
+      <br />
+    </div>
   </div>
 </template>
 
@@ -33,6 +39,7 @@ export default {
       chosenImage: null,
       loading: false,
       token: "",
+      timer: "",
     };
   },
   props: {
@@ -63,15 +70,22 @@ export default {
         console.log(error);
       });
   },
+  // 5 seconds timer which triggers a refresh to get the new data/images from the server.
   created() {
     this.timer = setInterval(this.fillData, 5000);
   },
+  // When the Stream component is deactivated, the refreshing timer is stopped.
+  beforeDestroy() {
+      clearInterval(this.timer);
+    },
   methods: {
     retrieveToken() {},
-
+    // Changes the big displayed picture to the selected one in the list of small pictures.
     clickMethod: function (event) {
       this.chosenImage = event.currentTarget.src;
     },
+    // Retrieves the data from the server by first checking if new images are on the server and then depending on the 
+    // file name, downloads the new picture to get it displayed in the component.
     async fillData() {
       var vm = this;
       this.loading = true;
@@ -79,7 +93,6 @@ export default {
       var body = "";
       var config = {
         method: "get",
-        //"https://wifo1-29.bwl.uni-mannheim.de:3000/img/all",
         url: "https://wifo1-29.bwl.uni-mannheim.de:3000/img/all",
         headers: { "x-access-token": this.token },
         data: body,
@@ -101,7 +114,6 @@ export default {
             var bodyTwo = "";
             var configGetImages = {
               method: "get",
-              //"https://wifo1-29.bwl.uni-mannheim.de:3000/img/single/" + imageStr,
               url:
                 "https://wifo1-29.bwl.uni-mannheim.de:3000/img/single/" +
                 imageStr,
@@ -119,10 +131,6 @@ export default {
           }
         }
       });
-    },
-    beforeDestroy() {
-      var vm = this;
-      clearInterval(vm.timer);
     },
   },
 };

@@ -99,6 +99,8 @@ export default {
     Maps
   },
   mounted() {
+    // Listen to a global variable and set the currently selected feature to the selection list. This determines the
+    // information that should be displayed in mainComponent.
     this.$root.$on("selectedComponent", data => {
       if (data === "btn-puls") {
         this.selection = [];
@@ -116,13 +118,14 @@ export default {
         this.selection.push(PulseOxy);
       }
     });
-
+    // Listens to the global puls oxy variable to display the puls oxy data inside the left side bar
     this.$root.$on("lastPulseData", data => {
       this.lastPulse = data;
     });
     this.$root.$on("lastSpo2Data", data => {
       this.lastSpo2 = data;
     });
+    // If the arrival time changes the value, update the arrival time displayed in the left sidebar.
     this.$watch(
       "arrivalTime",
       arrivalTime => {
@@ -130,6 +133,7 @@ export default {
       },
       { immediate: true }
     );
+    // Set the multi selection as default view
     this.setSelection({
       currentTarget: {
         id: "multi-selection"
@@ -140,6 +144,7 @@ export default {
     arrivalTime: String
   },
   methods: {
+    // Activates the functionalitxy based on the the clicked button. The previous selection is cleared within this method.
     setSelection(event) {
       //var component = null;
 
@@ -188,6 +193,7 @@ export default {
         }
       }
     },
+    // if a button is clicked, give it a green background color
     toggleButton(status) {
       let buttonClass = "";
       if (status) {
