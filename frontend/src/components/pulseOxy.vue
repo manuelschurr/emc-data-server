@@ -5,7 +5,7 @@
         Keine Puls und SpO2 Daten verfügbar, die Komponente kann aktuell nicht
         geladen werden.
       </div>
-      <div v-else>
+      <div v-else class="col-12">
         <div class="col-12">
           <form class="form-inline" style="align-items: center;">
             <div class="col-9" width="100%">

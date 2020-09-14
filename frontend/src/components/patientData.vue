@@ -70,7 +70,7 @@
           </div>
           <div class="col-7" style="align-items: start;">
             <div class="form-group row labelTitle">
-              <label>Sonstiges</label>
+              <label>Verdachtsdiagnose/<br />Einlieferungsdetails</label>
               <textarea
                 class="form-control-plaintext"
                 rows="4"
