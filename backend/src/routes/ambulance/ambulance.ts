@@ -1,9 +1,11 @@
 import express from "express";
 import _ from "lodash";
-import { NotFoundResponse, SuccessResponse } from "../../core/ApiResponse";
+import verifyToken from "../../auth/VerifyToken";
+import { NotFoundMsgResponse, SuccessResponse } from "../../core/ApiResponse";
 import Ambulance from "../../database/model/Ambulance";
 import Gnss from "../../database/model/Gnss";
 import AmbulanceRepo from "../../database/repository/AmbulanceRepo";
+import CountersRepo from "../../database/repository/CountersRepo";
 import GnssRepo from "../../database/repository/GnssRepo";
 import asyncHandler from "../../helpers/asyncHandler";
 import validator, { ValidationSource } from "../../helpers/validator";
@@ -12,12 +14,12 @@ import schema from "./schema";
 const router = express.Router()
 
 router.get(
-    "/findAll",
+    "/findAll", verifyToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const ambulances = await AmbulanceRepo.findAll();
         if (!ambulances) {
-            throw new NotFoundResponse('Ambulance data could not be found.');
+            throw new NotFoundMsgResponse('Ambulance data could not be found.');
         }
 
         return new SuccessResponse("Successful", ambulances).send(res);
@@ -25,14 +27,14 @@ router.get(
 );
 
 router.get(
-    "/findByAmbulanceId/:ambulanceId",
+    "/findByAmbulanceId/:ambulanceId", verifyToken,
     validator(schema.ambulanceId, ValidationSource.PARAM),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const { ambulanceId } = req.params;
         const ambulance = await AmbulanceRepo.findByAmbulanceId(parseInt(ambulanceId));
         if (!ambulance) {
-            throw new NotFoundResponse('Ambulance data could not be found.');
+            throw new NotFoundMsgResponse('Ambulance data could not be found.');
         }
 
         return new SuccessResponse("Successful", ambulance).send(res);
@@ -40,28 +42,24 @@ router.get(
 );
 
 router.get(
-    "/findNextAmbulanceId",
+    "/findNextAmbulanceId", verifyToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const ambulance = await AmbulanceRepo.findMaxAmbulanceId();
-        var ambulanceId = 1;
-        if (ambulance) {
-            ambulanceId = ambulance.ambulanceId + 1;
-        }
+        const nextAmbulanceId = await CountersRepo.findAndModify("ambulanceId");
         
-        return new SuccessResponse("Successful", ambulanceId).send(res);
+        return new SuccessResponse("Successful", nextAmbulanceId).send(res);
     }),
 );
 
 router.get(
-    "/findGnssByAmbulanceId/:ambulanceId",
+    "/findGnssByAmbulanceId/:ambulanceId", verifyToken,
     validator(schema.ambulanceId, ValidationSource.PARAM),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const { ambulanceId } = req.params;
         const gnss = await GnssRepo.findLatestByAmbulanceId(parseInt(ambulanceId));
         if (!gnss) {
-            throw new NotFoundResponse('GNSS data could not be found.');
+            throw new NotFoundMsgResponse('GNSS data could not be found.');
         }
 
         return new SuccessResponse("Successful", gnss).send(res);
@@ -69,7 +67,7 @@ router.get(
 );
 
 router.get(
-    "/findGnssByAmbulanceIdAndTimestamp",
+    "/findGnssByAmbulanceIdAndTimestamp", verifyToken,
     validator(schema.gnss, ValidationSource.QUERY),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
@@ -77,7 +75,7 @@ router.get(
         const timestamp = new Date(req.query.timestamp.toString());
         const gnss = await GnssRepo.findLatestByAmbulanceIdAndTimestamp(parseInt(ambulanceId), timestamp);
         if (!gnss) {
-            throw new NotFoundResponse('GNSS data could not be found.');
+            throw new NotFoundMsgResponse('GNSS data could not be found.');
         }
 
         return new SuccessResponse("Successful", gnss).send(res);
@@ -86,7 +84,7 @@ router.get(
 );
 
 router.post(
-    "/create",
+    "/create", verifyToken,
     validator(schema.createAmbulance),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
@@ -106,7 +104,7 @@ router.post(
 );
 
 router.post(
-    "/createGnss",
+    "/createGnss", verifyToken,
     validator(schema.createGnss),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
@@ -127,14 +125,14 @@ router.post(
 );
 
 router.put(
-    '/update/:ambulanceId',
+    '/update/:ambulanceId', verifyToken,
     validator(schema.ambulanceId, ValidationSource.PARAM),
     validator(schema.updateAmbulance),
     asyncHandler(async (req, res, next) => {
         const { ambulanceId } = req.params;
         const ambulance = await AmbulanceRepo.findByAmbulanceId(parseInt(ambulanceId));
         if (ambulance == null) {
-            throw new NotFoundResponse('Ambulance does not exist');
+            throw new NotFoundMsgResponse('Ambulance does not exist');
         }
         
         if (req.body.hasOwnProperty('patientId')) ambulance.patientId = req.body.patientId;

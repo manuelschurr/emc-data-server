@@ -1,6 +1,7 @@
 import bodyParser from "body-parser"
 import cors from "cors"
 import express, { NextFunction, Request, Response } from "express"
+import path from "path"
 import { corsUrl, environment } from "./config"
 import { ApiError, InternalError, NotFoundError } from "./core/ApiError"
 import Logger from "./core/Logger"
@@ -11,11 +12,12 @@ process.on("uncaughtException", (e:any) => {
     Logger.error(e)
 })
 
-// get certificate for TLS usage, created with OpenSSL
+// integrate certificate and key for TLS, created with Let's Encrypt
 var fs = require('fs')
 var https = require('https')
-var privateKey  = fs.readFileSync('./certificates/key.pem', 'utf8')
-var certificate = fs.readFileSync('./certificates/cert.pem', 'utf8')
+const CERT_DIR = path.join(process.cwd() + "/certificates/")
+var privateKey  = fs.readFileSync(CERT_DIR + 'key.pem', 'utf8')
+var certificate = fs.readFileSync(CERT_DIR + 'fullchain.pem', 'utf8')
 var credentials = {key: privateKey, cert: certificate};
 
 const app = express()

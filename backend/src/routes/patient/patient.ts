@@ -1,8 +1,10 @@
 import express from "express";
 import _ from "lodash";
-import { NotFoundResponse, SuccessResponse } from "../../core/ApiResponse";
+import verifyToken from "../../auth/VerifyToken";
+import { NotFoundMsgResponse, SuccessResponse } from "../../core/ApiResponse";
 import Patient from "../../database/model/Patient";
 import Pulsoxy from "../../database/model/Pulsoxy";
+import CountersRepo from "../../database/repository/CountersRepo";
 import PatientRepo from "../../database/repository/PatientRepo";
 import PulsoxyRepo from "../../database/repository/PulsoxyRepo";
 import asyncHandler from "../../helpers/asyncHandler";
@@ -12,14 +14,14 @@ import schema from "./schema";
 const router = express.Router()
 
 router.get(
-    "/findByPatientId/:patientId",
+    "/findByPatientId/:patientId", verifyToken,
     validator(schema.patientId, ValidationSource.PARAM),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const { patientId } = req.params;
         const patient = await PatientRepo.findByPatientId(parseInt(patientId));
         if (!patient) {
-            throw new NotFoundResponse('Patient could not be found.');
+            throw new NotFoundMsgResponse('Patient could not be found.');
         }
 
         return new SuccessResponse("Successful", patient).send(res);
@@ -27,14 +29,14 @@ router.get(
 );
 
 router.get(
-    "/findByAmbulanceId/:ambulanceId",
+    "/findByAmbulanceId/:ambulanceId", verifyToken,
     validator(schema.ambulanceId, ValidationSource.PARAM),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const { ambulanceId } = req.params;
         const patient = await PatientRepo.findByAmbulanceId(parseInt(ambulanceId));
         if (!patient) {
-            throw new NotFoundResponse('Patient could not be found.');
+            throw new NotFoundMsgResponse('Patient could not be found.');
         }
 
         return new SuccessResponse("Successful", patient).send(res);
@@ -42,28 +44,24 @@ router.get(
 );
 
 router.get(
-    "/findNextPatientId",
+    "/findNextPatientId", verifyToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        const patient = await PatientRepo.findMaxAmbulanceId();
-        var patientId = 1;
-        if (patient) {
-            patientId = patient.patientId + 1;
-        }
+        const nextPatientValue = await CountersRepo.findAndModify("patientId");
 
-        return new SuccessResponse("Successful", patientId).send(res);
+        return new SuccessResponse("Successful", nextPatientValue).send(res);
     }),
 );
 
 router.get(
-    "/findPulsoxyByPatientId/:patientId",
+    "/findPulsoxyByPatientId/:patientId", verifyToken,
     validator(schema.patientId, ValidationSource.PARAM),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const { patientId } = req.params;
         const pulsoxy = await PulsoxyRepo.findLatestByPatientId(parseInt(patientId));
         if (!pulsoxy) {
-            throw new NotFoundResponse('Pulsoxy data could not be found.');
+            throw new NotFoundMsgResponse('Pulsoxy data could not be found.');
         }
 
         return new SuccessResponse("Successful", pulsoxy).send(res);
@@ -71,7 +69,7 @@ router.get(
 );
 
 router.get(
-    "/findPulsoxyByPatientIdAndTimestamp",
+    "/findPulsoxyByPatientIdAndTimestamp", verifyToken,
     validator(schema.pulsoxy, ValidationSource.QUERY),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
@@ -79,7 +77,7 @@ router.get(
         const timestamp = new Date(req.query.timestamp.toString());
         const pulsoxy = await PulsoxyRepo.findLatestByPatientIdAndTimestamp(parseInt(patientId), timestamp);
         if (!pulsoxy) {
-            throw new NotFoundResponse('Pulsoxy data could not be found.');
+            throw new NotFoundMsgResponse('Pulsoxy data could not be found.');
         }
 
         return new SuccessResponse("Successful", pulsoxy).send(res);
@@ -89,12 +87,12 @@ router.get(
 
 router.post(
     "/create",
-    validator(schema.createPatient),
+    validator(schema.createPatient), verifyToken,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
         const patient = await PatientRepo.findByPatientId(req.body.patientId);
         if (patient) {
-            throw new NotFoundResponse('Patient already exists');
+            throw new NotFoundMsgResponse('Patient already exists');
         }
 
         const { patient: createdPatient } = await PatientRepo.create(
@@ -126,11 +124,11 @@ router.post(
 );
 
 router.post(
-    "/createPulsoxy",
+    "/createPulsoxy", verifyToken,
     validator(schema.createPulsoxy),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asyncHandler(async (req, res, next) => {
-        
+
         const { pulsoxy: createdPulsoxy } = await PulsoxyRepo.create(
             {
                 patientId: req.body.patientId,
@@ -147,14 +145,14 @@ router.post(
 );
 
 router.put(
-    '/update/:patientId',
+    '/update/:patientId', verifyToken,
     validator(schema.patientId, ValidationSource.PARAM),
     validator(schema.updatePatient),
     asyncHandler(async (req, res, next) => {
         const { patientId } = req.params;
         const patient = await PatientRepo.findByPatientId(parseInt(patientId));
         if (patient == null) {
-            throw new NotFoundResponse('Patient does not exist');
+            throw new NotFoundMsgResponse('Patient does not exist');
         }
 
         if (req.body.hasOwnProperty('ambulanceId')) patient.ambulanceId = req.body.ambulanceId;
@@ -177,7 +175,7 @@ router.put(
         await PatientRepo.update(patient);
         new SuccessResponse('Patient updated successfully', patient).send(res);
     }),
-  );
+);
 
 
 export default router

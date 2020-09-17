@@ -8,5 +8,6 @@
       "source.fixAll": true,
       "source.organizeImports": true
     }
-  }
+  },
+  "git.ignoreLimitWarning": true
 }

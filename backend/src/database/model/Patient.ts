@@ -51,8 +51,7 @@ const schema = new Schema(
          enum: [Gender.M, Gender.W, Gender.E]
       },
       age: {
-         type: Schema.Types.Number,
-         required: true
+         type: Schema.Types.Number
       },
       preExistingIllness: {
          type: Schema.Types.String
@@ -61,36 +60,31 @@ const schema = new Schema(
          type: Schema.Types.String
       },
       AIsSelected: {
-         type: Schema.Types.Boolean,
-         required: true
+         type: Schema.Types.Boolean
       },
       AText: {
          type: Schema.Types.String
       },
       BIsSelected: {
-         type: Schema.Types.Boolean,
-         required: true
+         type: Schema.Types.Boolean
       },
       BText: {
          type: Schema.Types.String
       },
       CIsSelected: {
-         type: Schema.Types.Boolean,
-         required: true
+         type: Schema.Types.Boolean
       },
       CText: {
          type: Schema.Types.String
       },
       DIsSelected: {
-         type: Schema.Types.Boolean,
-         required: true
+         type: Schema.Types.Boolean
       },
       DText: {
          type: Schema.Types.String
       },
       EIsSelected: {
-         type: Schema.Types.Boolean,
-         required: true
+         type: Schema.Types.Boolean
       },
       EText: {
          type: Schema.Types.String
